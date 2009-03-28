@@ -10,8 +10,13 @@ Copyright (c) 2009 Third Cog Software. All rights reserved.
 import sys
 import os
 import euclid
-
+import random
 import demjson
+
+class GameDelegate:
+  def entityChanged(self, entity):
+    pass
+
 
 class Player (object):
   def __init(self):
@@ -29,19 +34,18 @@ class Game(object):
 
     self.load_level(level_name)
 
-    P = Player()
-    E = Entity(self.level, "test player", euclid.Vector2(5,0))
-    P.set_entity(E)
-    self.player = [P]
   
   def ful_get_player(self, n):
     print self.player
     return self.player[n]
     
+    self.delegate = None
+    
   def load_level(self, name):  
     print "ladda level"
     
     self.level = Level(name)
+    self.level.game = self
   
   def update(self, dt):
     self.level.update(dt)
@@ -51,11 +55,13 @@ class Entity(object):
   """docstring for Entity"""
   def __init__(self, level, name, pos):
     super(Entity, self).__init__()
+    self.level = None
     level.add_entity(self)
     self.pos = pos
     self.name = name
     self.vel = euclid.Vector2(0., 0.)
     self.acc = euclid.Vector2(0., 0.)
+
     self.move_force = euclid.Vector2(0,0)
     self.gravity_force = euclid.Vector2(0,9.82)
     self.mass = 1
@@ -75,7 +81,7 @@ class Entity(object):
 
   def update(self, tilemap, dt):
     new_pos = self.pos + self.vel * dt
-    
+      
     if tilemap.tile_at_point(new_pos) == 0:
       self.pos = new_pos
       self.on_floor = False
@@ -88,6 +94,9 @@ class Entity(object):
     self.acc = self.move_force / self.mass + self.gravity_force
     
     print self.pos, self.vel, self.on_floor
+    
+    if(self.level.game.delegate):
+      self.level.game.delegate.entityChanged(self)
   
   def set_velocity(self, acc, dt):
     self.vel += acc * dt
@@ -114,11 +123,22 @@ class Level(object):
     self.name = name
     
     self.entities = []
+    self.game = None
+  
     self.tilemap = self.load_tilemap()
       
   def add_entity(self, ent):
+    ent.level = self
     self.entities.append(ent)
-  
+    
+  def entity_by_name(self, name):
+    for e in self.entities:
+      if e.name == name:
+        return e
+    e = Entity(self, name, euclid.Vector2(0,0))
+    return e
+    
+    
   def update(self, dt):
     # update entities
     for entity in self.entities:

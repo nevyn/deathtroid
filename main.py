@@ -15,6 +15,9 @@ from pyglet import clock
 from pyglet.gl import *
 from pyglet.window import key
 import controller
+import logging
+
+logging.basicConfig(level=logging.WARNING)
 
 win = window.Window(640, 480, "DEATHTROID")
 
@@ -53,11 +56,13 @@ def on_key_release(symbol, modifiers):
 glPointSize(5)
     
 
+server_controller = controller.ServerController()
 
 game_controller = controller.GameController()
-pe = game_controller.ful_get_player(0)
+pe = server_controller.ful_get_player(0)
 print 'pe: ', pe
 
+clock.schedule(server_controller.update)
 clock.schedule(game_controller.update)
 
 
