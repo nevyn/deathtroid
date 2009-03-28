@@ -30,8 +30,6 @@ logging.basicConfig(level=logging.WARNING)
 
 win = window.Window(640, 480, "DEATHTROID")
 
-event_loop = pyglet.app.EventLoop()
-
 current_controller = None
 
 @win.event
@@ -83,7 +81,16 @@ def on_key_release(symbol, modifiers):
       print dfdfdf
       dfdfdf.write(ubbe)
       print "sparade!"
-      
+
+@win.event
+def on_close():
+    reactor.stop()
+
+    # Return true to ensure that no other handlers
+    # on the stack receive the on_close event
+    return True
+
+
 fullscreen = False
 
 current_tile = 0
@@ -119,13 +126,7 @@ def on_mouse_press(x, y, button, modifiers):
     
   elif button == window.mouse.RIGHT:    
     server_controller.game.level.tilemap.map[y][x] = (server_controller.game.level.tilemap.map[y][x] + 1) % num_tiles
-    game_controller.game.level.tilemap.map[y][x] = (game_controller.game.level.tilemap.map[y][x] + 1) % num_tiles
-
-@event_loop.event
-def on_exit():
-  if server:
-    server.close()
-    
+    game_controller.game.level.tilemap.map[y][x] = (game_controller.game.level.tilemap.map[y][x] + 1) % num_tiles    
 
 
 glPointSize(5)
@@ -153,4 +154,3 @@ if(roles == "client" or roles == "both"):
 
 
 reactor.run()
-#event_loop.run()
