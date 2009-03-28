@@ -18,15 +18,18 @@ class Game (object):
 
 class Entity(object):
   """docstring for Entity"""
-  def __init__(self, pos, vel, acc):
+  def __init__(self, pos):
     super(Entity, self).__init__()
     self.pos = pos
-    self.vel = vel
-    self.acc = acc
+    self.vel = euclid.Vector2(0., 0.)
+    self.acc = euclid.Vector2(0., 0.)
     
-  
 class Level (object):
   pass
 
-class Tilemap (object):
-  pass
+class Tilemap(object):
+  """docstring for Tilemap"""
+  def __init__(self, width, height):
+    super(Tilemap, self).__init__()
+    
+    self.tilemap = [[0 for x in range(width)] for y in range(height)]

@@ -14,10 +14,13 @@ import model
 class GameController(object):
   """hej"""
   def __init__(self):
-    super(Controller, self).__init__()
+    super(GameController, self).__init__()
     
     self.game = model.Game()
     self.view = None
+    
+  def update(self, dt):
+    pass
     
 
 
