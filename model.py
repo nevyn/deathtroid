@@ -47,9 +47,18 @@ class Entity(object):
     self.vel = euclid.Vector2(0., 0.)
     self.acc = euclid.Vector2(0., 0.)
 
-  def update(self, dt):
-    self.pos += self.vel * dt
-    self.vel += self.acc * dt
+  def update(self, tilemap, dt):
+    new_pos = self.pos + self.vel * dt
+    
+    if tilemap.tile_at_point(new_pos) == 0:
+        self.pos = new_pos
+        self.vel += self.acc * dt
+    else:
+      self.vel = 0
+    
+    self.acc = euclid.Vector2(0., 9.82)
+    
+    print self.pos
     
   def collision(self, ent):
     if (self.pos - ent.pos).magnitude() < 1:
@@ -59,19 +68,19 @@ class Level(object):
   """docstring for Level"""
   def __init__(self):
     super(Level, self).__init__()
-    
+    self.load_tilemap("foobar")
     self.entities = []
   
   def add_entity(self, ent):
     self.entities.append(ent)
   
   def load_tilemap(self, name):
-    pass
+    self.tilemap = Tilemap(100,100)
   
   def update(self, dt):
     # update entities
     for entity in self.entities:
-      entity.update(dt)
+      entity.update(self.tilemap, dt)
     
     # check collisions
     for a in self.entities:
@@ -87,3 +96,6 @@ class Tilemap(object):
     super(Tilemap, self).__init__()
     
     self.tilemap = [[0 for x in range(width)] for y in range(height)]
+  
+  def tile_at_point(self, point):
+    return 0
