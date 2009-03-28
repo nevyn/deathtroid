@@ -91,7 +91,7 @@ class Entity(object):
     self.max_vel = euclid.Vector2(7, 25)
     self.on_floor = False
     
-    self.width = 0.9
+    self.width = 0.75
     self.height = 2.5
     
     self.state = "running_left"

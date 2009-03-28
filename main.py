@@ -16,6 +16,8 @@ from pyglet.gl import *
 from pyglet.window import key
 import controller
 import logging
+import euclid
+import demjson
 
 logging.basicConfig(level=logging.WARNING)
 
@@ -36,7 +38,6 @@ def on_resize(width, height):
 @win.event
 def on_draw():
   if game_controller:
-    #win.clear()    
     game_controller.draw()
 
 @win.event
@@ -67,18 +68,49 @@ def on_key_release(symbol, modifiers):
       fullscreen = not fullscreen
       win.set_fullscreen(fullscreen)
       
+    elif symbol == key.S:
+      ubbe = demjson.encode(server_controller.game.level.tilemap.map)
+      dfdfdf = open('data/levels/foolevel/tilemap.data', 'w')
+      print dfdfdf
+      dfdfdf.write(ubbe)
+      print "sparade!"
+      
 fullscreen = False
 
 current_tile = 0
-max_tiles = 0
-
-
-
-
+num_tiles = 14
   
 @win.event
 def on_mouse_press(x, y, button, modifiers):
-  pass
+  global current_tile
+  y = 480 - y
+
+  vp = euclid.Vector2(game_controller.view.cam.x*32, game_controller.view.cam.y*32)
+
+  x += vp.x
+  y += vp.y
+
+  x = int(x)
+  y = int(y)
+
+  x /= 32
+  y /= 32
+
+  print "cam: ", game_controller.view.cam
+
+  #x += game_controller.view.cam.x
+  #y += int(game_controller.view.cam.y)
+
+
+  print "sätt i ", x, y
+  if button == window.mouse.LEFT:
+    
+    server_controller.game.level.tilemap.map[y][x] = (server_controller.game.level.tilemap.map[y][x] - 1) % num_tiles
+    game_controller.game.level.tilemap.map[y][x] = (game_controller.game.level.tilemap.map[y][x] - 1) % num_tiles
+    
+  elif button == window.mouse.RIGHT:    
+    server_controller.game.level.tilemap.map[y][x] = (server_controller.game.level.tilemap.map[y][x] + 1) % num_tiles
+    game_controller.game.level.tilemap.map[y][x] = (game_controller.game.level.tilemap.map[y][x] + 1) % num_tiles
 
 @event_loop.event
 def on_exit():

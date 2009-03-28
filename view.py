@@ -25,17 +25,17 @@ class View(object):
     # Move
     if self.follow is not None:
       
-      cam = euclid.Vector2(self.follow.pos.x, self.follow.pos.y);
-      cam.x -= 10.0
-      cam.y -= 10.0
+      self.cam = euclid.Vector2(self.follow.pos.x, self.follow.pos.y);
+      self.cam.x -= 10.0
+      self.cam.y -= 10.0
       
-      if cam.x < 0.0: cam.x = 0.0
-      elif cam.x > self.game.level.tilemap.width - 20: cam.x = self.game.level.tilemap.width - 20
-      if cam.y < 0.0: cam.y = 0.0
-      elif cam.y > self.game.level.tilemap.height - 15: cam.y = self.game.level.tilemap.height - 15
+      if self.cam.x < 0.0: self.cam.x = 0.0
+      elif self.cam.x > self.game.level.tilemap.width - 20: self.cam.x = self.game.level.tilemap.width - 20
+      if self.cam.y < 0.0: self.cam.y = 0.0
+      elif self.cam.y > self.game.level.tilemap.height - 15: self.cam.y = self.game.level.tilemap.height - 15
 
       
-      glTranslatef(-cam.x, -cam.y, 0)
+      glTranslatef(-self.cam.x, -self.cam.y, 0)
     
         
     
@@ -110,7 +110,7 @@ class SpriteView(object):
     
   def set_animation(self, anim_name):
     self.current_animation = self.sprite.animations[anim_name]
-    print "set animation to ", anim_name , " : ", self.current_animation
+    #print "set animation to ", anim_name , " : ", self.current_animation
     
   def draw(self):
     pos = self.entity.pos - self.sprite.center
@@ -185,7 +185,7 @@ class SpriteView(object):
     if self.current_frame >= self.current_animation.frames:
       self.current_frame = self.current_animation.loopstart
       
-    print "state: ", self.entity.state  
+    #print "state: ", self.entity.state  
       
     if self.entity.state == "running_left":
       self.set_animation("run_left")
