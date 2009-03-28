@@ -42,21 +42,7 @@ class View(object):
       glVertex2f(bb.c().x, bb.c().y)
       glVertex2f(bb.d().x, bb.d().y)
       
-      glEnd()
-      
-      glBegin(GL_POINTS)
-      
-      glColor3f(1,0,1)
-      glVertex2f(e.pos.x, e.pos.y)
-      glColor3f(1,1,1)
-      
-      glEnd()
-      
-      #e.sprite.gfx.scale = 0.5 # float(0.03125)
-      #e.sprite.gfx.x = e.pos.x
-      #e.sprite.gfx.y = e.pos.y
-      #e.sprite.gfx.draw()
-         
+      glEnd()           
          
 class SpriteView(object):
   """docstring for SpriteView"""
@@ -77,9 +63,66 @@ class SpriteView(object):
     self.current_animation = None
     self.current_frame = 0
     
+  def set_animation(self, anim_name):
+    self.current_animation = self.sprite.animations[anim_name]
+    print "set animation to ", anim_name , " : ", self.current_animation
+    
   def draw(self):
+    pos = self.entity.pos - self.sprite.center
+    texcoords = self.current_animation.coords[self.current_frame]
+    w = self.sprite.width
+    h = self.sprite.height
     
-    pos = self.entity.pos
+
+    
+    glPushMatrix()
+    glTranslatef(pos.x, pos.y, 0)
+    
+    #glColor3f(1.0, 0.0, 0.0)
+    
+    #glBegin(GL_QUADS)    
+
+    #glVertex2f(0,0)
+    #glVertex2f(0,h)
+    #glVertex2f(w,h)
+    #glVertex2f(w,0)
+    
+    #glEnd()
+    glEnable(GL_TEXTURE_2D)
+    
+    glBindTexture(GL_TEXTURE_2D, self.current_animation.texture.data.id)
     
     
+    glBegin(GL_QUADS)    
+
+
+    #glTexCoord2f(0.0, 0.0)
+    #glVertex2f(0,0)
+    #glTexCoord2f(0.0, 1.0)
+    #glVertex2f(0,h)
+    #glTexCoord2f(1.0, 1.0)
+    #glVertex2f(w,h)
+    #glTexCoord2f(1.0, 0.0)
+    #glVertex2f(w,0)
+
+    
+    glTexCoord2f(texcoords.b().x, texcoords.b().y)
+    glVertex2f(0,0)
+    glTexCoord2f(texcoords.a().x, texcoords.a().y)
+    glVertex2f(0,h)
+    glTexCoord2f(texcoords.d().x, texcoords.d().y)
+    glVertex2f(w,h)
+    glTexCoord2f(texcoords.c().x, texcoords.c().y)
+    glVertex2f(w,0)
+    
+    glEnd()
+    
+    
+    
+    glPopMatrix()
+
+  def update(self, dt):
+    self.current_frame = self.current_frame + 1
+    if self.current_frame >= self.current_animation.frames:
+      self.current_frame = self.current_animation.loopstart
      

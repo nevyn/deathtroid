@@ -88,11 +88,9 @@ class Entity(object):
 
     self.move_force = euclid.Vector2(0,0)
     self.mass = 1
-    self.max_vel = euclid.Vector2(3, 25)
+    self.max_vel = euclid.Vector2(7, 25)
     self.on_floor = False
     
-    self.sprite = Sprite("samus")
-
     self.width = 1.0
     self.height = 2.0
   
@@ -124,38 +122,15 @@ class Entity(object):
       print 'collision between %s and %s !!1!1!!!ONE' % (self.name, ent.name)
   
   def boundingbox(self):
-    return BoundingBox(euclid.Vector2(-self.width/2, -self.height/2), euclid.Vector2(self.width/2, self.height/2))
+    return BoundingBox(euclid.Vector2(-self.width/2, -self.height), euclid.Vector2(self.width/2, 0))
+    
+    #return BoundingBox(euclid.Vector2(-self.width/2, -self.height/2), euclid.Vector2(self.width/2, self.height/2))
 
   def player_boundingbox(self):
     return BoundingBox(euclid.Vector2(-self.width/2, -self.height), euclid.Vector2(self.width/2, 0))
 
 Entity.physics_update = physics.entity_update
 
-class Animation(object):
-  def __init__(self):
-      pass
-      
-class Sprite(object):
-  """docstring for Sprite"""
-  def __init__(self, name):
-    super(Sprite, self).__init__()
-    
-    self.animations = []    
-    
-    # Öppna datafilen så vi får reda på allt WOHOOOOOOO
-    
-  
-    image = pyglet.image.load("data/sprites/" + name + "/stand_bi.png")
-    seq = pyglet.image.ImageGrid(image, 1, 4)
-    anim = pyglet.image.Animation.from_image_sequence(seq, 1, True)
-    
-    print "anim: ", anim
-    
-    self.gfx = pyglet.sprite.Sprite(anim)
-    
-  def set_animation(self, name):
-    self.current_anim = self.animations[name]
-    self.frame = 0
     
     
   
@@ -184,10 +159,12 @@ class Level(object):
     for e in self.entities:
       if e.name == name:
         return e
-    e = Entity(self, name, euclid.Vector2(0,0))
+    #e = Entity(self, name, euclid.Vector2(0,0))
     
-    return e
+    return None
     
+  def create_entity(self, name):
+    return Entity(self, name, euclid.Vector2(0,0))
     
   def update(self, dt):
     # update entities
