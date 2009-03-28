@@ -25,3 +25,6 @@ class BoundingBox (object):
   def d(self):
     return euclid.Vector2(self.max.x, self.min.y)
   
+  def __repr__(self):
+    return 'BoundingBox: (%f, %f) - (%f, %f)' % (self.min.x, self.min.y, self.max.x, self.max.y)
+  
