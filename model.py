@@ -22,8 +22,10 @@ class GameDelegate:
 
 
 class Player (object):
-  def __init(self):
+  def __init__(self):
     self.entity = None
+    self.name = "Unnamed"
+    self.connection = None
   
   def set_entity(self, Ent):
     self.entity = Ent
@@ -34,15 +36,11 @@ class Game(object):
     super(Game, self).__init__()
 
     self.level = None
+    self.players = []
 
     self.load_level(level_name)
-
-  
-  def ful_get_player(self, n):
-    print self.player
-    return self.player[n]
     
-    self.delegate = None
+    self.delegate = None    
     
   def load_level(self, name):  
     print "ladda level"
@@ -52,7 +50,15 @@ class Game(object):
   
   def update(self, dt):
     self.level.update(dt)
-
+  
+  def player_by_connection(self, conn):
+    for p in self.players:
+      if(p.connection == conn):
+        return p
+    p = Player()
+    p.connection = conn
+    self.players.append(p)
+    return p
 
 class Entity(object):
   """docstring for Entity"""
@@ -158,6 +164,7 @@ class Level(object):
       if e.name == name:
         return e
     e = Entity(self, name, euclid.Vector2(0,0))
+    
     return e
     
     

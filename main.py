@@ -23,15 +23,17 @@ win = window.Window(640, 480, "DEATHTROID")
 
 @win.event
 def on_resize(width, height):
-  glViewport(0, 0, width, height)
-  glMatrixMode(gl.GL_PROJECTION)
-  glLoadIdentity()
-  glOrtho(0, 20, 15, 0, -1, 1)
-  glMatrixMode(gl.GL_MODELVIEW)
-  return pyglet.event.EVENT_HANDLED
+  if game_controller:
+    glViewport(0, 0, width, height)
+    glMatrixMode(gl.GL_PROJECTION)
+    glLoadIdentity()
+    glOrtho(0, 20, 15, 0, -1, 1)
+    glMatrixMode(gl.GL_MODELVIEW)
+    return pyglet.event.EVENT_HANDLED
 
 @win.event
 def on_draw():
+  if game_controller:
     #win.clear()
     glClear(GL_COLOR_BUFFER_BIT)
     glLoadIdentity()
@@ -40,37 +42,44 @@ def on_draw():
 
 @win.event
 def on_key_press(symbol, modifiers):
-  if symbol == key.LEFT:
-    pe.entity.set_movement(-2,0)
-  elif symbol == key.RIGHT:
-    pe.entity.set_movement(2,0)
-  elif symbol == key.UP:
-    if pe.entity.can_jump():
-      pe.entity.set_movement(0,-500)
-
+  if game_controller:
+    event = None
+    
+    if symbol == key.LEFT:
+      game_controller.action("move_left")
+    elif symbol == key.RIGHT:
+      game_controller.action("move_right")
+    elif symbol == key.UP:
+      game_controller.action("jump")
 
 @win.event
 def on_key_release(symbol, modifiers):
-  if symbol == key.LEFT:
-    pe.entity.set_movement(2,0)
-  if symbol == key.RIGHT:
-    pe.entity.set_movement(-2,0)
+  if game_controller:
+    if symbol == key.LEFT or symbol == key.RIGHT:
+      game_controller.action("stop_moving")
+
+
 
 glPointSize(5)
 glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST)
 glEnable(GL_BLEND)
 glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
-    
+if(len(sys.argv) < 3):
+  print "Usage: python main.py {playerName} [server|client|both]"
 
-server_controller = controller.ServerController()
+roles = sys.argv[2]
+name = sys.argv[1]
 
-game_controller = controller.GameController()
-pe = server_controller.ful_get_player(0)
-print 'pe: ', pe
+server_controller = game_controller = None
 
-clock.schedule(server_controller.update)
-clock.schedule(game_controller.update)
+if(roles == "server" or roles == "both"):
+  server_controller = controller.ServerController()
+  clock.schedule(server_controller.update)
+
+if(roles == "client" or roles == "both"):
+  game_controller = controller.GameController(name)
+  clock.schedule(game_controller.update)
 
 
 app.run()
