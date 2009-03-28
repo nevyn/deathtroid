@@ -64,6 +64,7 @@ class Listener (asyncore.dispatcher):
         asyncore.dispatcher.__init__(self)
         self.onConnected = self.onRequest = None
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.set_reuse_addr()
         self.bind( ('',port) )
         self.listen(5)
         self.sslKeyFile=sslKeyFile
