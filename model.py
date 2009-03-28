@@ -32,6 +32,7 @@ class Player (object):
   def set_entity(self, Ent):
     self.entity = Ent
     self.entity.boundingbox = self.entity.player_boundingbox
+    Entity.physics_update = physics.forcebased_physics
   
   def update(self, dt):
     if self.entity:
@@ -129,7 +130,7 @@ class Entity(object):
   def player_boundingbox(self):
     return BoundingBox(euclid.Vector2(-self.width/2, -self.height), euclid.Vector2(self.width/2, 0))
 
-Entity.physics_update = physics.entity_update
+Entity.physics_update = physics.static_physics
 
     
     
