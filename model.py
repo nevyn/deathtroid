@@ -26,7 +26,7 @@ class Game(object):
     self.load_level(level_name)
 
     P = Player()
-    E = Entity(self.level, euclid.Vector2(0,0))
+    E = Entity(self.level, "test player", euclid.Vector2(0,0))
     P.set_entity(E)
     self.player = [P]
     
@@ -39,10 +39,11 @@ class Game(object):
 
 class Entity(object):
   """docstring for Entity"""
-  def __init__(self, level, pos):
+  def __init__(self, level, name, pos):
     super(Entity, self).__init__()
     level.add_entity(self)
     self.pos = pos
+    self.name = name
     self.vel = euclid.Vector2(0., 0.)
     self.acc = euclid.Vector2(0., 0.)
 
@@ -52,7 +53,7 @@ class Entity(object):
     
   def collision(self, ent):
     if (self.pos - ent.pos).magnitude() < 1:
-      print "collision!!1!1!!!ONE"
+      print 'collision between %s and %s !!1!1!!!ONE' % (self.name, ent.name)
     
 class Level(object):
   """docstring for Level"""
