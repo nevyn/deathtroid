@@ -55,8 +55,10 @@ def on_key_press(symbol, modifiers):
 @win.event
 def on_key_release(symbol, modifiers):
   if game_controller:
-    if symbol == key.LEFT or symbol == key.RIGHT:
-      game_controller.action("stop_moving")
+    if symbol == key.LEFT:
+      game_controller.action("stop_moving_left")
+    elif symbol == key.RIGHT:
+      game_controller.action("stop_moving_right")
 
 
 
