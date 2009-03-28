@@ -17,7 +17,7 @@ from pyglet.window import key
 import controller
 import logging
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARNING)
 
 win = window.Window(640, 480, "DEATHTROID")
 
