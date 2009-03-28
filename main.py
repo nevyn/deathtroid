@@ -90,7 +90,7 @@ if(roles == "client" or roles == "both"):
   host = "localhost"
   if(roles == "client"): host = sys.argv[3]
   game_controller = controller.GameController(name, host)
-  clock.schedule(game_controller.update)
+  clock.schedule_interval(game_controller.update, 0.1)
 
 
 event_loop.run()
