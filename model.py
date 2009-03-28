@@ -92,7 +92,9 @@ class Entity(object):
     self.on_floor = False
     
     self.width = 0.9
-    self.height = 2.0
+    self.height = 2.5
+    
+    self.state = "running_left"
   
   def set_movement(self, x, y):
     self.move_force.x += x

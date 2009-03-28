@@ -58,7 +58,7 @@ class ServerController(object):
     
     self.playerChanged(player)
     
-    E = model.Entity(self.game.level, "player "+name, euclid.Vector2(random.randint(1, 10),2))
+    E = model.Entity(self.game.level, "player "+name, euclid.Vector2(random.randint(1, 10),3))
     player.set_entity(E)
   
   def gotPlayerRequest(self, req):
@@ -73,8 +73,10 @@ class ServerController(object):
       cmd = payload["action"]
       if(cmd == "move_left"):
         pe.set_movement(-24,0)
+        pe.state = "running_left"
       elif(cmd == "move_right"):
         pe.set_movement(24,0)
+        pe.state = "running_right"
       elif(cmd == "jump"):
         if pe.can_jump():
           pe.jump(-2500)
@@ -99,7 +101,8 @@ class ServerController(object):
   def entityChanged(self, entity):
     entityRep = {
       "name": entity.name,
-      "pos": [entity.pos.x, entity.pos.y]
+      "pos": [entity.pos.x, entity.pos.y],
+      "state": entity.state
     }
   
     self.broadcast("entityChanged", entityRep)
@@ -128,12 +131,13 @@ class GameController(object):
       if entity is None:
         entity = self.game.level.create_entity(payload["name"])
         entView = view.SpriteView(entity, resources.get_sprite("samus"))
-        entView.set_animation("stand")
+        entView.set_animation("run_left")
         self.view.entity_views.append( entView )
         if len(self.game.level.entities) == 1:
           self.view.follow = self.game.level.entities[0]
       entity.pos.x = float(payload["pos"][0])
       entity.pos.y = float(payload["pos"][1])
+      entity.state = payload["state"]
     elif(msgName == "pleaseLogin"):
       print "I should log in"
       resp = req.response
