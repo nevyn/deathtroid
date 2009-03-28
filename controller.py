@@ -36,6 +36,8 @@ class ServerController(object):
   def newConnection(self, conn):
     player = self.game.player_by_connection(conn)
     
+    conn.onRequest = self.gotPlayerRequest
+    
     loginRequest = OutgoingRequest(conn, "''", {'Message-Name': 'pleaseLogin'})
     loginRequest.response.onComplete = self.gotLogin
     loginRequest.send()
@@ -53,8 +55,27 @@ class ServerController(object):
     
     E = model.Entity(self.game.level, "player "+name, euclid.Vector2(random.randint(0, 5),0))
     player.set_entity(E)
-
+  
+  def gotPlayerRequest(self, req):
+    msgName = req.properties.get('Message-Name')
+    payload = demjson.decode(req.body)
     
+    if msgName == "player_action":
+      player = self.game.player_by_connection(req.connection)
+      
+      pe = player.entity
+      
+      cmd = payload["action"]
+      if(cmd == "move_left"):
+        pe.set_movement(-2,0)
+      elif(cmd == "move_right"):
+        pe.set_movement(2,0)
+      elif(cmd == "jump"):
+        pe.set_movement(0, -500)
+      elif(cmd == "stop_moving_left"):
+        pe.set_movement(2,0)
+      elif(cmd == "stop_moving_right"):
+        pe.set_movement(-2,0)
   
   def broadcast(self, msgName, data):
     payload = demjson.encode(data)
@@ -104,10 +125,20 @@ class GameController(object):
       resp.properties['Message-Name'] = "login"
       resp.body = demjson.encode({"name": self.name})
       resp.send()
-      
+    
+  
+  def send(self, msgName, data):
+    payload = demjson.encode(data)
+    
+    print "OMG sending ", msgName, data
+
+    req = OutgoingRequest(self.connection, payload, {'Message-Name': msgName})
+    req.compressed = True
+    req.send()
+
   
   def action(self, what):
-    pass
+    self.send("player_action", {"action": what})
     
   def update(self, dt):
     asyncore.loop(timeout=0.01,count=1)
