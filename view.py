@@ -24,24 +24,11 @@ class View(object):
         
         if tile == 0:
           continue
-          
         
         ts.tiles[tile - 1].anchor_y = 16
         tl = ts.tiles[tile - 1].get_transform(flip_y=True)
         
         tl.blit(x,y, width=1, height=1)
-        
-        #glBegin(GL_QUADS)
-        #
-        #glColor3f(0.5, 0.5, 0.5)
-        #glVertex2i(x, y)
-        #glColor3f(0.2,0.2,0.2)
-        #glVertex2i(x, y + 1)
-        #glColor3f(1.0,1.0,1.0)
-        #glVertex2i(x + 1, y + 1)
-        #glVertex2i(x + 1, y)
-        
-        #glEnd()
         
     entities = self.game.level.entities
     
@@ -51,3 +38,46 @@ class View(object):
       glVertex2f(e.pos.x, e.pos.y)
       
       glEnd()
+      
+      bb = e.boundingbox().translate(e.pos)
+      
+      glBegin(GL_QUADS)
+      
+      glVertex2f(bb.a().x, bb.a().y)
+      glVertex2f(bb.b().x, bb.b().y)
+      glVertex2f(bb.c().x, bb.c().y)
+      glVertex2f(bb.d().x, bb.d().y)
+      
+      glEnd()
+      
+      #e.sprite.gfx.scale = 0.5 # float(0.03125)
+      #e.sprite.gfx.x = e.pos.x
+      #e.sprite.gfx.y = e.pos.y
+      #e.sprite.gfx.draw()
+         
+         
+class SpriteView(object):
+  """docstring for SpriteView"""
+  def __init__(self, entity, sprite):
+    super(SpriteView, self).__init__()
+
+    # Härifrån kommer positioner och sånt skit
+    self.entity = entity
+    
+    # Här kommer den grafiska datan
+    self.sprite = sprite
+    
+    # Vilket håll spriten tittar. Detta har inget att göra med
+    # vilket håll entityn är på väg. Det är dessutom inte nån
+    # vektor-riktning utan mer "höger" och "vänster" och kanske "uppåt"
+    self.dir = 0
+    
+    self.current_animation = None
+    self.current_frame = 0
+    
+  def draw(self):
+    
+    pos = self.entity.pos
+    
+    
+     

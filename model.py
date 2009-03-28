@@ -90,6 +90,8 @@ class Entity(object):
     self.max_vel = euclid.Vector2(3, 5)
     self.on_floor = False
     
+    self.sprite = Sprite("samus")
+
     self.width = 1
     self.height = 2
   
@@ -125,6 +127,37 @@ class Entity(object):
 
 Entity.physics_update = physics.entity_update
 
+class Animation(object):
+  def __init__(self):
+      pass
+      
+class Sprite(object):
+  """docstring for Sprite"""
+  def __init__(self, name):
+    super(Sprite, self).__init__()
+    
+    self.animations = []    
+    
+    # Öppna datafilen så vi får reda på allt WOHOOOOOOO
+    
+  
+    image = pyglet.image.load("data/sprites/" + name + "/stand_bi.png")
+    seq = pyglet.image.ImageGrid(image, 1, 4)
+    anim = pyglet.image.Animation.from_image_sequence(seq, 1, True)
+    
+    print "anim: ", anim
+    
+    self.gfx = pyglet.sprite.Sprite(anim)
+    
+  def set_animation(self, name):
+    self.current_anim = self.animations[name]
+    self.frame = 0
+    
+    
+  
+    
+    
+    
 class Level(object):
   """docstring for Level"""
   def __init__(self, name):
@@ -196,6 +229,12 @@ class Tileset(object):
   """docstring for Tileset"""
   def __init__(self, name):
     super(Tileset, self).__init__()
+    
+    # load definition file
+    
+    # load actual texture
+    
+    # calculate coords
 
     self.image = pyglet.image.load("data/tilesets/" + name + ".png")
     seq = pyglet.image.ImageGrid(self.image, 1, 16)

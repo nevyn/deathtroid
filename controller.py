@@ -122,8 +122,8 @@ class GameController(object):
     
     if(msgName == "entityChanged"):
       entity = self.game.level.entity_by_name(payload["name"])
-      entity.pos.x = payload["pos"][0]
-      entity.pos.y = payload["pos"][1]
+      entity.pos.x = float(payload["pos"][0])
+      entity.pos.y = float(payload["pos"][1])
     elif(msgName == "pleaseLogin"):
       print "I should log in"
       resp = req.response
