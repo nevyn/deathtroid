@@ -86,11 +86,16 @@ class Entity(object):
     
     if self.on_floor:
       self.vel.y = 0
+      
+      # On floor with no walls
       if tilemap.tile_at_point(euclid.Vector2(new_pos.x, self.pos.y)) == 0:
         self.pos.x = new_pos.x
     else:
+      # Falling
       if tilemap.tile_at_point(new_pos) == 0:
         self.pos = new_pos
+      
+      # Falling but pushing against wall
       else:
         self.pos.y = new_pos.y
     
