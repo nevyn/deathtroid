@@ -23,10 +23,17 @@ def calc_acceleration(forces, mass):
 
 def collision(tilemap, bb):
   print bb.a(), bb.b(), bb.c(), bb.d()
+  
   if tilemap.tile_at_point(bb.a()) != 0: return True
   if tilemap.tile_at_point(bb.b()) != 0: return True
   if tilemap.tile_at_point(bb.c()) != 0: return True
   if tilemap.tile_at_point(bb.d()) != 0: return True
+  
+  if tilemap.intersection(bb.a(), bb.b()): return True
+  if tilemap.intersection(bb.b(), bb.c()): return True
+  if tilemap.intersection(bb.c(), bb.d()): return True
+  if tilemap.intersection(bb.d(), bb.a()): return True
+  
   return False
 
 def entity_update(ent, tilemap, dt):

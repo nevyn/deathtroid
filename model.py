@@ -12,6 +12,7 @@ import euclid
 import random
 import physics
 import pyglet
+import math
 from pyglet.gl import *
 from boundingbox import *
 
@@ -92,8 +93,8 @@ class Entity(object):
     
     self.sprite = Sprite("samus")
 
-    self.width = 1
-    self.height = 2
+    self.width = 1.0
+    self.height = 2.0
   
   def set_movement(self, x, y):
     self.move_force.x += x
@@ -224,6 +225,29 @@ class Tilemap(object):
       return -1
       
     return self.map[y][x]
+  
+  def intersection(self, a, b):
+    line = b - a
+    length = math.ceil(line.magnitude())
+    dir = line.normalized()
+    
+    end = b
+    end.x = int(end.x)
+    end.y = int(end.y)
+    
+    point = a
+    ipoint = a
+    
+    while True:
+      ipoint.x = int(point.x)
+      ipoint.y = int(point.y)
+      if self.tile_at_point(ipoint) != 0:
+        return True
+      point += dir
+      if ipoint == end:
+        break
+    
+    return False
 
 class Tileset(object):
   """docstring for Tileset"""

@@ -33,12 +33,6 @@ class View(object):
     entities = self.game.level.entities
     
     for e in entities:
-      glBegin(GL_POINTS)
-      
-      glVertex2f(e.pos.x, e.pos.y)
-      
-      glEnd()
-      
       bb = e.boundingbox().translate(e.pos)
       
       glBegin(GL_QUADS)
@@ -47,6 +41,14 @@ class View(object):
       glVertex2f(bb.b().x, bb.b().y)
       glVertex2f(bb.c().x, bb.c().y)
       glVertex2f(bb.d().x, bb.d().y)
+      
+      glEnd()
+      
+      glBegin(GL_POINTS)
+      
+      glColor3f(1,0,1)
+      glVertex2f(e.pos.x, e.pos.y)
+      glColor3f(1,1,1)
       
       glEnd()
       
