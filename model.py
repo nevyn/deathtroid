@@ -82,13 +82,17 @@ class Entity(object):
   def update(self, tilemap, dt):
     new_pos = self.pos + self.vel * dt
       
-    if tilemap.tile_at_point(new_pos) == 0:
-      self.pos = new_pos
-      self.on_floor = False
-    else:
-      self.pos.x = new_pos.x
+    self.on_floor = tilemap.tile_at_point(euclid.Vector2(self.pos.x, new_pos.y)) != 0
+    
+    if self.on_floor:
       self.vel.y = 0
-      self.on_floor = True
+      if tilemap.tile_at_point(euclid.Vector2(new_pos.x, self.pos.y)) == 0:
+        self.pos.x = new_pos.x
+    else:
+      if tilemap.tile_at_point(new_pos) == 0:
+        self.pos = new_pos
+      else:
+        self.pos.y = new_pos.y
     
     self.set_velocity(self.acc, dt)
     self.acc = self.move_force / self.mass + self.gravity_force
