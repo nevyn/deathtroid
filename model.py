@@ -218,8 +218,8 @@ class Tilemap(object):
     self.height = len(tilemap)
   
   def tile_at_point(self, point):
-    x = int(point.x)
-    y = int(point.y)
+    x = int(math.floor(point.x))
+    y = int(math.floor(point.y))
     
     if x < 0 or y < 0 or x >= self.width or y >= self.height:
       return -1
@@ -228,26 +228,21 @@ class Tilemap(object):
   
   def intersection(self, a, b):
     line = b - a
-    length = math.ceil(line.magnitude())
     dir = line.normalized()
     
-    end = b
+    end = euclid.Vector2(b.x, b.y)
     end.x = math.floor(end.x)
     end.y = math.floor(end.y)
     
-    point = a
-    ipoint = a
-    
-    print 'intersecting line ', a, b
+    point = euclid.Vector2(a.x, a.y)
     
     while True:
-      ipoint.x = math.floor(point.x)
-      ipoint.y = math.floor(point.y)
-      #print ipoint, self.tile_at_point(ipoint), end
-      if self.tile_at_point(ipoint) != 0:
+      x = int(math.floor(point.x))
+      y = int(math.floor(point.y))
+      if self.tile_at_point(euclid.Vector2(x,y)) != 0:
         return True
       point += dir
-      if ipoint == end:
+      if (x == end.x and y == end.y):
         break
     
     return False
