@@ -1,0 +1,12 @@
+{
+	"size" : [ 3, 4 ],
+	"center" : [ 1.5, 4 ],
+	"animations" : {
+		"stand" : {
+			"fps" : 2.0,
+			"loopstart" : 0,
+			"frames" : 10,
+			"texture" : "run_left"
+		}
+	}
+}
