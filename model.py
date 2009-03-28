@@ -88,7 +88,7 @@ class Entity(object):
 
     self.move_force = euclid.Vector2(0,0)
     self.mass = 1
-    self.max_vel = euclid.Vector2(3, 5)
+    self.max_vel = euclid.Vector2(3, 25)
     self.on_floor = False
     
     self.sprite = Sprite("samus")
@@ -108,6 +108,9 @@ class Entity(object):
 
   def can_jump(self):
     return self.on_floor
+  
+  def jump(self, amount):
+    self.vel.y += amount
   
   def update(self, tilemap, dt):
     if self.physics_update:
