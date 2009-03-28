@@ -114,7 +114,6 @@ class GameController(object):
     self.name = name
     self.game = model.Game("foolevel")
     self.view = view.View(self.game)
-    self.entityViews = []
     self.connection = Connection( (host, 18245) )
     self.connection.onRequest = self.incomingRequest
   
@@ -128,7 +127,9 @@ class GameController(object):
         entity = self.game.level.create_entity(payload["name"])
         entView = view.SpriteView(entity, resources.get_sprite("samus"))
         entView.set_animation("stand")
-        self.entityViews.append( entView )
+        self.view.entity_views.append( entView )
+        if len(self.game.level.entities) == 1:
+          self.view.follow = self.game.level.entities[0]
       entity.pos.x = float(payload["pos"][0])
       entity.pos.y = float(payload["pos"][1])
     elif(msgName == "pleaseLogin"):
@@ -155,39 +156,7 @@ class GameController(object):
   def update(self, dt):
     asyncore.loop(timeout=0.01,count=1)
     
-    for v in self.entityViews:
-      v.update(dt)
-  
+    self.view.update(dt)
+    
   def draw(self):
     self.view.draw()
-    
-    for v in self.entityViews:
-      v.draw()
-    
-
-
-
-"""
-class Jocke:
-  def __init__(self):
-    self.hair_length = 5
-    self.procrastination_level = levels.MAX
-    
-  def frame(self):
-    
-    self.toilet_need = self.toilet_need + 1
-    
-    if random.randInt(0, 50) == 3:
-      print "Auuurghh"
-    else if self.boredom > 10:
-      self.fiddle_with_iphone(5)
-    
-    def fiddle_with_iphone(self, duration):
-      self.equip(self.items[IPHONE])
-      
-
-
-
-jocke = Jocke()
-
-jocke.run()"""

@@ -3,16 +3,70 @@
 
 from pyglet.gl import *
 
+import euclid
+
 class View(object):
   """docstring for View"""
   def __init__(self, game):
     super(View, self).__init__()
     
     self.game = game
+    self.level_view = LevelView(game)
+    
+    self.entity_views = []
+    
+    self.follow = None
+    
+  def draw(self):
+    
+    glClear(GL_COLOR_BUFFER_BIT)
+    glLoadIdentity()
+    
+    # Move
+    if self.follow is not None:
+      
+      cam = euclid.Vector2(self.follow.pos.x, self.follow.pos.y);
+      cam.x -= 10.0
+      cam.y -= 10.0
+      
+      if cam.x < 0.0: cam.x = 0.0
+      elif cam.x > self.game.level.tilemap.width - 20: cam.x = self.game.level.tilemap.width - 20
+      if cam.y < 0.0: cam.y = 0.0
+      elif cam.y > self.game.level.tilemap.height - 15: cam.y = self.game.level.tilemap.height - 15
+
+      
+      glTranslatef(-cam.x, -cam.y, 0)
+    
+        
+    
+    # Draw background layers
+    
+    # Draw collision layer
+    self.level_view.draw()
+    
+    # Draw entities
+    for e in self.entity_views:
+      e.draw()
+    
+    # Draw foreground layers
+    
+    
+  def update(self, dt):
+    for e in self.entity_views:
+      e.update(dt)    
+    
+    
+    
+
+class LevelView(object):
+  """docstring for LevelView"""
+  def __init__(self, game):
+    super(LevelView, self).__init__()
+    
+    self.game = game
     
   
   def draw(self):
-    # kanske kan splöffa in detta i en egen view, typ LevelView, sen...
     
     tm = self.game.level.tilemap.map
     ts = self.game.level.tilesets[0]
@@ -32,17 +86,7 @@ class View(object):
         
     entities = self.game.level.entities
     
-    for e in entities:
-      bb = e.boundingbox().translate(e.pos)
-      
-      glBegin(GL_QUADS)
-      
-      glVertex2f(bb.a().x, bb.a().y)
-      glVertex2f(bb.b().x, bb.b().y)
-      glVertex2f(bb.c().x, bb.c().y)
-      glVertex2f(bb.d().x, bb.d().y)
-      
-      glEnd()           
+        
          
 class SpriteView(object):
   """docstring for SpriteView"""
@@ -117,9 +161,23 @@ class SpriteView(object):
     
     glEnd()
     
-    
-    
     glPopMatrix()
+    
+    bb = self.entity.boundingbox().translate(self.entity.pos)
+    
+    glDisable(GL_TEXTURE_2D)
+    
+    glColor3f(1.0, 1.0, 0.0)
+    
+    glBegin(GL_LINE_LOOP)
+    
+    glVertex2f(bb.a().x, bb.a().y)
+    glVertex2f(bb.b().x, bb.b().y)
+    glVertex2f(bb.c().x, bb.c().y)
+    glVertex2f(bb.d().x, bb.d().y)
+    
+    glEnd()           
+    
 
   def update(self, dt):
     self.current_frame = self.current_frame + 1

@@ -36,10 +36,7 @@ def on_resize(width, height):
 @win.event
 def on_draw():
   if game_controller:
-    #win.clear()
-    glClear(GL_COLOR_BUFFER_BIT)
-    glLoadIdentity()
-    
+    #win.clear()    
     game_controller.draw()
 
 @win.event
@@ -61,6 +58,14 @@ def on_key_release(symbol, modifiers):
       game_controller.action("stop_moving_left")
     elif symbol == key.RIGHT:
       game_controller.action("stop_moving_right")
+      
+fullscreen = False      
+  
+@win.event
+def on_mouse_press(x, y, button, modifiers):
+  global fullscreen
+  fullscreen = not fullscreen
+  win.set_fullscreen(fullscreen)
 
 @event_loop.event
 def on_exit():

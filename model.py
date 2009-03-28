@@ -92,7 +92,7 @@ class Entity(object):
     self.max_vel = euclid.Vector2(7, 25)
     self.on_floor = False
     
-    self.width = 1.0
+    self.width = 0.9
     self.height = 2.0
   
   def set_movement(self, x, y):
