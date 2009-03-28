@@ -47,8 +47,8 @@ class Entity(object):
     self.acc = euclid.Vector2(0., 0.)
 
   def update(self, dt):
-    self.pos += self.vel
-    self.vel += self.acc
+    self.pos += self.vel * dt
+    self.vel += self.acc * dt
     
 class Level(object):
   """docstring for Level"""
