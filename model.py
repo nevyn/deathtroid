@@ -13,8 +13,18 @@ import os
 class Player (object):
   pass
   
-class Game (object):
-  pass
+class Game(object):
+  """docstring for Game"""
+  def __init__(self, level_name):
+    super(Game, self).__init__()
+
+    self.load_level(level_name)
+    
+  def load_level(self, name):
+    
+    pass    
+    
+      
 
 class Entity(object):
   """docstring for Entity"""
@@ -24,9 +34,17 @@ class Entity(object):
     self.vel = euclid.Vector2(0., 0.)
     self.acc = euclid.Vector2(0., 0.)
     
-class Level (object):
-  pass
-
+class Level(object):
+  """docstring for Level"""
+  def __init__(self):
+    super(Level, self).__init__()
+    
+    self.entities = []
+    
+  def load_tilemap(self, name):
+    pass
+    
+    
 class Tilemap(object):
   """docstring for Tilemap"""
   def __init__(self, width, height):
