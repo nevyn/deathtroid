@@ -74,7 +74,6 @@ class Entity(object):
     
     if self.move_force.x == 0:
       self.vel.x = 0
-      self.acc.x = 0
   
   def set_mass(self, mass):
     self.mass = mass
@@ -102,9 +101,9 @@ class Entity(object):
       else:
         self.pos.y = new_pos.y
     
-    self.set_velocity(self.acc, dt)
     self.acc = self.move_force / self.mass + self.gravity_force
     self.move_force.y = 0
+    self.set_velocity(self.acc, dt)
     
     print self.pos, self.vel, self.on_floor
     
