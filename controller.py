@@ -16,10 +16,11 @@ class GameController(object):
   def __init__(self):
     super(GameController, self).__init__()
     
-    self.game = model.Game()
+    self.game = model.Game("foobar")
     self.view = None
     
   def update(self, dt):
+    self.game.update(dt)
     pass
     
 
