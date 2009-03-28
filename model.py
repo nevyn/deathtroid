@@ -70,7 +70,9 @@ class Entity(object):
     
     if tilemap.tile_at_point(new_pos) == 0:
       self.pos = new_pos
+      self.on_floor = False
     else:
+      self.pos.x = new_pos.x
       self.on_floor = True
     
     self.set_velocity(self.acc, dt)
