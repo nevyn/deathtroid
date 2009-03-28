@@ -16,7 +16,7 @@ class DeathtroidProtocol(Protocol):
       self.state = "wait for data"
       justTheLength = data[:4]
 
-      (length, ) = struct.unpack("L", justTheLength)
+      (length, ) = struct.unpack("I", justTheLength)
       self.incomingDataLength = length
       self.buffer = ""
 
@@ -56,7 +56,7 @@ class DeathtroidProtocol(Protocol):
     
     dd = demjson.encode(d).encode("utf8")
     length = len(dd)
-    out = struct.pack("L", length) + dd
+    out = struct.pack("I", length) + dd
 
     print "sending", dd, len(out)
     self.transport.write(out)
