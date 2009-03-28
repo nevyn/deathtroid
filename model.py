@@ -121,6 +121,7 @@ class Entity(object):
       print 'collision between %s and %s !!1!1!!!ONE' % (self.name, ent.name)
   
   def boundingbox(self):
+    return BoundingBox(euclid.Vector2(-self.width/2, -self.height), euclid.Vector2(self.width/2, 0))
     return BoundingBox(euclid.Vector2(-self.width/2, -self.height/2), euclid.Vector2(self.width/2, self.height/2))
 
   def player_boundingbox(self):
