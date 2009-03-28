@@ -115,11 +115,13 @@ class Entity(object):
   
   def calc_velocity(self, acc, dt):
     self.vel += acc * dt
+    
     if self.vel.x < -self.max_vel.x:
       self.vel.x = -self.max_vel.x
     elif self.vel.x > self.max_vel.x:
       self.vel.x = self.max_vel.x
-    elif self.vel.y < -self.max_vel.y:
+      
+    if self.vel.y < -self.max_vel.y:
       self.vel.y = -self.max_vel.y
     elif self.vel.y > self.max_vel.y:
       self.vel.y = self.max_vel.y
