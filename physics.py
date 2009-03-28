@@ -22,13 +22,6 @@ def calc_acceleration(forces, mass):
   return reduce(lambda acc, f: acc + f * inv_mass, forces)
 
 def collision(tilemap, bb):
-  print bb.a(), bb.b(), bb.c(), bb.d()
-  
-  if tilemap.tile_at_point(bb.a()) != 0: return True
-  if tilemap.tile_at_point(bb.b()) != 0: return True
-  if tilemap.tile_at_point(bb.c()) != 0: return True
-  if tilemap.tile_at_point(bb.d()) != 0: return True
-  
   if tilemap.intersection(bb.a(), bb.b()): return True
   if tilemap.intersection(bb.b(), bb.c()): return True
   if tilemap.intersection(bb.c(), bb.d()): return True
@@ -62,4 +55,4 @@ def entity_update(ent, tilemap, dt):
     ent.acc = calc_acceleration([ent.move_force, gravity], ent.mass)
     ent.vel = calc_velocity(ent.vel, ent.acc, ent.max_vel, dt)
     
-    print ent.pos, ent.vel, ent.on_floor
+    #print ent.pos, ent.vel, ent.on_floor
