@@ -5,16 +5,11 @@ import math
 
 def calc_velocity(vel, acc, max_vel, dt):
   vel += acc * dt
-    
+
   if vel.x < -max_vel.x:
     vel.x = -max_vel.x
   elif vel.x > max_vel.x:
     vel.x = max_vel.x
-    
-  if vel.y < -max_vel.y:
-    vel.y = -max_vel.y
-  elif vel.y > max_vel.y:
-    vel.y = max_vel.y
   
   return vel
 
@@ -42,6 +37,7 @@ def entity_update(ent, tilemap, dt):
       # On floor with no wall s
       if collision(tilemap, bb.translate(euclid.Vector2(new_pos.x, ent.pos.y))) == 0:
         ent.pos.x = new_pos.x
+        ent.pos.y = math.ceil(ent.pos.y)-0.0000000001
     else:
       # Falling
       if collision(tilemap, bb.translate(new_pos)) == 0:

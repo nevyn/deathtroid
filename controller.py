@@ -76,7 +76,7 @@ class ServerController(object):
         pe.set_movement(2,0)
       elif(cmd == "jump"):
         if pe.can_jump():
-          pe.set_movement(0, -500)
+          pe.jump(-8)
       elif(cmd == "stop_moving_left"):
         pe.set_movement(2,0)
       elif(cmd == "stop_moving_right"):
