@@ -63,8 +63,6 @@ class Entity(object):
     
     if tilemap.tile_at_point(new_pos) == 0:
       self.pos = new_pos
-    else:
-      self.vel = 0
     
     self.set_velocity(self.acc, dt)
     self.acc = self.move_force / self.mass + self.gravity_force
