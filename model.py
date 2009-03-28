@@ -30,7 +30,7 @@ class Game(object):
     self.load_level(level_name)
 
     P = Player()
-    E = Entity(self.level, "test player", euclid.Vector2(0,0))
+    E = Entity(self.level, "test player", euclid.Vector2(5,0))
     P.set_entity(E)
     self.player = [P]
     
@@ -96,32 +96,27 @@ class Level(object):
   """docstring for Level"""
   def __init__(self, name):
     super(Level, self).__init__()
-    self.load_tilemap("foobar")
+    
     self.name = name
     
     self.entities = []
-<<<<<<< .mine
-    self.tilemap = None
-    
-=======
-  
+    self.tilemap = self.load_tilemap()
+      
   def add_entity(self, ent):
     self.entities.append(ent)
-  
->>>>>>> .r14
-<<<<<<< .mine
-    self.load_tilemap()
-=======
-  def load_tilemap(self, name):
-    self.tilemap = Tilemap(100,100)
   
   def update(self, dt):
     # update entities
     for entity in self.entities:
       entity.update(self.tilemap, dt)
->>>>>>> .r14
+      
+    # check collisions
+    for a in self.entities:
+      for b in self.entities:
+        if a == b:
+          continue
+        a.collision(b)
     
-<<<<<<< .mine
   def load_tilemap(self):
 
     try:
@@ -129,31 +124,23 @@ class Level(object):
     except:
       print "Fuck you!"
       raise
-=======
-    # check collisions
-    for a in self.entities:
-      for b in self.entities:
-        if a == b:
-          continue
-        a.collision(b)
->>>>>>> .r14
-    
-<<<<<<< .mine
-    self.tilemap = demjson.decode(tm.read())
-    
-    print "loaded tilemap"
-    print "w:", len(self.tilemap[0]), "  h: ", len(self.tilemap)
-    print self.tilemap
-    
-=======
-    
->>>>>>> .r14
+      
+    return Tilemap(demjson.decode(tm.read()))    
+        
 class Tilemap(object):
   """docstring for Tilemap"""
-  def __init__(self, width, height):
+  def __init__(self, tilemap):
     super(Tilemap, self).__init__()
     
-    self.tilemap = [[0 for x in range(width)] for y in range(height)]
+    self.map = tilemap
+    self.width = len(tilemap[0])
+    self.height = len(tilemap)
   
   def tile_at_point(self, point):
-    return 0
+    x = int(point.x)
+    y = int(point.y)
+    
+    if x < 0 or y < 0 or x >= self.width or y >= self.height:
+      return -1
+      
+    return self.map[y][x]
