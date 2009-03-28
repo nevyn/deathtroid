@@ -13,6 +13,7 @@ from pyglet import window
 from pyglet import app
 from pyglet import clock
 from pyglet.gl import *
+from pyglet.window import key
 import controller
 
 win = window.Window(640, 480, "DEATHTROID")
@@ -33,16 +34,29 @@ def on_draw():
     glLoadIdentity()
     
     game_controller.draw()
-    
-    
-    
+
+@win.event
+def on_key_press(symbol, modifiers):
+  if symbol == key.LEFT:
+    pe.entity.set_movement(-2,0)
+  elif symbol == key.RIGHT:
+    pe.entity.set_movement(2,0)
+
+
+@win.event
+def on_key_release(symbol, modifiers):
+  if symbol == key.LEFT:
+    pe.entity.set_movement(0,0)
+  if symbol == key.RIGHT:
+    pe.entity.set_movement(0,0)
+
 glPointSize(5)
     
 
 
 game_controller = controller.GameController()
-
-
+pe = game_controller.ful_get_player(0)
+print 'pe: ', pe
 
 clock.schedule(game_controller.update)
 

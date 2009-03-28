@@ -33,6 +33,10 @@ class Game(object):
     E = Entity(self.level, "test player", euclid.Vector2(5,0))
     P.set_entity(E)
     self.player = [P]
+  
+  def ful_get_player(self, n):
+    print self.player
+    return self.player[n]
     
   def load_level(self, name):  
     print "ladda level"
@@ -61,6 +65,10 @@ class Entity(object):
   def set_movement(self, x, y):
     self.move_force.x = x
     self.move_force.y = y
+    
+    if x == 0:
+      self.vel.x = 0
+      self.acc.x = 0
   
   def set_mass(self, mass):
     self.mass = mass
@@ -73,6 +81,7 @@ class Entity(object):
       self.on_floor = False
     else:
       self.pos.x = new_pos.x
+      self.vel.y = 0
       self.on_floor = True
     
     self.set_velocity(self.acc, dt)
