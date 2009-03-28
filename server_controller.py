@@ -111,7 +111,7 @@ class ServerController(object):
     
     self.playerChanged(player)
     
-    E = model.Entity(self.game.level, "player "+name, euclid.Vector2(random.randint(1, 10),2))
+    E = model.Entity(self.game.level, "player "+name, euclid.Vector2(random.randint(1, 10),3))
     player.set_entity(E)
     
   def broadcast(self, msgName, data):
