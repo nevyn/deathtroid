@@ -14,16 +14,25 @@ from pyglet import app
 from pyglet import clock
 from pyglet.gl import *
 from pyglet.window import key
-import controller
+
+import pygletreactor
+pygletreactor.install() # <- this must come before...
+from twisted.internet import reactor, task # <- ...importing this reactor!
+
+import client_controller
+import server_controller
 import logging
 import euclid
 import demjson
+
 
 logging.basicConfig(level=logging.WARNING)
 
 win = window.Window(640, 480, "DEATHTROID")
 
 event_loop = pyglet.app.EventLoop()
+
+current_controller = None
 
 @win.event
 def on_resize(width, height):
@@ -114,8 +123,8 @@ def on_mouse_press(x, y, button, modifiers):
 
 @event_loop.event
 def on_exit():
-  if server_controller:
-    server_controller.close()
+  if server:
+    server.close()
     
 
 
@@ -130,17 +139,18 @@ if(len(sys.argv) < 3):
 roles = sys.argv[2]
 name = sys.argv[1]
 
-server_controller = game_controller = None
+server = game_controller = None
 
 if(roles == "server" or roles == "both"):
-  server_controller = controller.ServerController()
-  clock.schedule(server_controller.update)
+  server = server_controller.ServerController()
+  clock.schedule_interval(server.update, 1./10.)
 
 if(roles == "client" or roles == "both"):
   host = "localhost"
   if(roles == "client"): host = sys.argv[3]
-  game_controller = controller.GameController(name, host)
-  clock.schedule_interval(game_controller.update, 0.1)
+  game_controller = client_controller.ClientController(name, host)
+  clock.schedule_interval(game_controller.update, 1./30.)
 
 
+reactor.run()
 event_loop.run()
