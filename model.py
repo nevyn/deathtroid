@@ -61,7 +61,7 @@ class Entity(object):
     new_pos = self.pos + self.vel * dt
     
     if tilemap.tile_at_point(new_pos) == 0:
-        self.pos = new_pos
+      self.pos = new_pos
     else:
       self.vel = 0
     
