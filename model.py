@@ -56,6 +56,7 @@ class Entity(object):
     self.gravity_force = euclid.Vector2(0,9.82)
     self.mass = 1
     self.max_vel = euclid.Vector2(3, 5)
+    self.on_floor = False
   
   def set_movement(self, x, y):
     self.move_force.x = x
@@ -69,11 +70,13 @@ class Entity(object):
     
     if tilemap.tile_at_point(new_pos) == 0:
       self.pos = new_pos
+    else:
+      self.on_floor = True
     
     self.set_velocity(self.acc, dt)
     self.acc = self.move_force / self.mass + self.gravity_force
     
-    print self.pos, self.vel
+    print self.pos, self.vel, self.on_floor
   
   def set_velocity(self, acc, dt):
     self.vel += acc * dt
