@@ -10,18 +10,22 @@ Copyright (c) 2009 Third Cog Software. All rights reserved.
 import sys
 import os
 import model
+import view
 
 class GameController(object):
   """hej"""
   def __init__(self):
     super(GameController, self).__init__()
     
-    self.game = model.Game("foobar")
-    self.view = None
+    self.game = model.Game("foolevel")
+    self.view = view.View(self.game)
     
   def update(self, dt):
     self.game.update(dt)
     pass
+    
+  def draw(self):
+    self.view.draw()
     
 
 

@@ -11,6 +11,8 @@ import sys
 import os
 import euclid
 
+import demjson
+
 class Player (object):
   def __init(self):
     self.entity = None
@@ -23,6 +25,8 @@ class Game(object):
   def __init__(self, level_name):
     super(Game, self).__init__()
 
+    self.level = None
+
     self.load_level(level_name)
 
     P = Player()
@@ -30,12 +34,14 @@ class Game(object):
     P.set_entity(E)
     self.player = [P]
     
-  def load_level(self, name):
-    self.level = Level()
-    pass
+  def load_level(self, name):  
+    print "ladda level"
+    
+    self.level = Level(name)
   
   def update(self, dt):
     self.level.update(dt)
+
 
 class Entity(object):
   """docstring for Entity"""
@@ -88,14 +94,24 @@ class Entity(object):
     
 class Level(object):
   """docstring for Level"""
-  def __init__(self):
+  def __init__(self, name):
     super(Level, self).__init__()
     self.load_tilemap("foobar")
+    self.name = name
+    
     self.entities = []
+<<<<<<< .mine
+    self.tilemap = None
+    
+=======
   
   def add_entity(self, ent):
     self.entities.append(ent)
   
+>>>>>>> .r14
+<<<<<<< .mine
+    self.load_tilemap()
+=======
   def load_tilemap(self, name):
     self.tilemap = Tilemap(100,100)
   
@@ -103,15 +119,35 @@ class Level(object):
     # update entities
     for entity in self.entities:
       entity.update(self.tilemap, dt)
+>>>>>>> .r14
     
+<<<<<<< .mine
+  def load_tilemap(self):
+
+    try:
+      tm = open("data/levels/" + self.name + "/tilemap.data")
+    except:
+      print "Fuck you!"
+      raise
+=======
     # check collisions
     for a in self.entities:
       for b in self.entities:
         if a == b:
           continue
         a.collision(b)
+>>>>>>> .r14
     
+<<<<<<< .mine
+    self.tilemap = demjson.decode(tm.read())
     
+    print "loaded tilemap"
+    print "w:", len(self.tilemap[0]), "  h: ", len(self.tilemap)
+    print self.tilemap
+    
+=======
+    
+>>>>>>> .r14
 class Tilemap(object):
   """docstring for Tilemap"""
   def __init__(self, width, height):
