@@ -57,6 +57,10 @@ def on_key_release(symbol, modifiers):
     pe.entity.set_movement(-2,0)
 
 glPointSize(5)
+glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST)
+glEnable(GL_BLEND)
+glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+
     
 
 server_controller = controller.ServerController()

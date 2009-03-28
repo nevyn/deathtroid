@@ -15,6 +15,7 @@ class View(object):
     # kanske kan splöffa in detta i en egen view, typ LevelView, sen...
     
     tm = self.game.level.tilemap.map
+    ts = self.game.level.tilesets[0]
     
     glColor3f(1., 1., 1.)
     
@@ -23,18 +24,24 @@ class View(object):
         
         if tile == 0:
           continue
+          
         
-        glBegin(GL_QUADS)
+        ts.tiles[tile - 1].anchor_y = 16
+        tl = ts.tiles[tile - 1].get_transform(flip_y=True)
         
-        glColor3f(0.5, 0.5, 0.5)
-        glVertex2i(x, y)
-        glColor3f(0.2,0.2,0.2)
-        glVertex2i(x, y + 1)
-        glColor3f(1.0,1.0,1.0)
-        glVertex2i(x + 1, y + 1)
-        glVertex2i(x + 1, y)
+        tl.blit(x,y, width=1, height=1)
         
-        glEnd()
+        #glBegin(GL_QUADS)
+        #
+        #glColor3f(0.5, 0.5, 0.5)
+        #glVertex2i(x, y)
+        #glColor3f(0.2,0.2,0.2)
+        #glVertex2i(x, y + 1)
+        #glColor3f(1.0,1.0,1.0)
+        #glVertex2i(x + 1, y + 1)
+        #glVertex2i(x + 1, y)
+        
+        #glEnd()
         
     entities = self.game.level.entities
     
