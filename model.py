@@ -9,9 +9,14 @@ Copyright (c) 2009 Third Cog Software. All rights reserved.
 
 import sys
 import os
+import euclid
 
 class Player (object):
-  pass
+  def __init(self):
+    self.entity = None
+  
+  def set_entity(self, Ent):
+    self.entity = Ent
   
 class Game(object):
   """docstring for Game"""
@@ -19,20 +24,31 @@ class Game(object):
     super(Game, self).__init__()
 
     self.load_level(level_name)
+
+    P = Player()
+    E = Entity(self.level, euclid.Vector2(0,0))
+    P.set_entity(E)
+    self.player = [P]
     
   def load_level(self, name):
-    
-    pass    
-    
-      
+    self.level = Level()
+    pass
+  
+  def update(self, dt):
+    self.level.update(dt)
 
 class Entity(object):
   """docstring for Entity"""
-  def __init__(self, pos):
+  def __init__(self, level, pos):
     super(Entity, self).__init__()
+    level.add_entity(self)
     self.pos = pos
     self.vel = euclid.Vector2(0., 0.)
     self.acc = euclid.Vector2(0., 0.)
+
+  def update(self, dt):
+    self.pos += self.vel
+    self.vel += self.acc
     
 class Level(object):
   """docstring for Level"""
@@ -40,9 +56,16 @@ class Level(object):
     super(Level, self).__init__()
     
     self.entities = []
-    
+  
+  def add_entity(self, ent):
+    self.entities.append(ent)
+  
   def load_tilemap(self, name):
     pass
+  
+  def update(self, dt):
+    for entity in self.entities:
+      entity.update(dt)
     
     
 class Tilemap(object):
