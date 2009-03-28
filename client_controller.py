@@ -96,8 +96,6 @@ class ClientController(object):
     self.send("player_action", {"action": what})
     
   def update(self, dt):
-    asyncore.loop(timeout=0.01,count=1)
-    
     self.view.update(dt)
   
   def draw(self):
