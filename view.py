@@ -41,12 +41,13 @@ class View(object):
     
     # Draw background layers
     
-    # Draw collision layer
-    self.level_view.draw()
     
     # Draw entities
     for e in self.entity_views:
       e.draw()
+      
+    # Draw collision layer
+    self.level_view.draw()
     
     # Draw foreground layers
     
@@ -183,4 +184,11 @@ class SpriteView(object):
     self.current_frame = self.current_frame + 1
     if self.current_frame >= self.current_animation.frames:
       self.current_frame = self.current_animation.loopstart
+      
+    print "state: ", self.entity.state  
+      
+    if self.entity.state == "running_left":
+      self.set_animation("run_left")
+    elif self.entity.state == "running_right":
+      self.set_animation("run_right")
      

@@ -53,6 +53,7 @@ def on_key_press(symbol, modifiers):
 
 @win.event
 def on_key_release(symbol, modifiers):
+  global fullscreen
   if game_controller:
     if symbol == key.LEFT:
       game_controller.action("stop_moving_left")
@@ -61,13 +62,23 @@ def on_key_release(symbol, modifiers):
     elif symbol == key.UP:
       game_controller.action("stop_jump")
       
+    elif symbol == key.F:
+      print "FULLSCREEN"
+      fullscreen = not fullscreen
+      win.set_fullscreen(fullscreen)
+      
 fullscreen = False
+
+current_tile = 0
+max_tiles = 0
+
+
+
+
   
 @win.event
 def on_mouse_press(x, y, button, modifiers):
-  global fullscreen
-  fullscreen = not fullscreen
-  win.set_fullscreen(fullscreen)
+  pass
 
 @event_loop.event
 def on_exit():
