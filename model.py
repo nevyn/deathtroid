@@ -49,6 +49,7 @@ class Entity(object):
     self.move_force = euclid.Vector2(0,0)
     self.gravity_force = euclid.Vector2(0,9.82)
     self.mass = 1
+    self.max_vel = euclid.Vector2(3, 5)
   
   def set_movement(self, x, y):
     self.move_force.x = x
@@ -65,10 +66,23 @@ class Entity(object):
     else:
       self.vel = 0
     
-    self.vel += self.acc * dt
-    self.acc = (self.move_force + self.gravity_force) / self.mass
+    self.set_velocity(self.acc, dt)
+    self.acc = self.move_force / self.mass + self.gravity_force
     
-    print self.pos
+    print self.pos, self.vel
+  
+  def set_velocity(self, acc, dt):
+    self.vel += acc * dt
+    if self.vel.x < -self.max_vel.x:
+      self.vel.x = -self.max_vel.x
+    elif self.vel.x > self.max_vel.x:
+      self.vel.x = self.max_vel.x
+    elif self.vel.y < -self.max_vel.y:
+      self.vel.y = -self.max_vel.y
+    elif self.vel.y > self.max_vel.y:
+      self.vel.y = self.max_vel.y
+
+
     
   def collision(self, ent):
     if (self.pos - ent.pos).magnitude() < 1:
