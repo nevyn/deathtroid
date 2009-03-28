@@ -9,13 +9,24 @@ Copyright (c) 2009 Third Cog Software. All rights reserved.
 
 import sys
 import os
-import pyglet
+from pyglet import window
+from pyglet import app
+from pyglet import clock
+import controller
 
-def main():
-	pass
+win = window.Window(640, 480, "DEATHTROID")
+
+@win.event
+def on_draw():
+    win.clear()
+    
 
 
-if __name__ == '__main__':
-	main()
-	print "a winrar is you"
+game_controller = controller.GameController()
 
+
+
+clock.schedule(game_controller.update)
+
+
+app.run()
