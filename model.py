@@ -232,15 +232,18 @@ class Tilemap(object):
     dir = line.normalized()
     
     end = b
-    end.x = int(end.x)
-    end.y = int(end.y)
+    end.x = math.floor(end.x)
+    end.y = math.floor(end.y)
     
     point = a
     ipoint = a
     
+    print 'intersecting line ', a, b
+    
     while True:
-      ipoint.x = int(point.x)
-      ipoint.y = int(point.y)
+      ipoint.x = math.floor(point.x)
+      ipoint.y = math.floor(point.y)
+      #print ipoint, self.tile_at_point(ipoint), end
       if self.tile_at_point(ipoint) != 0:
         return True
       point += dir
@@ -248,6 +251,12 @@ class Tilemap(object):
         break
     
     return False
+
+  def __repr__(self):
+    string = ''
+    for row in self.map:
+      string += str(row) + '\n'
+    return string
 
 class Tileset(object):
   """docstring for Tileset"""
