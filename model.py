@@ -69,16 +69,19 @@ class Entity(object):
     self.on_floor = False
   
   def set_movement(self, x, y):
-    self.move_force.x = x
-    self.move_force.y = y
+    self.move_force.x += x
+    self.move_force.y += y
     
-    if x == 0:
+    if self.move_force.x == 0:
       self.vel.x = 0
       self.acc.x = 0
   
   def set_mass(self, mass):
     self.mass = mass
 
+  def can_jump(self):
+    return self.on_floor
+  
   def update(self, tilemap, dt):
     new_pos = self.pos + self.vel * dt
       
@@ -101,6 +104,7 @@ class Entity(object):
     
     self.set_velocity(self.acc, dt)
     self.acc = self.move_force / self.mass + self.gravity_force
+    self.move_force.y = 0
     
     print self.pos, self.vel, self.on_floor
     

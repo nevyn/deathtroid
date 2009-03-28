@@ -44,14 +44,17 @@ def on_key_press(symbol, modifiers):
     pe.entity.set_movement(-2,0)
   elif symbol == key.RIGHT:
     pe.entity.set_movement(2,0)
+  elif symbol == key.UP:
+    if pe.entity.can_jump():
+      pe.entity.set_movement(0,-500)
 
 
 @win.event
 def on_key_release(symbol, modifiers):
   if symbol == key.LEFT:
-    pe.entity.set_movement(0,0)
+    pe.entity.set_movement(2,0)
   if symbol == key.RIGHT:
-    pe.entity.set_movement(0,0)
+    pe.entity.set_movement(-2,0)
 
 glPointSize(5)
     
