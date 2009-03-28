@@ -58,8 +58,10 @@ def on_key_release(symbol, modifiers):
       game_controller.action("stop_moving_left")
     elif symbol == key.RIGHT:
       game_controller.action("stop_moving_right")
+    elif symbol == key.UP:
+      game_controller.action("stop_jump")
       
-fullscreen = False      
+fullscreen = False
   
 @win.event
 def on_mouse_press(x, y, button, modifiers):

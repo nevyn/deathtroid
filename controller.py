@@ -77,11 +77,13 @@ class ServerController(object):
         pe.set_movement(24,0)
       elif(cmd == "jump"):
         if pe.can_jump():
-          pe.jump(-8)
+          pe.jump(-2500)
       elif(cmd == "stop_moving_left"):
         pe.set_movement(24,0)
       elif(cmd == "stop_moving_right"):
         pe.set_movement(-24,0)
+      elif(cmd == "stop_jump"):
+        pe.jump(0)
   
   def broadcast(self, msgName, data):
     payload = demjson.encode(data)

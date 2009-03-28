@@ -35,9 +35,7 @@ class Player (object):
     Entity.physics_update = physics.forcebased_physics
   
   def update(self, dt):
-    if self.entity:
-      # Reset jump-force
-      self.entity.move_force.y = 0
+    pass
   
 class Game(object):
   """docstring for Game"""
@@ -51,7 +49,7 @@ class Game(object):
     
     self.delegate = None
     
-    self.gravity_force = euclid.Vector2(0,9.82)
+    self.gravity_force = euclid.Vector2(0,35.0)
     
   def load_level(self, name):  
     print "ladda level"
@@ -88,7 +86,8 @@ class Entity(object):
     self.acc = euclid.Vector2(0., 0.)
 
     self.move_force = euclid.Vector2(0,0)
-    self.mass = 1
+    self.jump_force = euclid.Vector2(0,0)
+    self.mass = 120
     self.max_vel = euclid.Vector2(7, 25)
     self.on_floor = False
     
@@ -109,7 +108,11 @@ class Entity(object):
     return self.on_floor
   
   def jump(self, amount):
-    self.vel.y += amount
+    self.jump_force.y = amount
+    if amount != 0:
+      self.vel.y -= 16
+    elif self.vel.y < 0:
+      self.vel.y = self.level.game.gravity().y * self.mass
   
   def update(self, tilemap, dt):
     if self.physics_update:
@@ -149,7 +152,6 @@ class Level(object):
     self.game = None
   
     self.tilemap = self.load_tilemap()
-    
     self.tilesets = [Tileset("metroid")]
       
   def add_entity(self, ent):

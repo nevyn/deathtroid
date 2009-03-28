@@ -56,8 +56,10 @@ def forcebased_physics(ent, tilemap, dt):
     
     gravity = ent.level.game.gravity() * ent.mass
     
-    ent.acc = calc_acceleration([ent.move_force, gravity], ent.mass)
+    ent.acc = calc_acceleration([ent.move_force, ent.jump_force, gravity], ent.mass)
     ent.vel = calc_velocity(ent.vel, ent.acc, ent.max_vel, dt)
+    if ent.jump_force.y < 0:
+      ent.jump_force.y -= ent.vel.y
     
 def static_physics(ent, tilemap, dt):
   pass
