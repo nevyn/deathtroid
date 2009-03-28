@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # encoding: utf-8
 """
 controller.py
@@ -76,7 +75,8 @@ class ServerController(object):
       elif(cmd == "move_right"):
         pe.set_movement(2,0)
       elif(cmd == "jump"):
-        pe.set_movement(0, -500)
+        if pe.can_jump():
+          pe.set_movement(0, -500)
       elif(cmd == "stop_moving_left"):
         pe.set_movement(2,0)
       elif(cmd == "stop_moving_right"):

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # encoding: utf-8
 """
 model.py
@@ -12,6 +11,7 @@ import os
 import euclid
 import random
 import pyglet
+import physics
 from pyglet.gl import *
 
 import demjson
@@ -40,7 +40,9 @@ class Game(object):
 
     self.load_level(level_name)
     
-    self.delegate = None    
+    self.delegate = None
+    
+    self.gravity_force = euclid.Vector2(0,9.82)
     
   def load_level(self, name):  
     print "ladda level"
@@ -50,6 +52,9 @@ class Game(object):
   
   def update(self, dt):
     self.level.update(dt)
+  
+  def gravity(self):
+    return self.gravity_force
   
   def player_by_connection(self, conn):
     for p in self.players:
@@ -72,10 +77,12 @@ class Entity(object):
     self.acc = euclid.Vector2(0., 0.)
 
     self.move_force = euclid.Vector2(0,0)
-    self.gravity_force = euclid.Vector2(0,9.82)
     self.mass = 1
     self.max_vel = euclid.Vector2(3, 5)
     self.on_floor = False
+    
+    self.width = 10
+    self.height = 20
   
   def set_movement(self, x, y):
     self.move_force.x += x
@@ -91,56 +98,19 @@ class Entity(object):
     return self.on_floor
   
   def update(self, tilemap, dt):
-    new_pos = self.pos + self.vel * dt
-      
-    self.on_floor = tilemap.tile_at_point(euclid.Vector2(self.pos.x, new_pos.y)) != 0
-    
-    if self.on_floor:
-      self.vel.y = 0
-      
-      # On floor with no walls
-      if tilemap.tile_at_point(euclid.Vector2(new_pos.x, self.pos.y)) == 0:
-        self.pos.x = new_pos.x
-    else:
-      # Falling
-      if tilemap.tile_at_point(new_pos) == 0:
-        self.pos = new_pos
-      
-      # Falling but pushing against wall
-      else:
-        self.pos.y = new_pos.y
-    
-    self.calc_acceleration()
-    self.calc_velocity(self.acc, dt)
-    
-    print self.pos, self.vel, self.on_floor
+    if self.physics_update:
+      self.physics_update(tilemap, dt)
+      self.move_force.y = 0
     
     if(self.level.game.delegate):
       self.level.game.delegate.entityChanged(self)
-  
-  def calc_acceleration(self):
-    self.acc = self.move_force / self.mass + self.gravity_force
-    self.move_force.y = 0
-  
-  def calc_velocity(self, acc, dt):
-    self.vel += acc * dt
-    
-    if self.vel.x < -self.max_vel.x:
-      self.vel.x = -self.max_vel.x
-    elif self.vel.x > self.max_vel.x:
-      self.vel.x = self.max_vel.x
-      
-    if self.vel.y < -self.max_vel.y:
-      self.vel.y = -self.max_vel.y
-    elif self.vel.y > self.max_vel.y:
-      self.vel.y = self.max_vel.y
-
-
     
   def collision(self, ent):
     if (self.pos - ent.pos).magnitude() < 1:
       print 'collision between %s and %s !!1!1!!!ONE' % (self.name, ent.name)
-    
+
+Entity.physics_update = physics.entity_update
+
 class Level(object):
   """docstring for Level"""
   def __init__(self, name):
