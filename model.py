@@ -30,6 +30,11 @@ class Player (object):
   def set_entity(self, Ent):
     self.entity = Ent
   
+  def update(self, dt):
+    if self.entity:
+      # Reset jump-force
+      self.entity.move_force.y = 0
+  
 class Game(object):
   """docstring for Game"""
   def __init__(self, level_name):
@@ -52,6 +57,8 @@ class Game(object):
   
   def update(self, dt):
     self.level.update(dt)
+    for p in self.players:
+      p.update(dt)
   
   def gravity(self):
     return self.gravity_force
@@ -100,8 +107,6 @@ class Entity(object):
   def update(self, tilemap, dt):
     if self.physics_update:
       self.physics_update(tilemap, dt)
-      # Reset "jump", this should however only happen with players
-      self.move_force.y = 0
     
     if(self.level.game.delegate):
       self.level.game.delegate.entityChanged(self)
