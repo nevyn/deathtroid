@@ -50,6 +50,10 @@ class Entity(object):
     self.pos += self.vel * dt
     self.vel += self.acc * dt
     
+  def collision(self, ent):
+    if (self.pos - ent.pos).magnitude() < 1:
+      print "collision!!1!1!!!ONE"
+    
 class Level(object):
   """docstring for Level"""
   def __init__(self):
@@ -64,8 +68,16 @@ class Level(object):
     pass
   
   def update(self, dt):
+    # update entities
     for entity in self.entities:
       entity.update(dt)
+    
+    # check collisions
+    for a in self.entities:
+      for b in self.entities:
+        if a == b:
+          continue
+        a.collision(b)
     
     
 class Tilemap(object):
