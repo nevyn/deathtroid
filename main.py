@@ -36,6 +36,8 @@ def on_draw():
     
     
     
+glPointSize(5)
+    
 
 
 game_controller = controller.GameController()
