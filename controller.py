@@ -15,6 +15,7 @@ import demjson
 import asyncore
 import view
 import euclid
+import random
 
 class ServerController(object):
   """docstring for ServerController"""
@@ -26,31 +27,42 @@ class ServerController(object):
     
     self.listener = Listener(8245)
     self.listener.onConnected = self.newConnection
-    self.connections = []
-    
-    P = model.Player()
-    E = model.Entity(self.game.level, "test player", euclid.Vector2(5,0))
-    P.set_entity(E)
-    self.game.player = [P]
-    
-    
-  def ful_get_player(self, n):
-    return self.game.ful_get_player(n)
-  
+      
   def update(self, dt):
     asyncore.loop(timeout=0.01,count=1)
     self.game.update(dt)
   
   # Network
   def newConnection(self, conn):
-    self.connections.append(conn)
+    player = self.game.player_by_connection(conn)
+    
+    loginRequest = OutgoingRequest(conn, "''", {'Message-Name': 'pleaseLogin'})
+    loginRequest.response.onComplete = self.gotLogin
+    loginRequest.send()
+    print "please login"
+  
+  def gotLogin(self, response):
+    print "someone logged in"
+    payload = demjson.decode(response.body)
+    name = payload["name"]
+    
+    player = self.game.player_by_connection(response.connection)
+    player.name = name
+    
+    self.playerChanged(player)
+    
+    E = model.Entity(self.game.level, "player "+name, euclid.Vector2(random.randint(0, 5),0))
+    player.set_entity(E)
+
+    
   
   def broadcast(self, msgName, data):
-     payload = demjson.encode(data)
-     for c in self.connections:
+    payload = demjson.encode(data)
+    
+    for p in self.game.players:
+      c = p.connection
       req = OutgoingRequest(c, payload, {'Message-Name': msgName})
       req.compressed = True
-      print "sending ", req
       req.send()
       
   
@@ -62,14 +74,17 @@ class ServerController(object):
     }
   
     self.broadcast("entityChanged", entityRep)
-
+  
+  def playerChanged(self, player):
+    pass
     
 
 class GameController(object):
   """hej"""
-  def __init__(self):
+  def __init__(self, name):
     super(GameController, self).__init__()
     
+    self.name = name
     self.game = model.Game("foolevel")
     self.view = view.View(self.game)
     self.connection = Connection( ('localhost', 8245) )
@@ -83,7 +98,16 @@ class GameController(object):
       entity = self.game.level.entity_by_name(payload["name"])
       entity.pos.x = payload["pos"][0]
       entity.pos.y = payload["pos"][1]
+    elif(msgName == "pleaseLogin"):
+      print "I should log in"
+      resp = req.response
+      resp.properties['Message-Name'] = "login"
+      resp.body = demjson.encode({"name": self.name})
+      resp.send()
+      
   
+  def action(self, what):
+    pass
     
   def update(self, dt):
     asyncore.loop(timeout=0.01,count=1)
