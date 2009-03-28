@@ -20,6 +20,9 @@ class GameController(object):
     self.game = model.Game("foolevel")
     self.view = view.View(self.game)
     
+  def ful_get_player(self, n):
+    return self.game.ful_get_player(n)
+  
   def update(self, dt):
     self.game.update(dt)
     pass
