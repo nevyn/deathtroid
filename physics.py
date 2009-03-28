@@ -22,7 +22,6 @@ def collision(tilemap, bb):
   if tilemap.intersection(bb.b(), bb.c()): return True
   if tilemap.intersection(bb.c(), bb.d()): return True
   if tilemap.intersection(bb.d(), bb.a()): return True
-  
   return False
 
 def entity_update(ent, tilemap, dt):

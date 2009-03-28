@@ -15,6 +15,7 @@ import asyncore
 import view
 import euclid
 import random
+import resources
 
 class ServerController(object):
   """docstring for ServerController"""
@@ -71,16 +72,16 @@ class ServerController(object):
       
       cmd = payload["action"]
       if(cmd == "move_left"):
-        pe.set_movement(-2,0)
+        pe.set_movement(-24,0)
       elif(cmd == "move_right"):
-        pe.set_movement(2,0)
+        pe.set_movement(24,0)
       elif(cmd == "jump"):
         if pe.can_jump():
           pe.jump(-8)
       elif(cmd == "stop_moving_left"):
-        pe.set_movement(2,0)
+        pe.set_movement(24,0)
       elif(cmd == "stop_moving_right"):
-        pe.set_movement(-2,0)
+        pe.set_movement(-24,0)
   
   def broadcast(self, msgName, data):
     payload = demjson.encode(data)
@@ -113,6 +114,7 @@ class GameController(object):
     self.name = name
     self.game = model.Game("foolevel")
     self.view = view.View(self.game)
+    self.entityViews = []
     self.connection = Connection( (host, 18245) )
     self.connection.onRequest = self.incomingRequest
   
@@ -122,6 +124,11 @@ class GameController(object):
     
     if(msgName == "entityChanged"):
       entity = self.game.level.entity_by_name(payload["name"])
+      if entity is None:
+        entity = self.game.level.create_entity(payload["name"])
+        entView = view.SpriteView(entity, resources.get_sprite("samus"))
+        entView.set_animation("stand")
+        self.entityViews.append( entView )
       entity.pos.x = float(payload["pos"][0])
       entity.pos.y = float(payload["pos"][1])
     elif(msgName == "pleaseLogin"):
@@ -147,9 +154,15 @@ class GameController(object):
     
   def update(self, dt):
     asyncore.loop(timeout=0.01,count=1)
+    
+    for v in self.entityViews:
+      v.update(dt)
   
   def draw(self):
     self.view.draw()
+    
+    for v in self.entityViews:
+      v.draw()
     
 
 
