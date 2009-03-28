@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 import euclid
+import math
 
 def calc_velocity(vel, acc, max_vel, dt):
   vel += acc * dt
@@ -36,6 +37,7 @@ def entity_update(ent, tilemap, dt):
     ent.on_floor = collision(tilemap, bb.translate(euclid.Vector2(ent.pos.x, new_pos.y)))
     
     if ent.on_floor:
+      ent.pos.y = math.ceil(ent.pos.y)
       ent.vel.y = 0
       
       # On floor with no wall s
