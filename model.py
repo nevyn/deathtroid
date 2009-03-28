@@ -10,9 +10,10 @@ import sys
 import os
 import euclid
 import random
-import pyglet
 import physics
+import pyglet
 from pyglet.gl import *
+from boundingbox import *
 
 import demjson
 
@@ -29,6 +30,7 @@ class Player (object):
   
   def set_entity(self, Ent):
     self.entity = Ent
+    self.entity.boundingbox = self.entity.player_boundingbox
   
   def update(self, dt):
     if self.entity:
@@ -88,8 +90,8 @@ class Entity(object):
     self.max_vel = euclid.Vector2(3, 5)
     self.on_floor = False
     
-    self.width = 10
-    self.height = 20
+    self.width = 1
+    self.height = 2
   
   def set_movement(self, x, y):
     self.move_force.x += x
@@ -114,6 +116,12 @@ class Entity(object):
   def collision(self, ent):
     if (self.pos - ent.pos).magnitude() < 1:
       print 'collision between %s and %s !!1!1!!!ONE' % (self.name, ent.name)
+  
+  def boundingbox(self):
+    return BoundingBox(euclid.Vector2(-self.width/2, -self.height/2), euclid.Vector2(self.width/2, self.height/2))
+
+  def player_boundingbox(self):
+    return BoundingBox(euclid.Vector2(-self.width/2, -self.height), euclid.Vector2(self.width/2, 0))
 
 Entity.physics_update = physics.entity_update
 

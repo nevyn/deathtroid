@@ -57,7 +57,7 @@ class ServerController(object):
     
     self.playerChanged(player)
     
-    E = model.Entity(self.game.level, "player "+name, euclid.Vector2(random.randint(0, 5),0))
+    E = model.Entity(self.game.level, "player "+name, euclid.Vector2(random.randint(0, 5),2))
     player.set_entity(E)
   
   def gotPlayerRequest(self, req):

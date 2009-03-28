@@ -21,20 +21,29 @@ def calc_acceleration(forces, mass):
   inv_mass = 1.0 / mass
   return reduce(lambda acc, f: acc + f * inv_mass, forces)
 
+def collision(tilemap, bb):
+  print bb.a(), bb.b(), bb.c(), bb.d()
+  if tilemap.tile_at_point(bb.a()) != 0: return True
+  if tilemap.tile_at_point(bb.b()) != 0: return True
+  if tilemap.tile_at_point(bb.c()) != 0: return True
+  if tilemap.tile_at_point(bb.d()) != 0: return True
+  return False
+
 def entity_update(ent, tilemap, dt):
     new_pos = ent.pos + ent.vel * dt
-      
-    ent.on_floor = tilemap.tile_at_point(euclid.Vector2(ent.pos.x, new_pos.y)) != 0
+    
+    bb = ent.boundingbox()
+    ent.on_floor = collision(tilemap, bb.translate(euclid.Vector2(ent.pos.x, new_pos.y)))
     
     if ent.on_floor:
       ent.vel.y = 0
       
-      # On floor with no walls
-      if tilemap.tile_at_point(euclid.Vector2(new_pos.x, ent.pos.y)) == 0:
+      # On floor with no wall s
+      if collision(tilemap, bb.translate(euclid.Vector2(new_pos.x, ent.pos.y))) == 0:
         ent.pos.x = new_pos.x
     else:
       # Falling
-      if tilemap.tile_at_point(new_pos) == 0:
+      if collision(tilemap, bb.translate(new_pos)) == 0:
         ent.pos = new_pos
       
       # Falling but pushing against wall
