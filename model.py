@@ -11,6 +11,9 @@ import sys
 import os
 import euclid
 import random
+import pyglet
+from pyglet.gl import *
+
 import demjson
 
 class GameDelegate:
@@ -143,6 +146,8 @@ class Level(object):
     self.game = None
   
     self.tilemap = self.load_tilemap()
+    
+    self.tilesets = [Tileset("metroid")]
       
   def add_entity(self, ent):
     ent.level = self
@@ -195,3 +200,24 @@ class Tilemap(object):
       return -1
       
     return self.map[y][x]
+
+class Tileset(object):
+  """docstring for Tileset"""
+  def __init__(self, name):
+    super(Tileset, self).__init__()
+
+    self.image = pyglet.image.load("data/tilesets/" + name + ".png")
+    seq = pyglet.image.ImageGrid(self.image, 1, 16)
+    self.tiles = pyglet.image.TextureGrid(seq)
+    #self.tiles = pyglet.image.Texture3D.create_for_image_grid(seq)
+    
+    print "target: ", self.tiles.target
+    print "id: ", self.tiles.id
+    
+    glBindTexture(GL_TEXTURE_2D, self.tiles.id)
+    
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        
+    print self.tiles
+    
