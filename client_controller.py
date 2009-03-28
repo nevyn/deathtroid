@@ -73,7 +73,7 @@ class ClientController(object):
         entity = self.game.level.create_entity(payload["name"])
         entView = view.SpriteView(entity, resources.get_sprite("samus"))
         entView.set_animation("run_left")
-        self.entityViews.append( entView )
+        self.view.entity_views.append( entView )
         if len(self.game.level.entities) == 1:
           self.view.follow = self.game.level.entities[0]
         
