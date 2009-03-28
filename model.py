@@ -46,17 +46,27 @@ class Entity(object):
     self.name = name
     self.vel = euclid.Vector2(0., 0.)
     self.acc = euclid.Vector2(0., 0.)
+    self.move_force = euclid.Vector2(0,0)
+    self.gravity_force = euclid.Vector2(0,9.82)
+    self.mass = 1
+  
+  def set_movement(self, x, y):
+    self.move_force.x = x
+    self.move_force.y = y
+  
+  def set_mass(self, mass):
+    self.mass = mass
 
   def update(self, tilemap, dt):
     new_pos = self.pos + self.vel * dt
     
     if tilemap.tile_at_point(new_pos) == 0:
         self.pos = new_pos
-        self.vel += self.acc * dt
     else:
       self.vel = 0
     
-    self.acc = euclid.Vector2(0., 9.82)
+    self.vel += self.acc * dt
+    self.acc = (self.move_force + self.gravity_force) / self.mass
     
     print self.pos
     
