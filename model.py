@@ -101,16 +101,19 @@ class Entity(object):
       else:
         self.pos.y = new_pos.y
     
-    self.acc = self.move_force / self.mass + self.gravity_force
-    self.move_force.y = 0
-    self.set_velocity(self.acc, dt)
+    self.calc_acceleration()
+    self.calc_velocity(self.acc, dt)
     
     print self.pos, self.vel, self.on_floor
     
     if(self.level.game.delegate):
       self.level.game.delegate.entityChanged(self)
   
-  def set_velocity(self, acc, dt):
+  def calc_acceleration(self):
+    self.acc = self.move_force / self.mass + self.gravity_force
+    self.move_force.y = 0
+  
+  def calc_velocity(self, acc, dt):
     self.vel += acc * dt
     if self.vel.x < -self.max_vel.x:
       self.vel.x = -self.max_vel.x
