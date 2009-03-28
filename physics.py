@@ -24,7 +24,7 @@ def collision(tilemap, bb):
   if tilemap.intersection(bb.d(), bb.a()): return True
   return False
 
-def entity_update(ent, tilemap, dt):
+def forcebased_physics(ent, tilemap, dt):
     new_pos = ent.pos + ent.vel * dt
     
     bb = ent.boundingbox()
@@ -59,4 +59,5 @@ def entity_update(ent, tilemap, dt):
     ent.acc = calc_acceleration([ent.move_force, gravity], ent.mass)
     ent.vel = calc_velocity(ent.vel, ent.acc, ent.max_vel, dt)
     
-    #print ent.pos, ent.vel, ent.on_floor
+def static_physics(ent, tilemap, dt):
+  pass
