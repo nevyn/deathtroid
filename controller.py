@@ -25,12 +25,17 @@ class ServerController(object):
     self.game = model.Game("foolevel")
     self.game.delegate = self
     
-    self.listener = Listener(8245)
+    self.listener = Listener(18245)
     self.listener.onConnected = self.newConnection
       
   def update(self, dt):
     asyncore.loop(timeout=0.01,count=1)
     self.game.update(dt)
+  
+  def close(self):
+    self.listener.close()
+    for p in self.game.players:
+      p.connection.close()
   
   # Network
   def newConnection(self, conn):
@@ -102,13 +107,13 @@ class ServerController(object):
 
 class GameController(object):
   """hej"""
-  def __init__(self, name):
+  def __init__(self, name, host):
     super(GameController, self).__init__()
     
     self.name = name
     self.game = model.Game("foolevel")
     self.view = view.View(self.game)
-    self.connection = Connection( ('localhost', 8245) )
+    self.connection = Connection( (host, 18245) )
     self.connection.onRequest = self.incomingRequest
   
   def incomingRequest(self, req):

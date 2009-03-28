@@ -17,9 +17,11 @@ from pyglet.window import key
 import controller
 import logging
 
-logging.basicConfig(level=logging.WARNING)
+logging.basicConfig(level=logging.INFO)
 
 win = window.Window(640, 480, "DEATHTROID")
+
+event_loop = pyglet.app.EventLoop()
 
 @win.event
 def on_resize(width, height):
@@ -60,6 +62,11 @@ def on_key_release(symbol, modifiers):
     elif symbol == key.RIGHT:
       game_controller.action("stop_moving_right")
 
+@event_loop.event
+def on_exit():
+  if server_controller:
+    server_controller.close()
+    
 
 
 glPointSize(5)
@@ -68,7 +75,7 @@ glEnable(GL_BLEND)
 glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
 if(len(sys.argv) < 3):
-  print "Usage: python main.py {playerName} [server|client|both]"
+  print "Usage: python main.py {playerName} [server|client {host}|both]"
 
 roles = sys.argv[2]
 name = sys.argv[1]
@@ -80,8 +87,10 @@ if(roles == "server" or roles == "both"):
   clock.schedule(server_controller.update)
 
 if(roles == "client" or roles == "both"):
-  game_controller = controller.GameController(name)
+  host = "localhost"
+  if(roles == "client"): host = argv[3]
+  game_controller = controller.GameController(name, host)
   clock.schedule(game_controller.update)
 
 
-app.run()
+event_loop.run()
