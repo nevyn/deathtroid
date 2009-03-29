@@ -125,6 +125,7 @@ class Entity(object):
     return self.on_floor
   
   def jump(self, amount):
+    self.state = 'jump_roll'
     self.jump_force.y = amount
     if amount != 0:
       self.vel.y -= 16
@@ -134,6 +135,12 @@ class Entity(object):
   def update(self, tilemap, dt):
     if self.physics_update:
       self.physics_update(tilemap, dt)
+    
+    if self.state == 'jump_roll' and self.on_floor:
+      if self.vel.x < 0:
+        self.state = 'running_left'
+      else:
+        self.state = 'running_right'
     
     if(self.level.game.delegate):
       self.level.game.delegate.entityChanged(self, ["pos"])
