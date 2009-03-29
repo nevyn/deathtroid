@@ -106,14 +106,7 @@ class ServerController(object):
   
   # Model delegates
   def entityChanged(self, entity, parts):
-    entityRep = {
-      "name": entity.name,
-      "pos": [entity.pos.x, entity.pos.y],
-      "state": entity.state,
-      "boundingbox": [entity.boundingbox.min.x, entity.boundingbox.min.y, entity.boundingbox.max.x, entity.boundingbox.max.y],
-      "width": entity.width,
-      "height": entity.height
-    }
+    entityRep = entity.rep()
   
     self.broadcast("entityChanged", entityRep)
   

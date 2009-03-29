@@ -52,25 +52,17 @@ class ClientController(object):
       self.t = t
       
       entity = self.game.level.entity_by_name(payload["name"])
-      
-      width = float(payload["width"])
-      height = float(payload["width"])
-      
+            
       if entity is None:
-        entity = model.Entity(self.game.level, payload["name"], euclid.Vector2(0,0), width, height)
+        entity = model.Entity.from_rep(payload, self.game.level)
         entView = view.SpriteView(entity, resources.get_sprite("samus"))
         entView.set_animation("run_left")
         self.view.level_view.entity_views.append( entView )
-        print entity.name, ", ", self.name
+
         if entity.name == "player "+self.name:
           self.view.follow = entity
-        
-      entity.pos.x = float(payload["pos"][0])
-      entity.pos.y = float(payload["pos"][1])
-      entity.boundingbox.min.x = float(payload["boundingbox"][0])
-      entity.boundingbox.min.y = float(payload["boundingbox"][1])
-      entity.boundingbox.max.x = float(payload["boundingbox"][2])
-      entity.boundingbox.max.y = float(payload["boundingbox"][3])
+      else:
+        entity.update_from_rep(payload)
       
       oldState = entity.state
       entity.state = payload["state"]

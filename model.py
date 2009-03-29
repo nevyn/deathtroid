@@ -75,7 +75,9 @@ class Game(object):
     p.connection = conn
     self.players.append(p)
     return p
-
+    
+  def is_on_server():
+    return self.delegate != None
 
 projectile_id = 0
 def next_projectile_name():
@@ -190,8 +192,34 @@ class Entity(object):
           self._boundingbox = value
       return locals()
   boundingbox = property(**boundingbox())
-
-
+  
+  @staticmethod
+  def from_rep(rep, inLevel):
+    w = float(rep["size"][0])
+    h = float(rep["size"][1])
+    x = float(rep["pos"][0])
+    y = float(rep["pos"][1])
+    entity = Entity(inLevel, rep["name"], euclid.Vector2(x, y), w, h)
+    return entity
+  
+  
+  def rep(self):
+    return {
+      "name": self.name,
+      "pos": [self.pos.x, self.pos.y],
+      "state": self.state,
+      "boundingbox": [self.boundingbox.min.x, self.boundingbox.min.y, self.boundingbox.max.x, self.boundingbox.max.y],
+      "size": [self.width, self.height]
+    }
+  
+  def update_from_rep(self, rep):
+    self.pos.x = float(rep["pos"][0])
+    self.pos.y = float(rep["pos"][1])
+    self.boundingbox.min.x = float(rep["boundingbox"][0])
+    self.boundingbox.min.y = float(rep["boundingbox"][1])
+    self.boundingbox.max.x = float(rep["boundingbox"][2])
+    self.boundingbox.max.y = float(rep["boundingbox"][3])
+    
     
     
     
