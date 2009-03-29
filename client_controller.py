@@ -14,6 +14,7 @@ import asyncore
 import view
 import euclid
 import random
+import datetime
 
 import twisted
 from twisted.internet.protocol import Protocol, ClientFactory
@@ -51,7 +52,7 @@ class ClientController(object):
     self.name = name
     self.game = model.Game("foolevel")
     self.view = view.View(self.game)
-    
+    self.t = datetime.datetime.now()
     
     reactor.connectTCP(host, 18245, DeathtroidFactory(self))
     
@@ -68,7 +69,12 @@ class ClientController(object):
     payload = data['Payload']
     
     if(msgName == "entityChanged"):
+      
       print "Entity updated", payload
+      t = datetime.datetime.now()
+      print 'dt:', t - self.t
+      self.t = t
+      
       entity = self.game.level.entity_by_name(payload["name"])
       if entity is None:
         entity = self.game.level.create_entity(payload["name"])
@@ -88,8 +94,6 @@ class ClientController(object):
     
   
   def send(self, msgName, data):
-    
-    print "OMG sending ", msgName, data
     self.connection.send(msgName, data)
 
   
