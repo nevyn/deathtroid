@@ -129,6 +129,8 @@ class ServerController(object):
       "pos": [entity.pos.x, entity.pos.y],
       "state": entity.state
     }
+    
+    #print entityRep
   
     self.broadcast("entityChanged", entityRep)
   

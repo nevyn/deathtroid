@@ -63,3 +63,6 @@ def forcebased_physics(ent, tilemap, dt):
     
 def static_physics(ent, tilemap, dt):
   pass
+
+def fulfysik(ent, tilemap, dt):
+  ent.pos.x += 1.3 * dt

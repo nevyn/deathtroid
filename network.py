@@ -1,52 +1,23 @@
 import twisted
-from twisted.internet.protocol import Protocol, Factory
+from twisted.protocols.basic import NetstringReceiver
 import struct
 import demjson
 
-class DeathtroidProtocol(Protocol):
+class DeathtroidProtocol(NetstringReceiver):
     
   
   def connectionMade(self):
     print "connection made"
     self.controller.newConnection(self)
     self.state = "wait for length"
+    print "transport", self.transport, type(self.transport)
+    self.transport.setTcpNoDelay(True)
     
-  def dataReceived(self, data):
-    if self.state == "wait for length":
-      self.state = "wait for data"
-      justTheLength = data[:4]
-
-      (length, ) = struct.unpack("I", justTheLength)
-      self.incomingDataLength = length
-      self.buffer = ""
-
-      rest = data[4:]
-      self.dataReceived(rest)
-    else:
-      dataLength = len(data)
-
-      if dataLength < self.incomingDataLength:
-        self.buffer += data
-        self.incomingDataLength -= dataLength
-        return
-      
-      data = self.buffer + data
-      self.buffer = ""
-      
-      myData = data[:self.incomingDataLength]
-      rest = data[self.incomingDataLength:]
-      
-      unpackedData = myData.decode("utf8")
-      
+  
+  def stringReceived(self, data):
+      unpackedData = data.decode("utf8")
       term = demjson.decode(unpackedData)
-
-      self.state = "wait for length"
-      
-      self.controller.gotData(self, term)
-      
-      if len(rest) > 0:
-        self.dataReceived(rest)
-      
+      self.controller.gotData(self, term)  
   
   def send(self, messageName, payload):
     d = {
@@ -55,9 +26,6 @@ class DeathtroidProtocol(Protocol):
     }
     
     dd = demjson.encode(d).encode("utf8")
-    length = len(dd)
-    out = struct.pack("I", length) + dd
-
-    #print "sending", dd, len(out)
-    self.transport.write(out)
+    
+    self.sendString(dd)
 

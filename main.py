@@ -144,7 +144,7 @@ server = game_controller = None
 
 if(roles == "server" or roles == "both"):
   server = server_controller.ServerController()
-  clock.schedule_interval(server.update, 1./10.)
+  clock.schedule_interval(server.update, 1./20.)
 
 if(roles == "client" or roles == "both"):
   host = "localhost"

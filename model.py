@@ -117,7 +117,6 @@ class Entity(object):
       self.vel.y = self.level.game.gravity().y * self.mass
   
   def update(self, tilemap, dt):
-    print "Entity update", dt
     if self.physics_update:
       self.physics_update(tilemap, dt)
     
