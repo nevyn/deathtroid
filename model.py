@@ -92,9 +92,12 @@ class Entity(object):
     self.mass = 120
     self.max_vel = euclid.Vector2(7, 25)
     self.on_floor = False
+    self.on_wall = False
     
     self.width = 0.75
     self.height = 2.5
+    
+    self.view_direction = -1
     
     self.state = "running_left"
   
@@ -137,7 +140,7 @@ class Entity(object):
       self.physics_update(tilemap, dt)
     
     if self.state == 'jump_roll' and self.on_floor:
-      if self.vel.x < 0:
+      if self.view_direction < 0:
         self.state = 'running_left'
       else:
         self.state = 'running_right'
