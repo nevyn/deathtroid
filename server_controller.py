@@ -95,7 +95,7 @@ class ServerController(object):
     self.playerChanged(player)
     
     for ent in self.game.level.entities:
-      network.send(conn, "entityCreated", ent.rep("full"))
+      network.send(connection, "entityCreated", ent.rep("full"))
     
     E = model.Entity(self.game.level, "samus", "player "+name, euclid.Vector2(random.randint(1, 10),3), 0.75, 2.5)
     player.set_entity(E)
