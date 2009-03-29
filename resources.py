@@ -82,6 +82,13 @@ class Animation(object):
     self.loopstart = data["loopstart"]
     self.num_frames = data["frames"]
     
+    self.flipx = False
+    self.flipy = False
+    
+    if "flip" in data:
+      self.flipx = data["flip"][0]
+      self.flipy = data["flip"][1]
+    
     self.strip = TextureStrip(texturename, self.num_frames)
       
   def coords_for_frame(self, frame):

@@ -186,40 +186,55 @@ class SpriteView(object):
     texcoords = self.current_animation.coords_for_frame(self.current_frame)
     w = self.current_animation.size.x
     h = self.current_animation.size.y
+    
+    a = texcoords.a()
+    b = texcoords.b()
+    c = texcoords.c()
+    d = texcoords.d()
   
     glPushMatrix()
+    if self.current_animation.flipx:
+      a, d = d, a
+      b, c = c, b
+    
+    if self.current_animation.flipy: 
+      a, b = b, a
+      d, c = c, d
+      
+      
+      #fx = 1.0
+      #fy = 1.0
+      #if self.current_animation.flipx: fx = -1.0
+      #if self.current_animation.flipy: fy = -1.0
     glTranslatef(-cam.x + pos.x, -cam.y + pos.y, 0)
+    
         
     glBindTexture(GL_TEXTURE_2D, self.current_animation.texture().data.id)
     
-    glBegin(GL_QUADS)    
+    glBegin(GL_QUADS)
     
-    glTexCoord2f(texcoords.b().x, texcoords.b().y)
+    glTexCoord2f(b.x, b.y)
     glVertex2f(0,0)
-    glTexCoord2f(texcoords.a().x, texcoords.a().y)
+    glTexCoord2f(a.x, a.y)
     glVertex2f(0,h)
-    glTexCoord2f(texcoords.d().x, texcoords.d().y)
+    glTexCoord2f(d.x, d.y)
     glVertex2f(w,h)
-    glTexCoord2f(texcoords.c().x, texcoords.c().y)
+    glTexCoord2f(c.x, c.y)
     glVertex2f(w,0)
+    
+    
+    #glTexCoord2f(texcoords.b().x, texcoords.b().y)
+    #glVertex2f(0,0)
+    #glTexCoord2f(texcoords.a().x, texcoords.a().y)
+    #glVertex2f(0,h)
+    #glTexCoord2f(texcoords.d().x, texcoords.d().y)
+    #glVertex2f(w,h)
+    #glTexCoord2f(texcoords.c().x, texcoords.c().y)
+    #glVertex2f(w,0)
     
     glEnd()
     
-    glPopMatrix()
-    
-    bb = self.entity.boundingbox().translate(self.entity.pos)
-        
-    glColor3f(1.0, 1.0, 0.0)
-    
-    glBegin(GL_LINE_LOOP)
-    
-    glVertex2f(bb.a().x, bb.a().y)
-    glVertex2f(bb.b().x, bb.b().y)
-    glVertex2f(bb.c().x, bb.c().y)
-    glVertex2f(bb.d().x, bb.d().y)
-    
-    glEnd()           
-    
+    glPopMatrix()    
 
   def update(self, dt):
     
@@ -235,5 +250,7 @@ class SpriteView(object):
       self.set_animation("run_left")
     elif self.entity.state == "running_right":
       self.set_animation("run_right")
-    elif self.entity.state == "jump_roll":
-      self.set_animation("jump_roll")
+    elif self.entity.state == "jump_roll_left":
+      self.set_animation("jump_roll_left")
+    elif self.entity.state == "jump_roll_right":
+      self.set_animation("jump_roll_right")

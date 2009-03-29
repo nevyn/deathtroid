@@ -16,13 +16,22 @@
 			"frames" : 10,
 			"texture" : "run_right"
 		},
-		"jump_roll" : {
+		"jump_roll_left" : {
 			"size" : [2.0, 2.0],
 			"center" : [1.0, 2.0],
 			"fps" : 2.0,
 			"loopstart" : 0,
 			"frames" : 8,
-			"texture" : "jump_roll"
+			"texture" : "jump_roll",
+			"flip" : [true, false]
+		},
+		"jump_roll_right" : {
+			"size" : [2.0, 2.0],
+			"center" : [1.0, 2.0],
+			"fps" : 2.0,
+			"loopstart" : 0,
+			"frames" : 8,
+			"texture" : "jump_roll",
 		}
 	}
 }
