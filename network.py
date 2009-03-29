@@ -3,6 +3,7 @@ import demjson
 from BLIP import *
 from pyglet import clock
 import cPickle as pickle
+import threading
 
 class NetworkDelegate(object):
   def newConnection(connection):
@@ -51,11 +52,22 @@ def startClient(host, port, delegate):
   startPolling()
 
 def startPolling():
-  clock.schedule_interval(poll, 1./30.)
+  clock.schedule(poll)
+  #SelectThread().start()
 
 def poll(asdf):
   asyncore.loop(timeout=0.01, count=2)
-      
+
+
+class SelectThread(threading.Thread):
+  
+  def __init__(self):
+    threading.Thread.__init__(self)
+    
+  
+  def run(self):
+     asyncore.loop()
+
 """
 class DeathtroidProtocol(NetstringReceiver):
   def connectionMade(self):
