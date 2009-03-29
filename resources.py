@@ -8,7 +8,8 @@ import pyglet
 from pyglet.gl import *
 
 textures = {}
-sprites = {}    
+sprites = {} 
+tilesets = {}   
 
 def get_texture(name):
   if name in textures: return textures[name]
@@ -23,6 +24,13 @@ def get_sprite(name):
   spr = Sprite(name)
   sprites[name] = spr
   return spr
+  
+def get_tileset(name):
+  if name in tilesets: return tilesets[name]
+  
+  ts = Tileset(name)
+  tilesets[name] = ts
+  return ts
 
 
 class Texture(object):
@@ -30,60 +38,64 @@ class Texture(object):
   def __init__(self, filename):
     super(Texture, self).__init__()
     
-    print "Loading new texture ", filename
+    print "Loading new texture", filename
     
     self.data = pyglet.image.load(filename).get_texture()
-    
-    print "texture is ", type(self.data)
     
     glBindTexture(GL_TEXTURE_2D, self.data.id)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
     
+class TextureStrip(object):
+  """Texture strip"""
+  def __init__(self, texturename, num_parts):
+    super(TextureStrip, self).__init__()
     
+    self.texture = get_texture(texturename)
+    self.coords = []
+    self.num_parts = num_parts
+    
+    width = self.texture.data.width
+    height = self.texture.data.height
+          
+    # Real width of texture, pyglet always creates a texture
+    # with power-of-two sides internally. Use this to 
+    # calculate UV for each part.
+    real_w = self.texture.data.tex_coords[3]
+    tjump = (1.0 / self.num_parts) * real_w
+    
+    for i in range(self.num_parts):
+      mi = euclid.Vector2(i * tjump, 0.0)
+      ma = euclid.Vector2(i * tjump + tjump, 1.0)
+      self.coords.append( boundingbox.BoundingBox(mi, ma) )
+      print self.coords[i]
+
+# Basically just a thin wrapper around texturestrip
+# that adds animation logic (fps, looping)
 class Animation(object):
-  def __init__(self, texturename, frames):
-      self.fps = 1.0
-      self.coords = []
+  def __init__(self, texturename, frames, fps, loopstart):
+    self.fps = fps
+    self.loopstart = loopstart
+    self.num_frames = frames
+    
+    self.strip = TextureStrip(texturename, frames)
       
-      # This is the frame the animation loops back to
-      self.loopstart = 0
-      
-      self.frames = frames
-      self.texture = get_texture(texturename)
-      
-      width = self.texture.data.width
-      height = self.texture.data.height
-      
-      print "loaded texture: ", width, height
-      
-      print "width", width
-      
-      bajs = self.texture.data.tex_coords[3]
-      print bajs
-      
-      tjump = (1.0 / self.frames) * bajs
-      
-      
-      print "texjump: ", tjump
-      
-      for i in range(self.frames):
-        mi = euclid.Vector2(i * tjump, 0.0)
-        ma = euclid.Vector2(i * tjump + tjump, 1.0)
-        self.coords.append( boundingbox.BoundingBox(mi, ma) )
-      
-      print self.coords
-      
+  def coords_for_frame(self, frame):
+    return self.strip.coords[frame]
+    
+  def texture(self):
+    return self.strip.texture
+
 class Sprite(object):
   """docstring for Sprite"""
   def __init__(self, name):
     super(Sprite, self).__init__()
     
-    print "Creating new sprite ", name
+    print "Creating new sprite", name
     
-    self.animations = {} 
+    # List of TextureStrips
+    self.animations = {}
     
-    # Öppna datafilen så vi får reda på allt WOHOOOOOOO
     spritedef_file = open("data/sprites/" + name + "/sprite.def")
     
     spritedef = demjson.decode(spritedef_file.read())
@@ -98,12 +110,53 @@ class Sprite(object):
     
     for k, v in animations.iteritems():    
       texname = "data/sprites/" + name + "/" + v["texture"] + ".png"
-      frames = v["frames"]
-      
-      anim = Animation(texname, frames)
-      anim.fps = v["fps"]
-      anim.loopstart = v["loopstart"]
-      
+            
+      anim = Animation(texname, v["frames"], v["fps"], v["loopstart"])
       self.animations[k] = anim
       
       print " ", k
+      
+      
+class Tile(object):
+  """docstring for Tile"""
+  def __init__(self, start, length, fps):
+    super(Tile, self).__init__()
+    
+    self.start = start
+    self.length = length
+    self.fps = fps
+    
+    self.current = self.start
+
+class Tileset(object):
+  """docstring for Tileset"""
+  def __init__(self, name):
+    super(Tileset, self).__init__()
+    
+    # This is indexed by tilemaps
+    self.tiles = []
+    
+    tiles_def_file = open("data/tilesets/" + name + ".tiles")
+    tiles_def = demjson.decode(tiles_def_file.read())
+    
+    for t in tiles_def:
+      self.tiles.append( Tile(t[0], t[1], t[2]) )
+      
+    self.strip = TextureStrip("data/tilesets/" + name + ".png", len(self.tiles))
+    
+    print "Number of tiles: ",len(self.tiles)
+    
+  def texture(self):
+    return self.strip.texture
+    
+  def coords_for_tile(self, tile):
+    return self.strip.coords[self.tiles[tile].current]
+    
+  def update(self, dt):
+    print "Uppdaterar TILES"
+        
+    for t in self.tiles:
+      t.current += 1
+      if t.current >= t.start + t.length:
+        t.current = t.start
+    

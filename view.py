@@ -5,6 +5,10 @@ from pyglet.gl import *
 
 import euclid
 
+
+tiles_drawn = 0
+
+
 class View(object):
   """docstring for View"""
   def __init__(self, game):
@@ -13,8 +17,6 @@ class View(object):
     self.game = game
     self.level_view = LevelView(game)
     
-    self.entity_views = []
-    
     self.follow = None
     
   def draw(self):
@@ -22,7 +24,7 @@ class View(object):
     glClear(GL_COLOR_BUFFER_BIT)
     glLoadIdentity()
     
-    # Move
+    # Move camera to correct position
     if self.follow is not None:
       
       self.cam = euclid.Vector2(self.follow.pos.x, self.follow.pos.y);
@@ -30,33 +32,16 @@ class View(object):
       self.cam.y -= 10.0
       
       if self.cam.x < 0.0: self.cam.x = 0.0
-      elif self.cam.x > self.game.level.tilemap.width - 20: self.cam.x = self.game.level.tilemap.width - 20
+      elif self.cam.x > self.game.level.main_layer.tilemap.width - 20: self.cam.x = self.game.level.main_layer.tilemap.width - 20
       if self.cam.y < 0.0: self.cam.y = 0.0
-      elif self.cam.y > self.game.level.tilemap.height - 15: self.cam.y = self.game.level.tilemap.height - 15
+      elif self.cam.y > self.game.level.main_layer.tilemap.height - 15: self.cam.y = self.game.level.main_layer.tilemap.height - 15
 
+      #glTranslatef(-self.cam.x, -self.cam.y, 0)
       
-      glTranslatef(-self.cam.x, -self.cam.y, 0)
-    
+      self.level_view.draw(self.cam)
         
-    
-    # Draw background layers
-    
-    
-    # Draw entities
-    for e in self.entity_views:
-      e.draw()
-      
-    # Draw collision layer
-    self.level_view.draw()
-    
-    # Draw foreground layers
-    
-    
   def update(self, dt):
-    for e in self.entity_views:
-      e.update(dt)    
-    
-    
+    self.level_view.update(dt)    
     
 
 class LevelView(object):
@@ -66,28 +51,100 @@ class LevelView(object):
     
     self.game = game
     
-  
-  def draw(self):
+    self.entity_views = []
+    self.background_views = []
+    self.main_view = None
+    self.foreground_views = []
     
-    tm = self.game.level.tilemap.map
+    for l in self.game.level.backgrounds:
+      self.background_views.append( LayerView(self.game, l) )
+      
+    for l in self.game.level.foregrounds:
+      self.foreground_views.append( LayerView(self.game, l) )
+      
+    self.main_view = LayerView(self.game, self.game.level.main_layer)
+    
+  def draw(self, cam):
+    global tiles_drawn
+    
+    tiles_drawn = 0
+    
+    for bg in self.background_views:
+      bg.draw(cam)
+      
+    for e in self.entity_views:
+      e.draw(cam)
+      
+    self.main_view.draw(cam)
+    
+    for fg in self.foreground_views:
+      fg.draw(cam)
+      
+    #print "Tiles drawn:", tiles_drawn
+      
+  def update(self, dt):
+    for e in self.entity_views:
+      e.update(dt)
+        
+
+class LayerView(object):
+  """docstring for LayerView"""
+  def __init__(self, game, layer):
+    super(LayerView, self).__init__()
+    
+    self.game = game
+    self.layer = layer
+
+  def draw(self, cam):
+    global tiles_drawn
     ts = self.game.level.tilesets[0]
     
-    glColor3f(1., 1., 1.)
+    position = euclid.Vector2(-cam.x * self.layer.scroll.x, -cam.y * self.layer.scroll.y)
     
-    for y, row in enumerate(tm):
-      for x, tile in enumerate(row):
+    glPushMatrix()
+    glTranslatef(position.x, position.y, 0)
+  
+    glBindTexture(GL_TEXTURE_2D, ts.texture().data.id)
+    
+    tm = self.layer.tilemap.map
+                            
+    glColor3f(self.layer.color.r, self.layer.color.g, self.layer.color.b)
+    
+    # Cull everything outside viewport
+    r = int(-position.y)
+    c = int(-position.x)
+    
+    re = r + 16
+    ce = c + 21
+    if re > len(tm): re = len(tm)
+    if ce > len(tm[0]): ce = len(tm[0])
+        
+    glBegin(GL_QUADS)
+    for y in range(r, re):
+      for x in range(c, ce):
+      
+        tile = tm[y][x]
         
         if tile == 0:
           continue
+          
+        texcoords = ts.coords_for_tile(tile - 1)
         
-        ts.tiles[tile - 1].anchor_y = 16
-        tl = ts.tiles[tile - 1].get_transform(flip_y=True)
+        glTexCoord2f(texcoords.b().x, texcoords.b().y)
+        glVertex2f(x,y)
+        glTexCoord2f(texcoords.a().x, texcoords.a().y)
+        glVertex2f(x,y+1)
+        glTexCoord2f(texcoords.d().x, texcoords.d().y)
+        glVertex2f(x+1,y+1)
+        glTexCoord2f(texcoords.c().x, texcoords.c().y)
+        glVertex2f(x+1,y)
         
-        tl.blit(x,y, width=1, height=1)
+        tiles_drawn += 1
         
-    entities = self.game.level.entities
+    glEnd()
     
-        
+    glPopMatrix()
+    
          
 class SpriteView(object):
   """docstring for SpriteView"""
@@ -112,44 +169,18 @@ class SpriteView(object):
     self.current_animation = self.sprite.animations[anim_name]
     #print "set animation to ", anim_name , " : ", self.current_animation
     
-  def draw(self):
+  def draw(self, cam):
     pos = self.entity.pos - self.sprite.center
-    texcoords = self.current_animation.coords[self.current_frame]
+    texcoords = self.current_animation.coords_for_frame(self.current_frame)
     w = self.sprite.width
     h = self.sprite.height
-    
-
-    
+  
     glPushMatrix()
-    glTranslatef(pos.x, pos.y, 0)
-    
-    #glColor3f(1.0, 0.0, 0.0)
-    
-    #glBegin(GL_QUADS)    
-
-    #glVertex2f(0,0)
-    #glVertex2f(0,h)
-    #glVertex2f(w,h)
-    #glVertex2f(w,0)
-    
-    #glEnd()
-    glEnable(GL_TEXTURE_2D)
-    
-    glBindTexture(GL_TEXTURE_2D, self.current_animation.texture.data.id)
-    
+    glTranslatef(-cam.x + pos.x, -cam.y + pos.y, 0)
+        
+    glBindTexture(GL_TEXTURE_2D, self.current_animation.texture().data.id)
     
     glBegin(GL_QUADS)    
-
-
-    #glTexCoord2f(0.0, 0.0)
-    #glVertex2f(0,0)
-    #glTexCoord2f(0.0, 1.0)
-    #glVertex2f(0,h)
-    #glTexCoord2f(1.0, 1.0)
-    #glVertex2f(w,h)
-    #glTexCoord2f(1.0, 0.0)
-    #glVertex2f(w,0)
-
     
     glTexCoord2f(texcoords.b().x, texcoords.b().y)
     glVertex2f(0,0)
@@ -165,9 +196,7 @@ class SpriteView(object):
     glPopMatrix()
     
     bb = self.entity.boundingbox().translate(self.entity.pos)
-    
-    glDisable(GL_TEXTURE_2D)
-    
+        
     glColor3f(1.0, 1.0, 0.0)
     
     glBegin(GL_LINE_LOOP)
@@ -181,12 +210,13 @@ class SpriteView(object):
     
 
   def update(self, dt):
+    
+    print "Uppdaterar SPRITE"
+    
     self.current_frame = self.current_frame + 1
-    if self.current_frame >= self.current_animation.frames:
+    if self.current_frame >= self.current_animation.num_frames:
       self.current_frame = self.current_animation.loopstart
-      
-    #print "state: ", self.entity.state  
-      
+            
     if self.entity.state == "running_left":
       self.set_animation("run_left")
     elif self.entity.state == "running_right":

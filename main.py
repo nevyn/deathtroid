@@ -71,13 +71,12 @@ def on_key_release(symbol, modifiers):
       game_controller.action("stop_jump")
       
     elif symbol == key.F:
-      print "FULLSCREEN"
       fullscreen = not fullscreen
       win.set_fullscreen(fullscreen)
       
     elif symbol == key.S:
       ubbe = demjson.encode(server_controller.game.level.tilemap.map)
-      dfdfdf = open('data/levels/foolevel/tilemap.data', 'w')
+      dfdfdf = open('data/levels/foolevel/main.layer', 'w')
       print dfdfdf
       dfdfdf.write(ubbe)
       print "sparade!"
@@ -133,6 +132,8 @@ glPointSize(5)
 glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST)
 glEnable(GL_BLEND)
 glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+
+glEnable(GL_TEXTURE_2D)
 
 if(len(sys.argv) < 3):
   print "Usage: python main.py {playerName} [server|client {host}|both]"
