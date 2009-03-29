@@ -12,6 +12,7 @@ import euclid
 import random
 import physics
 import pyglet
+import resources
 import math
 from pyglet.gl import *
 from boundingbox import *
@@ -153,8 +154,11 @@ class Level(object):
     self.entities = []
     self.game = None
   
-    self.tilemap = self.load_tilemap()
-    self.tilesets = [Tileset("metroid")]
+    self.tilesets = [ resources.get_tileset("metroid") ]
+    
+    self.main_layer = self.load_main_layer()
+    self.backgrounds = self.load_backgrounds()
+    self.foregrounds = self.load_foregrounds()
       
   def add_entity(self, ent):
     ent.level = self
@@ -172,9 +176,12 @@ class Level(object):
     return Entity(self, name, euclid.Vector2(0,0))
     
   def update(self, dt):
+    for ts in self.tilesets:
+      ts.update(dt)
+    
     # update entities
     for entity in self.entities:
-      entity.update(self.tilemap, dt)
+      entity.update(self.main_layer.tilemap, dt)
       
     # check collisions
     for a in self.entities:
@@ -183,27 +190,67 @@ class Level(object):
           continue
         a.collision(b)
     
-  def load_tilemap(self):
-
-    try:
-      tm = open("data/levels/" + self.name + "/tilemap.data")
-    except:
-      print "Fuck you!"
-      raise
+  def load_main_layer(self):
+    layer_data_file = open("data/levels/" + self.name + "/main.layer")
+    layer_data = demjson.decode(layer_data_file.read())
+    
+    return Layer(layer_data)    
+    
+  def load_backgrounds(self):    
+    bg = open("data/levels/" + self.name + "/background.layers")
+    bgdata = demjson.decode(bg.read())
+    
+    backs = []
+    
+    for b in bgdata:
+      backs.append( Layer(b) )
       
-    return Tilemap(demjson.decode(tm.read()))
-  
+    return backs
+    
+  def load_foregrounds(self):
+    fg = open("data/levels/" + self.name + "/foreground.layers")
+    fgdata = demjson.decode(fg.read())
+    
+    fores = []
+    
+    for f in fgdata:
+      fores.append( Layer(f) )
+      
+    return fores  
+    
   def gravity(self):
     return self.game.gravity()
+
+class Color(object):
+  """docstring for Color"""
+  def __init__(self, r, g, b):
+    super(Color, self).__init__()
+    self.r = r
+    self.g = g
+    self.b = b
+              
+        
+    
+class Layer(object):
+  """docstring for Layer"""
+  def __init__(self, data):
+    super(Layer, self).__init__()
+        
+    self.pos = euclid.Vector2(0.0, 0.0)    
+    self.scroll = euclid.Vector2(data["scroll"][0], data["scroll"][1])
+    self.color = Color(data["color"][0], data["color"][1], data["color"][2])
+        
+    self.tilemap = Tilemap(data["map"])   
+    
         
 class Tilemap(object):
   """docstring for Tilemap"""
-  def __init__(self, tilemap):
+  def __init__(self, data):
     super(Tilemap, self).__init__()
     
-    self.map = tilemap
-    self.width = len(tilemap[0])
-    self.height = len(tilemap)
+    self.map = data
+    self.width = len(data[0])
+    self.height = len(data)
   
   def tile_at_point(self, point):
     x = int(math.floor(point.x))
@@ -241,29 +288,4 @@ class Tilemap(object):
       string += str(row) + '\n'
     return string
 
-class Tileset(object):
-  """docstring for Tileset"""
-  def __init__(self, name):
-    super(Tileset, self).__init__()
-    
-    # load definition file
-    
-    # load actual texture
-    
-    # calculate coords
-
-    self.image = pyglet.image.load("data/tilesets/" + name + ".png")
-    seq = pyglet.image.ImageGrid(self.image, 1, 16)
-    self.tiles = pyglet.image.TextureGrid(seq)
-    #self.tiles = pyglet.image.Texture3D.create_for_image_grid(seq)
-    
-    print "target: ", self.tiles.target
-    print "id: ", self.tiles.id
-    
-    glBindTexture(GL_TEXTURE_2D, self.tiles.id)
-    
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-        
-    print self.tiles
     
