@@ -51,7 +51,9 @@ def forcebased_physics(ent, tilemap, dt):
       # value.
       if ent.on_floor:
         (x,y) = vertical_collision
-        ent.pos.y = y-0.0000000001
+        while tilemap.tile_at_point(euclid.Vector2(x,y)) != 0:
+          y -= 1
+        ent.pos.y = y+1-0.0000000001
     else:
       ent.pos.y = new_pos.y
     
