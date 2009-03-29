@@ -33,7 +33,7 @@ class Player (object):
   
   def set_entity(self, Ent):
     self.entity = Ent
-    self.entity.boundingbox = self.entity.player_boundingbox
+    self.entity.set_boundingbox(BoundingBox(euclid.Vector2(-self.entity.width/2, -self.entity.height), euclid.Vector2(self.entity.width/2, 0)))
     Entity.physics_update = physics.forcebased_physics
   
   def update(self, dt):
@@ -96,6 +96,8 @@ class Entity(object):
     
     self.width = 0.75
     self.height = 2.5
+    
+    self.bb = BoundingBox(euclid.Vector2(-self.width/2, -self.height/2), euclid.Vector2(self.width/2, self.height/2))
     
     self.view_direction = -1
     
@@ -162,12 +164,10 @@ class Entity(object):
       print 'collision between %s and %s !!1!1!!!ONE' % (self.name, ent.name)
   
   def boundingbox(self):
-    return BoundingBox(euclid.Vector2(-self.width/2, -self.height), euclid.Vector2(self.width/2, 0))
-    
-    #return BoundingBox(euclid.Vector2(-self.width/2, -self.height/2), euclid.Vector2(self.width/2, self.height/2))
+    return self.bb
 
-  def player_boundingbox(self):
-    return BoundingBox(euclid.Vector2(-self.width/2, -self.height), euclid.Vector2(self.width/2, 0))
+  def set_boundingbox(self, bb):
+    self.bb = bb
 
 Entity.physics_update = physics.static_physics
 
