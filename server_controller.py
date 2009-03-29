@@ -52,12 +52,12 @@ class ServerController(object):
       cmd = payload["action"]
       if(cmd == "move_left"):
         pe.set_movement(-24,0)
-        if pe.state != "jump_roll_right" and pe.state != "jump_roll_right":
+        if pe.state != "jump_roll_right" and pe.state != "jump_roll_left":
           pe.state = "running_left"
         pe.view_direction = -1
       elif(cmd == "move_right"):
         pe.set_movement(24,0)
-        if pe.state != "jump_roll_right" and pe.state != "jump_roll_right":
+        if pe.state != "jump_roll_right" and pe.state != "jump_roll_left":
           pe.state = "running_right"
         pe.view_direction = 1
       elif(cmd == "jump"):
@@ -69,6 +69,9 @@ class ServerController(object):
         pe.set_movement(-24,0)
       elif(cmd == "stop_jump"):
         pe.jump(0)
+        
+      elif(cmd == "fire"):
+        pe.fire()
     
     else:
       print "Unknown message:", payload

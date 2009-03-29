@@ -70,12 +70,15 @@ def on_key_release(symbol, modifiers):
     elif symbol == key.UP:
       game_controller.action("stop_jump")
       
+    elif symbol == key.SPACE:
+      game_controller.action("fire")
+      
     elif symbol == key.F:
       fullscreen = not fullscreen
       win.set_fullscreen(fullscreen)
       
     elif symbol == key.S:
-      ubbe = demjson.encode(server_controller.game.level.tilemap.map)
+      ubbe = demjson.encode(server.game.level.main_layer.tilemap.map)
       dfdfdf = open('data/levels/foolevel/main.layer', 'w')
       print dfdfdf
       dfdfdf.write(ubbe)
@@ -120,12 +123,12 @@ def on_mouse_press(x, y, button, modifiers):
   print "sätt i ", x, y
   if button == window.mouse.LEFT:
     
-    server_controller.game.level.tilemap.map[y][x] = (server_controller.game.level.tilemap.map[y][x] - 1) % num_tiles
-    game_controller.game.level.tilemap.map[y][x] = (game_controller.game.level.tilemap.map[y][x] - 1) % num_tiles
+    server.game.level.main_layer.tilemap.map[y][x] = (server.game.level.main_layer.tilemap.map[y][x] - 1) % num_tiles
+    game_controller.game.level.main_layer.tilemap.map[y][x] = (game_controller.game.level.main_layer.tilemap.map[y][x] - 1) % num_tiles
     
   elif button == window.mouse.RIGHT:    
-    server_controller.game.level.tilemap.map[y][x] = (server_controller.game.level.tilemap.map[y][x] + 1) % num_tiles
-    game_controller.game.level.tilemap.map[y][x] = (game_controller.game.level.tilemap.map[y][x] + 1) % num_tiles    
+    server.game.level.main_layer.tilemap.map[y][x] = (server.game.level.main_layer.tilemap.map[y][x] + 1) % num_tiles
+    game_controller.game.level.main_layer.tilemap.map[y][x] = (game_controller.game.level.main_layer.tilemap.map[y][x] + 1) % num_tiles    
 
 
 glPointSize(5)
@@ -151,7 +154,7 @@ if(roles == "client" or roles == "both"):
   host = "localhost"
   if(roles == "client"): host = sys.argv[3]
   game_controller = client_controller.ClientController(name, host)
-  clock.schedule_interval(game_controller.update, 1./50.)
+  clock.schedule(game_controller.update)
 
 
 #reactor.run()
