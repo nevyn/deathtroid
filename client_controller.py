@@ -44,6 +44,23 @@ class ClientController(object):
   
   def gotData(self, connection, msgName, payload):
     
+    if(msgName == "entityCreated"):
+      entity = self.game.level.entity_by_name(payload["name"])
+            
+      if entity is not None:
+        print "GAH! Got entityCreated for an entity we already have!", payload
+        return
+      
+      print "New entity!!", payload
+      
+      entity = model.Entity.from_rep(payload, self.game.level)
+      entView = view.SpriteView(entity, resources.get_sprite(payload["type"]))
+      self.view.level_view.entity_views.append( entView )
+      self.view.level_view.entity_state_updated_for(entity)
+
+      if entity.name == "player "+self.name:
+        self.view.follow = entity
+    
     if(msgName == "entityChanged"):
       
       #print "Entity updated", payload
@@ -54,20 +71,15 @@ class ClientController(object):
       entity = self.game.level.entity_by_name(payload["name"])
             
       if entity is None:
-        entity = model.Entity.from_rep(payload, self.game.level)
-        entView = view.SpriteView(entity, resources.get_sprite(payload["type"]))
-        self.view.level_view.entity_views.append( entView )
-        self.view.level_view.entity_state_updated_for(entity)
-
-        if entity.name == "player "+self.name:
-          self.view.follow = entity
-      else:
-        oldState = entity.state
-        
-        entity.update_from_rep(payload)
+        print "Warning: Got entityChanged for non-existing entity: ", payload
+        return
       
-        if oldState != entity.state:
-          self.view.level_view.entity_state_updated_for(entity)
+      oldState = entity.state
+      
+      entity.update_from_rep(payload)
+    
+      if oldState != entity.state:
+        self.view.level_view.entity_state_updated_for(entity)
     
     elif(msgName == "entityRemoved"):
       entity = self.game.level.entity_by_name(payload)
