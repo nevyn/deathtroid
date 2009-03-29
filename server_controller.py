@@ -10,34 +10,11 @@ import sys
 import os
 import model
 import demjson
-import asyncore
 import view
 import euclid
 import random
-
-import twisted
-from twisted.internet.protocol import Protocol, Factory
-import pygletreactor
-pygletreactor.install() # <- this must come before...
-from twisted.internet import reactor, task # <- ...importing this reactor!
-
 import resources
-from network import *
-
-from twisted.internet.protocol import ClientCreator
-
-
-class DeathtroidFactory (Factory):
-  
-  protocol = DeathtroidProtocol
-  
-  def __init__(self, controller):
-    self.controller = controller
-  
-  def buildProtocol(self, addr):
-    newProto = Factory.buildProtocol(self, addr)
-    newProto.controller = self.controller
-    return newProto
+import network
   
 
 class ServerController(object):
@@ -49,7 +26,8 @@ class ServerController(object):
     self.game = model.Game("foolevel")
     self.game.delegate = self
     
-    reactor.listenTCP(18245, DeathtroidFactory(self))
+    network.startServer(18245, self)
+    
     print "Server is running"
     
       
