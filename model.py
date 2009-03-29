@@ -23,7 +23,9 @@ class GameDelegate:
   # parts is an array which contains any of: pos, state
   def entityChanged(self, entity, parts_that_changed):
     pass
-
+  
+  def entityCreated(self, entity):
+    pass
 
 class Player (object):
   def __init__(self):
@@ -113,6 +115,9 @@ class Entity(object):
     self.view_direction = -1
     
     self.state = "running_left"
+    
+    if self.level.game.delegate:
+      self.level.game.delegate.entityCreated(self)
   
   def remove(self):
     if self.level.game.delegate:
@@ -179,7 +184,7 @@ class Entity(object):
           self.state = 'jump_roll_right'
     
     if(self.level.game.delegate):
-      self.level.game.delegate.entityChanged(self, ["pos"])
+      self.level.game.delegate.entityChanged(self, ["pos", "state"])
     
   def collision(self, ent):
     if (self.pos - ent.pos).magnitude() < 1:
@@ -197,6 +202,9 @@ class Entity(object):
           return self._boundingbox
       def fset(self, value):
           self._boundingbox = value
+          if(self.level.game.delegate):
+            self.level.game.delegate.entityChanged(self, ["boundingbox"])
+          
       return locals()
   boundingbox = property(**boundingbox())
   
@@ -207,28 +215,43 @@ class Entity(object):
     x = float(rep["pos"][0])
     y = float(rep["pos"][1])
     entity = Entity(inLevel, rep["type"], rep["name"], euclid.Vector2(x, y), w, h)
+    entity.update_from_rep(rep)
     return entity
   
   
-  def rep(self):
-    return {
-      "name": self.name,
-      "type": self.type,
-      "pos": [self.pos.x, self.pos.y],
-      "state": self.state,
-      "boundingbox": [self.boundingbox.min.x, self.boundingbox.min.y, self.boundingbox.max.x, self.boundingbox.max.y],
-      "size": [self.width, self.height]
+  def rep(self, parts = "full"):
+    rep = {
+      "name": self.name
     }
+    if parts is "full":
+      rep["type"] = self.type
+      
+    if parts is "full" or "boundingbox" in parts:
+      rep["boundingbox"] = [self.boundingbox.min.x, self.boundingbox.min.y, self.boundingbox.max.x, self.boundingbox.max.y]
+    
+    if parts is "full" or "size" in parts:
+      rep["size"] = [self.width, self.height]
+      
+    if parts is "full" or "pos" in parts:
+      rep["pos"] = [self.pos.x, self.pos.y]
+    
+    if parts is "full" or "state" in parts:
+      rep["state"] = self.state
+      
+    return rep
   
   def update_from_rep(self, rep):
-    self.pos.x = float(rep["pos"][0])
-    self.pos.y = float(rep["pos"][1])
-    self.boundingbox.min.x = float(rep["boundingbox"][0])
-    self.boundingbox.min.y = float(rep["boundingbox"][1])
-    self.boundingbox.max.x = float(rep["boundingbox"][2])
-    self.boundingbox.max.y = float(rep["boundingbox"][3])
-    self.state = rep["state"]
+    if "pos" in rep:
+      self.pos.x = float(rep["pos"][0])
+      self.pos.y = float(rep["pos"][1])
+    if "boundingbox" in rep:
+      self.boundingbox.min.x = float(rep["boundingbox"][0])
+      self.boundingbox.min.y = float(rep["boundingbox"][1])
+      self.boundingbox.max.x = float(rep["boundingbox"][2])
+      self.boundingbox.max.y = float(rep["boundingbox"][3])
     
+    if "state" in rep:
+      self.state = rep["state"]
     
     
     
@@ -269,7 +292,6 @@ class Level(object):
     
     # update entities
     for entity in self.entities:
-      print entity.name
       entity.update(self.main_layer.tilemap, dt)
       
     # check collisions

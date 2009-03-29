@@ -94,6 +94,9 @@ class ServerController(object):
     
     self.playerChanged(player)
     
+    for ent in self.game.level.entities:
+      network.send(conn, "entityCreated", ent.rep("full"))
+    
     E = model.Entity(self.game.level, "samus", "player "+name, euclid.Vector2(random.randint(1, 10),3), 0.75, 2.5)
     player.set_entity(E)
     
@@ -105,10 +108,11 @@ class ServerController(object):
   
   # Model delegates
   def entityChanged(self, entity, parts):
-    entityRep = entity.rep()
+    self.broadcast("entityChanged", entity.rep(parts))
   
-    self.broadcast("entityChanged", entityRep)
-  
+  def entityCreated(self, entity):
+    self.broadcast("entityCreated", entity.rep("full"))
+    
   def entityRemoved(self, entity):
     self.broadcast("entityRemoved", entity.name)
     

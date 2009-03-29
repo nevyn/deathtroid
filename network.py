@@ -2,6 +2,7 @@ import struct
 import demjson
 from BLIP import *
 from pyglet import clock
+import cPickle as pickle
 
 class NetworkDelegate(object):
   def newConnection(connection):
@@ -13,7 +14,7 @@ def send(connection, msgName, payload):
   req = OutgoingRequest(connection, "",
     {
       "msgName": msgName,
-      "payload": demjson.encode(payload)
+      "payload": pickle.dumps(payload) #demjson.encode(payload)
     })
   req.compressed = True
   req.noReply = True
@@ -22,7 +23,7 @@ def send(connection, msgName, payload):
 
 def newData2(delegate, msg):
   msgName = msg["msgName"]
-  payload = demjson.decode(msg["payload"])
+  payload = pickle.loads(msg["payload"]) #demjson.decode(msg["payload"])
   delegate.gotData(msg.connection, msgName, payload)
 
 def startServer(port, delegate):
