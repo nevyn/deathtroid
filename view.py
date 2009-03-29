@@ -43,6 +43,8 @@ class View(object):
   def update(self, dt):
     self.level_view.update(dt)
     
+    
+    
 
 class LevelView(object):
   """docstring for LevelView"""
@@ -66,7 +68,7 @@ class LevelView(object):
     
   def draw(self, cam):
     global tiles_drawn
-    
+      
     tiles_drawn = 0
     
     for bg in self.background_views:
@@ -86,9 +88,14 @@ class LevelView(object):
     for e in self.entity_views:
       e.update(dt)
       
+  def view_for_entity(self, entity):
+    for e in self.entity_views:
+      if e.entity is entity: return e
+    return None
+      
   def entity_state_updated_for(self, entity):
-    pass
-        
+    view = self.view_for_entity(entity)
+    view.entity_state_updated()
 
 class LayerView(object):
   """docstring for LayerView"""
@@ -98,7 +105,7 @@ class LayerView(object):
     self.game = game
     self.layer = layer
 
-  def draw(self, cam):
+  def draw(self, cam):    
     global tiles_drawn
     ts = self.game.level.tilesets[0]
     
@@ -170,13 +177,15 @@ class SpriteView(object):
     
   def set_animation(self, anim_name):
     self.current_animation = self.sprite.animations[anim_name]
-    #print "set animation to ", anim_name , " : ", self.current_animation
+    self.current_frame = 0
     
   def draw(self, cam):
-    pos = self.entity.pos - self.sprite.center
+    if self.current_animation is None: return
+    
+    pos = self.entity.pos - self.current_animation.center
     texcoords = self.current_animation.coords_for_frame(self.current_frame)
-    w = self.sprite.width
-    h = self.sprite.height
+    w = self.current_animation.size.x
+    h = self.current_animation.size.y
   
     glPushMatrix()
     glTranslatef(-cam.x + pos.x, -cam.y + pos.y, 0)
@@ -214,14 +223,17 @@ class SpriteView(object):
 
   def update(self, dt):
     
-    print "Uppdaterar SPRITE"
+    #print "Uppdaterar SPRITE"
     
     self.current_frame = self.current_frame + 1
     if self.current_frame >= self.current_animation.num_frames:
       self.current_frame = self.current_animation.loopstart
             
+      
+  def entity_state_updated(self):
     if self.entity.state == "running_left":
       self.set_animation("run_left")
     elif self.entity.state == "running_right":
       self.set_animation("run_right")
-     
+    elif self.entity.state == "jump_roll":
+      self.set_animation("jump_roll")

@@ -1,18 +1,28 @@
 {
-	"size" : [ 3, 4 ],
-	"center" : [ 1.5, 4 ],
 	"animations" : {
 		"run_left" : {
+			"size" : [3.0, 4.0],
+			"center" : [1.5, 4.0],
 			"fps" : 2.0,
 			"loopstart" : 0,
 			"frames" : 10,
 			"texture" : "run_left"
 		},
 		"run_right" : {
+			"size" : [3.0, 4.0],
+			"center" : [1.5, 4.0],
 			"fps" : 5.0,
 			"loopstart" : 0,
 			"frames" : 10,
 			"texture" : "run_right"
+		},
+		"jump_roll" : {
+			"size" : [2.0, 2.0],
+			"center" : [1.0, 2.0],
+			"fps" : 2.0,
+			"loopstart" : 0,
+			"frames" : 8,
+			"texture" : "jump_roll"
 		}
 	}
 }

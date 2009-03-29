@@ -57,6 +57,7 @@ class ClientController(object):
         entView = view.SpriteView(entity, resources.get_sprite("samus"))
         entView.set_animation("run_left")
         self.view.level_view.entity_views.append( entView )
+        print entity.name, ", ", self.name
         if entity.name == "player "+self.name:
           self.view.follow = entity
         
