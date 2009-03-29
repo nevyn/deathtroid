@@ -47,9 +47,10 @@ def forcebased_physics(ent, tilemap, dt):
       # value we assure that we are always on the ground. However, we don't want
       # to be IN the ground but right above it we subtract with a very small
       # value.
-      if ent.on_floor:
-        (x,y) = vertical_collision
-        ent.pos.y = y-0.0000000001
+      #if ent.on_floor:
+        #(x,y) = vertical_collision
+        #print 'offseting', y
+        #ent.pos.y = y-0.0000000001
     else:
       ent.pos.y = new_pos.y
     
