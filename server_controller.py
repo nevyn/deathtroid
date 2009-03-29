@@ -64,8 +64,10 @@ class ServerController(object):
           pe.jump(-2500)
       elif(cmd == "stop_moving_left"):
         pe.set_movement(24,0)
+        pe.state = "stand_left"
       elif(cmd == "stop_moving_right"):
         pe.set_movement(-24,0)
+        pe.state = "stand_right"
       elif(cmd == "stop_jump"):
         pe.jump(0)
         

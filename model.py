@@ -174,9 +174,9 @@ class Entity(object):
     if self.state == 'jump_roll_left' or self.state == 'jump_roll_right':
       if self.on_floor:
         if self.view_direction < 0:
-          self.state = 'running_left'
+          self.state = 'stand_left'
         else:
-          self.state = 'running_right'
+          self.state = 'stand_right'
       else:
         if self.view_direction < 0:
           self.state = 'jump_roll_left'
@@ -259,7 +259,7 @@ class Level(object):
     self.entities = []
     self.game = None
   
-    self.tilesets = [ resources.get_tileset("metroid") ]
+    #self.tilesets = [ resources.get_tileset("metroid") ]
     
     self.main_layer = self.load_main_layer()
     self.backgrounds = self.load_backgrounds()
@@ -281,9 +281,8 @@ class Level(object):
     return None
         
   def update(self, dt):
-    for ts in self.tilesets:
-      ts.update(dt)
-    
+    resources.update(dt)
+          
     # update entities
     for entity in self.entities:
       entity.update(self.main_layer.tilemap, dt)
@@ -299,7 +298,7 @@ class Level(object):
     layer_data_file = open("data/levels/" + self.name + "/main.layer")
     layer_data = demjson.decode(layer_data_file.read())
     
-    return Layer(layer_data)    
+    return Layer(layer_data, "main")    
     
   def load_backgrounds(self):    
     bg = open("data/levels/" + self.name + "/background.layers")
@@ -308,7 +307,7 @@ class Level(object):
     backs = []
     
     for b in bgdata:
-      backs.append( Layer(b) )
+      backs.append( Layer(b, "BG_" + str(len(bgdata))) )
       
     return backs
     
@@ -319,7 +318,7 @@ class Level(object):
     fores = []
     
     for f in fgdata:
-      fores.append( Layer(f) )
+      fores.append( Layer(f, "FG_" + str(len(fgdata))) )
       
     return fores  
     
@@ -338,14 +337,49 @@ class Color(object):
     
 class Layer(object):
   """docstring for Layer"""
-  def __init__(self, data):
+  def __init__(self, data, name):
     super(Layer, self).__init__()
+    
+    self.name = name
+    
+    self.startpos = euclid.Vector2(0.0, 0.0)
         
-    self.pos = euclid.Vector2(0.0, 0.0)    
+    self.offset = euclid.Vector2(0.0, 0.0)
     self.scroll = euclid.Vector2(data["scroll"][0], data["scroll"][1])
     self.color = Color(data["color"][0], data["color"][1], data["color"][2])
+    
+    tilesetname = data["tileset"]
+    self.tileset = resources.get_tileset(tilesetname)
+    
+    if "auto" in data:
+      self.auto = euclid.Vector2(data["auto"][0], data["auto"][1])
+    else:
+      self.auto = euclid.Vector2(0.0, 0.0)
+      
+    if "repeat" in data:
+      self.repeatx = data["repeat"][0]
+      self.repeaty = data["repeat"][1]
+    else:
+      self.repeatx = self.repeaty = False
+      
+    if "position" in data:
+      self.startpos.x = data["position"][0]
+      self.startpos.y = data["position"][1]
         
-    self.tilemap = Tilemap(data["map"])   
+    self.tilemap = Tilemap(data["map"])
+    
+  def update(self, dt):
+    self.offset += self.auto * dt
+    
+    if self.offset.x >= self.tilemap.width:
+      self.offset.x = int(self.offset.x - self.tilemap.width)
+    elif self.offset.x < -self.tilemap.width:
+      self.offset.x = int(self.offset.x - -self.tilemap.width)
+      
+    if self.offset.y >= self.tilemap.height:
+      self.offset.y = int(self.offset.y - self.tilemap.height)
+    elif self.offset.y < -self.tilemap.height:
+      self.offset.y = int(self.offset.y - -self.tilemap.height)
     
         
 class Tilemap(object):
