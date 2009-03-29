@@ -55,7 +55,7 @@ class ClientController(object):
             
       if entity is None:
         entity = model.Entity.from_rep(payload, self.game.level)
-        entView = view.SpriteView(entity, resources.get_sprite("samus"))
+        entView = view.SpriteView(entity, resources.get_sprite(payload["type"]))
         self.view.level_view.entity_views.append( entView )
         self.view.level_view.entity_state_updated_for(entity)
 
