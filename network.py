@@ -1,6 +1,7 @@
 import struct
 import demjson
 from BLIP import *
+from pyglet import clock
 
 class NetworkDelegate(object):
   def newConnection(connection):
@@ -34,6 +35,8 @@ def startServer(port, delegate):
   
   listener.onRequest = newData
   listener.onConnected = newConnection
+  
+  startPolling()
 
 def startClient(host, port, delegate):
   conn = Connection( (host,port) )
@@ -43,7 +46,14 @@ def startClient(host, port, delegate):
   
   conn.onRequest = newData
   delegate.newConnection(conn)
+  
+  startPolling()
 
+def startPolling():
+  clock.schedule_interval(poll, 1./30.)
+
+def poll(asdf):
+  asyncore.loop(timeout=0.01, count=5)
       
 """
 class DeathtroidProtocol(NetstringReceiver):

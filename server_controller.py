@@ -35,7 +35,6 @@ class ServerController(object):
       
   def update(self, dt):
     self.game.update(dt)
-    asyncore.loop(timeout=0.01,count=1)
   
   def close(self):
     pass
