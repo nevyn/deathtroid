@@ -62,7 +62,10 @@ class ClientController(object):
         
       entity.pos.x = float(payload["pos"][0])
       entity.pos.y = float(payload["pos"][1])
+      oldState = entity.state
       entity.state = payload["state"]
+      if oldState != entity.state:
+        self.view.level_view.entity_state_updated_for(entity)
       
     elif(msgName == "pleaseLogin"):
       print "I should log in"
