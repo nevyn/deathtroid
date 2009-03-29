@@ -31,7 +31,7 @@ def forcebased_physics(ent, tilemap, dt):
 
     new_pos = ent.pos + ent.vel * dt
     
-    bb = ent.boundingbox()
+    bb = ent.boundingbox
     
     vertical_collision = collision(tilemap, bb.translate(euclid.Vector2(ent.pos.x, new_pos.y)))
     horizontal_collision = collision(tilemap, bb.translate(euclid.Vector2(new_pos.x, ent.pos.y)))

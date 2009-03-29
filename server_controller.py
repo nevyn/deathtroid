@@ -109,7 +109,8 @@ class ServerController(object):
     entityRep = {
       "name": entity.name,
       "pos": [entity.pos.x, entity.pos.y],
-      "state": entity.state
+      "state": entity.state,
+      "boundingbox": [entity.boundingbox.min.x, entity.boundingbox.min.y, entity.boundingbox.max.x, entity.boundingbox.max.y]
     }
   
     self.broadcast("entityChanged", entityRep)

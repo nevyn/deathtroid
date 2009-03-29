@@ -63,6 +63,10 @@ class ClientController(object):
         
       entity.pos.x = float(payload["pos"][0])
       entity.pos.y = float(payload["pos"][1])
+      entity.boundingbox.min.x = float(payload["boundingbox"][0])
+      entity.boundingbox.min.y = float(payload["boundingbox"][1])
+      entity.boundingbox.max.x = float(payload["boundingbox"][2])
+      entity.boundingbox.max.y = float(payload["boundingbox"][3])
       oldState = entity.state
       entity.state = payload["state"]
       if oldState != entity.state:

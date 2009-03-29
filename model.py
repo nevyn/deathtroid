@@ -33,7 +33,7 @@ class Player (object):
   
   def set_entity(self, Ent):
     self.entity = Ent
-    self.entity.set_boundingbox(BoundingBox(euclid.Vector2(-self.entity.width/2, -self.entity.height), euclid.Vector2(self.entity.width/2, 0)))
+    self.entity.boundingbox = BoundingBox(euclid.Vector2(-self.entity.width/2, -self.entity.height), euclid.Vector2(self.entity.width/2, 0))
     Entity.physics_update = physics.forcebased_physics
   
   def update(self, dt):
@@ -97,7 +97,7 @@ class Entity(object):
     self.width = 0.75
     self.height = 2.5
     
-    self.bb = BoundingBox(euclid.Vector2(-self.width/2, -self.height/2), euclid.Vector2(self.width/2, self.height/2))
+    self.boundingbox = BoundingBox(euclid.Vector2(-self.width/2, -self.height/2), euclid.Vector2(self.width/2, self.height/2))
     
     self.view_direction = -1
     
@@ -168,12 +168,19 @@ class Entity(object):
 
   def set_boundingbox(self, bb):
     self.bb = bb
+    
+  def boundingbox():
+      doc = "The boundingbox property."
+      def fget(self):
+          return self._boundingbox
+      def fset(self, value):
+          self._boundingbox = value
+      return locals()
+  boundingbox = property(**boundingbox())
 
 Entity.physics_update = physics.static_physics
 
-    
-    
-  
+
     
     
     
