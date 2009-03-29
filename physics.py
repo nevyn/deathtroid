@@ -18,11 +18,7 @@ def calc_acceleration(forces, mass):
   return reduce(lambda acc, f: acc + f * inv_mass, forces)
 
 def collision(tilemap, bb):
-  if tilemap.intersection(bb.a(), bb.b()): return True
-  if tilemap.intersection(bb.b(), bb.c()): return True
-  if tilemap.intersection(bb.c(), bb.d()): return True
-  if tilemap.intersection(bb.d(), bb.a()): return True
-  return False
+  return tilemap.intersection(bb.a(), bb.b()) or tilemap.intersection(bb.b(), bb.c()) or tilemap.intersection(bb.c(), bb.d()) or tilemap.intersection(bb.d(), bb.a()) or None
 
 def forcebased_physics(ent, tilemap, dt):
     gravity = ent.level.gravity() * ent.mass
@@ -39,10 +35,10 @@ def forcebased_physics(ent, tilemap, dt):
     vertical_collision = collision(tilemap, bb.translate(euclid.Vector2(ent.pos.x, new_pos.y)))
     horizontal_collision = collision(tilemap, bb.translate(euclid.Vector2(new_pos.x, ent.pos.y)))
     
-    ent.on_floor = ent.vel.y > 0 and vertical_collision
-    ent.on_wall = ent.vel.x != 0 and horizontal_collision
+    ent.on_floor = ent.vel.y > 0 and vertical_collision != None
+    ent.on_wall = ent.vel.x != 0 and horizontal_collision != None
     
-    if vertical_collision:
+    if vertical_collision != None:
       ent.vel.y = 0
         
       # On the way down we want to land exactly on the ground. Usually this
@@ -52,11 +48,12 @@ def forcebased_physics(ent, tilemap, dt):
       # to be IN the ground but right above it we subtract with a very small
       # value.
       if ent.on_floor:
-        ent.pos.y = math.ceil(ent.pos.y)-0.0000000001
+        (x,y) = vertical_collision
+        ent.pos.y = y-0.0000000001
     else:
       ent.pos.y = new_pos.y
     
-    if horizontal_collision:
+    if horizontal_collision != None:
       pass
     else:
        ent.pos.x = new_pos.x
