@@ -14,6 +14,7 @@ import view
 import euclid
 import random
 import datetime
+import asyncore
 
 import resources
 
@@ -41,9 +42,7 @@ class ClientController(object):
     self.connection = conn
     print "Got client connection"
   
-  def gotData(self, connection, data):
-    msgName = data['Message-Name']
-    payload = data['Payload']
+  def gotData(self, connection, msgName, payload):
     
     if(msgName == "entityChanged"):
       
@@ -67,11 +66,11 @@ class ClientController(object):
       
     elif(msgName == "pleaseLogin"):
       print "I should log in"
-      connection.send("login", {"name": self.name})
+      self.send("login", {"name": self.name})
     
   
   def send(self, msgName, data):
-    self.connection.send(msgName, data)
+    network.send(self.connection, msgName, data)
 
   
   def action(self, what):
@@ -79,6 +78,7 @@ class ClientController(object):
     
   def update(self, dt):
     self.view.update(dt)
+    asyncore.loop(timeout=0.01,count=1)
   
   def draw(self):
     self.view.draw()    
