@@ -191,7 +191,10 @@ class Level(object):
       print "Fuck you!"
       raise
       
-    return Tilemap(demjson.decode(tm.read()))    
+    return Tilemap(demjson.decode(tm.read()))
+  
+  def gravity(self):
+    return self.game.gravity()
         
 class Tilemap(object):
   """docstring for Tilemap"""
