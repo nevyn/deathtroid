@@ -58,5 +58,6 @@ class DeathtroidProtocol(Protocol):
     length = len(dd)
     out = struct.pack("I", length) + dd
 
-    print "sending", dd, len(out)
+    #print "sending", dd, len(out)
     self.transport.write(out)
+
