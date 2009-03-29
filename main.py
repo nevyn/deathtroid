@@ -197,10 +197,7 @@ glEnable(GL_TEXTURE_2D)
 
 server = client = menu = None
 
-if(len(sys.argv) < 3 and len(sys.argv) != 1):
-  print "Usage: python main.py {playerName} [server|client {host}|both]"
-  
-elif (len(sys.argv) == 3):
+if (len(sys.argv) == 3 or len(sys.argv) == 4):
 
   roles = sys.argv[2]
   name = sys.argv[1]
@@ -222,6 +219,7 @@ elif (len(sys.argv) == 3):
   #  clock.schedule(client.update)
     
 else:
+  print "Usage: python main.py {playerName} [server|client {host}|both]"
   start_menu()
 
 
