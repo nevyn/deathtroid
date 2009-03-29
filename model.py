@@ -189,13 +189,7 @@ class Entity(object):
   def collision(self, ent):
     if (self.pos - ent.pos).magnitude() < 1:
       print 'collision between %s and %s !!1!1!!!ONE' % (self.name, ent.name)
-  
-  def boundingbox(self):
-    return self.bb
-
-  def set_boundingbox(self, bb):
-    self.bb = bb
-    
+      
   def boundingbox():
       doc = "The boundingbox property."
       def fget(self):
