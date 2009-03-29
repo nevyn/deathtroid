@@ -52,11 +52,13 @@ class ServerController(object):
       cmd = payload["action"]
       if(cmd == "move_left"):
         pe.set_movement(-24,0)
-        pe.state = "running_left"
+        if pe.state != "jump_roll_right" or pe.state != "jump_roll_right":
+          pe.state = "running_left"
         pe.view_direction = -1
       elif(cmd == "move_right"):
         pe.set_movement(24,0)
-        pe.state = "running_right"
+        if pe.state != "jump_roll_right" or pe.state != "jump_roll_right":
+          pe.state = "running_right"
         pe.view_direction = 1
       elif(cmd == "jump"):
         if pe.can_jump():
