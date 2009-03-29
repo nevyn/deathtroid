@@ -53,7 +53,7 @@ def startPolling():
   clock.schedule_interval(poll, 1./30.)
 
 def poll(asdf):
-  asyncore.loop(timeout=0.01, count=5)
+  asyncore.loop(timeout=0.01, count=2)
       
 """
 class DeathtroidProtocol(NetstringReceiver):
