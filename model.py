@@ -89,7 +89,7 @@ class Entity(object):
   """docstring for Entity"""
   def __init__(self, level, name, pos, width, height):
     super(Entity, self).__init__()
-    self.level = None
+    self.level = None # Set by level.add_entity
     level.add_entity(self)
     self.pos = pos
     self.name = name
@@ -112,6 +112,9 @@ class Entity(object):
     self.view_direction = -1
     
     self.state = "running_left"
+  
+  def remove(self):
+    self.level.remove_entity(self)
   
   def state():
       doc = "The state property."
@@ -242,6 +245,9 @@ class Level(object):
   def add_entity(self, ent):
     ent.level = self
     self.entities.append(ent)
+  
+  def remove_entity(self, ent):
+    self.entities.remove(ent)
     
   def entity_by_name(self, name):
     for e in self.entities:

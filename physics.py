@@ -2,6 +2,7 @@
 
 import euclid
 import math
+import logic
 
 def calc_velocity(vel, acc, max_vel, dt):
   vel += acc * dt
@@ -68,9 +69,7 @@ def projectile_physics(ent, tilemap, dt):
   col = collision(tilemap, ent.boundingbox.translate(euclid.Vector2(ent.pos.x, ent.pos.y)))
   if col != None:
     (x,y) = col
-    print 'projectile collition at tile %dx%d' % (x,y)
-    ent.vel.x = 0
-    ent.vel.y = 0
+    logic.collision(ent, None, col)
 
 def fulfysik(ent, tilemap, dt):
   ent.pos.x += 1.3 * dt
