@@ -73,12 +73,16 @@ class TextureStrip(object):
 # Basically just a thin wrapper around texturestrip
 # that adds animation logic (fps, looping)
 class Animation(object):
-  def __init__(self, texturename, frames, fps, loopstart):
-    self.fps = fps
-    self.loopstart = loopstart
-    self.num_frames = frames
+  #def __init__(self, texturename, frames, fps, loopstart):
+  def __init__(self, texturename, data):
+    self.size = euclid.Vector2(data["size"][0], data["size"][1])
+    self.center = euclid.Vector2(data["center"][0], data["size"][1])
     
-    self.strip = TextureStrip(texturename, frames)
+    self.fps = data["fps"]
+    self.loopstart = data["loopstart"]
+    self.num_frames = data["frames"]
+    
+    self.strip = TextureStrip(texturename, self.num_frames)
       
   def coords_for_frame(self, frame):
     return self.strip.coords[frame]
@@ -100,9 +104,9 @@ class Sprite(object):
     
     spritedef = demjson.decode(spritedef_file.read())
     
-    self.width = spritedef["size"][0]
-    self.height = spritedef["size"][1]
-    self.center = euclid.Vector2(spritedef["center"][0], spritedef["center"][1])
+    #self.width = spritedef["size"][0]
+    #self.height = spritedef["size"][1]
+    #self.center = euclid.Vector2(spritedef["center"][0], spritedef["center"][1])
     
     animations = spritedef["animations"]
     
@@ -111,7 +115,8 @@ class Sprite(object):
     for k, v in animations.iteritems():    
       texname = "data/sprites/" + name + "/" + v["texture"] + ".png"
             
-      anim = Animation(texname, v["frames"], v["fps"], v["loopstart"])
+      #anim = Animation(texname, v["frames"], v["fps"], v["loopstart"])
+      anim = Animation(texname, v)
       self.animations[k] = anim
       
       print " ", k
@@ -153,7 +158,7 @@ class Tileset(object):
     return self.strip.coords[self.tiles[tile].current]
     
   def update(self, dt):
-    print "Uppdaterar TILES"
+    #print "Uppdaterar TILES"
         
     for t in self.tiles:
       t.current += 1
