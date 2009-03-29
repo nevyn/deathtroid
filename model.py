@@ -142,11 +142,17 @@ class Entity(object):
     if self.physics_update:
       self.physics_update(tilemap, dt)
     
-    if self.state == 'jump_roll' and self.on_floor:
-      if self.view_direction < 0:
-        self.state = 'running_left'
+    if self.state == 'jump_roll_left' or self.state == 'jump_roll_right':
+      if self.on_floor:
+        if self.view_direction < 0:
+          self.state = 'running_left'
+        else:
+          self.state = 'running_right'
       else:
-        self.state = 'running_right'
+        if self.view_direction < 0:
+          self.state = 'jump_roll_left'
+        else:
+          self.state = 'jump_roll_right'
     
     if(self.level.game.delegate):
       self.level.game.delegate.entityChanged(self, ["pos"])
