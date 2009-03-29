@@ -63,8 +63,14 @@ def static_physics(ent, tilemap, dt):
   pass
 
 def projectile_physics(ent, tilemap, dt):
-  print "hej", ent.pos
   ent.pos += ent.vel*dt
+  
+  col = collision(tilemap, ent.boundingbox.translate(euclid.Vector2(ent.pos.x, ent.pos.y)))
+  if col != None:
+    (x,y) = col
+    print 'projectile collition at tile %dx%d' % (x,y)
+    ent.vel.x = 0
+    ent.vel.y = 0
 
 def fulfysik(ent, tilemap, dt):
   ent.pos.x += 1.3 * dt
