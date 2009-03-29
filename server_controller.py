@@ -31,7 +31,6 @@ class ServerController(object):
     network.startServer(18245, self)
     
     print "Server is running"
-    
       
   def update(self, dt):
     self.game.update(dt)
@@ -110,6 +109,9 @@ class ServerController(object):
   
     self.broadcast("entityChanged", entityRep)
   
+  def entityRemoved(self, entity):
+    self.broadcast("entityRemoved", entity.name)
+    
   def playerChanged(self, player):
     pass
     

@@ -114,6 +114,9 @@ class Entity(object):
     self.state = "running_left"
   
   def remove(self):
+    if self.level.game.delegate:
+      self.level.game.delegate.entityRemoved(self)
+    
     self.level.remove_entity(self)
   
   def state():

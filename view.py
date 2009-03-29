@@ -95,6 +95,10 @@ class LevelView(object):
   def entity_state_updated_for(self, entity):
     view = self.view_for_entity(entity)
     view.entity_state_updated()
+  
+  def entity_removed(self, entity):
+    entView = self.view_for_entity(entity)
+    self.entity_views.remove(entView)
 
 class LayerView(object):
   """docstring for LayerView"""

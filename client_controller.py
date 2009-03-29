@@ -68,7 +68,11 @@ class ClientController(object):
       
         if oldState != entity.state:
           self.view.level_view.entity_state_updated_for(entity)
-      
+    
+    elif(msgName == "entityRemoved"):
+      entity = self.game.level.entity_by_name(payload)
+      self.view.level_view.entity_removed(entity)
+      entity.remove()
     elif(msgName == "pleaseLogin"):
       print "I should log in"
       self.send("login", {"name": self.name})
