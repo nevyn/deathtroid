@@ -56,8 +56,12 @@ def on_key_press(symbol, modifiers):
       game_controller.action("move_left")
     elif symbol == key.RIGHT:
       game_controller.action("move_right")
-    elif symbol == key.UP:
+      
+    elif symbol == key.Z:
       game_controller.action("jump")
+      
+    elif symbol == key.X:
+      game_controller.action("fire")
 
 @win.event
 def on_key_release(symbol, modifiers):
@@ -67,11 +71,10 @@ def on_key_release(symbol, modifiers):
       game_controller.action("stop_moving_left")
     elif symbol == key.RIGHT:
       game_controller.action("stop_moving_right")
-    elif symbol == key.UP:
+      
+    elif symbol == key.Z:
       game_controller.action("stop_jump")
       
-    elif symbol == key.SPACE:
-      game_controller.action("fire")
       
     elif symbol == key.F:
       fullscreen = not fullscreen
