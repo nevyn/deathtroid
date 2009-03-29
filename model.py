@@ -20,7 +20,8 @@ from boundingbox import *
 import demjson
 
 class GameDelegate:
-  def entityChanged(self, entity):
+  # parts is an array which contains any of: pos, state
+  def entityChanged(self, entity, parts_that_changed):
     pass
 
 
@@ -97,6 +98,19 @@ class Entity(object):
     
     self.state = "running_left"
   
+  def state():
+      doc = "The state property."
+      def fget(self):
+          return self._state
+      def fset(self, value):
+          self._state = value
+          if(self.level.game.delegate):
+            self.level.game.delegate.entityChanged(self, ["state"])
+          
+      return locals()
+  state = property(**state())
+  
+  
   def set_movement(self, x, y):
     self.move_force.x += x
     self.move_force.y += y
@@ -122,7 +136,7 @@ class Entity(object):
       self.physics_update(tilemap, dt)
     
     if(self.level.game.delegate):
-      self.level.game.delegate.entityChanged(self)
+      self.level.game.delegate.entityChanged(self, ["pos"])
     
   def collision(self, ent):
     if (self.pos - ent.pos).magnitude() < 1:

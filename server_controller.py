@@ -98,14 +98,12 @@ class ServerController(object):
       
   
   # Model delegates
-  def entityChanged(self, entity):
+  def entityChanged(self, entity, parts):
     entityRep = {
       "name": entity.name,
       "pos": [entity.pos.x, entity.pos.y],
       "state": entity.state
     }
-    
-    #print entityRep
   
     self.broadcast("entityChanged", entityRep)
   

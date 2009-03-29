@@ -41,7 +41,7 @@ class View(object):
       self.level_view.draw(self.cam)
         
   def update(self, dt):
-    self.level_view.update(dt)    
+    self.level_view.update(dt)
     
 
 class LevelView(object):
@@ -85,6 +85,9 @@ class LevelView(object):
   def update(self, dt):
     for e in self.entity_views:
       e.update(dt)
+      
+  def entity_state_updated_for(self, entity):
+    pass
         
 
 class LayerView(object):
