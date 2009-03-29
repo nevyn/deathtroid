@@ -228,12 +228,12 @@ class Tilemap(object):
       x = int(math.floor(point.x))
       y = int(math.floor(point.y))
       if self.tile_at_point(euclid.Vector2(x,y)) != 0:
-        return True
+        return (x,y)
       point += dir
       if (x == end.x and y == end.y):
         break
     
-    return False
+    return None
 
   def __repr__(self):
     string = ''
