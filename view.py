@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # encoding: utf-8
 
 from pyglet.gl import *
@@ -222,19 +221,27 @@ class SpriteView(object):
     glTexCoord2f(c.x, c.y)
     glVertex2f(w,0)
     
-    
-    #glTexCoord2f(texcoords.b().x, texcoords.b().y)
-    #glVertex2f(0,0)
-    #glTexCoord2f(texcoords.a().x, texcoords.a().y)
-    #glVertex2f(0,h)
-    #glTexCoord2f(texcoords.d().x, texcoords.d().y)
-    #glVertex2f(w,h)
-    #glTexCoord2f(texcoords.c().x, texcoords.c().y)
-    #glVertex2f(w,0)
-    
     glEnd()
     
     glPopMatrix()    
+    
+    glPushAttrib(GL_ENABLE_BIT)
+    glDisable(GL_TEXTURE_2D)
+    
+    bb = self.entity.boundingbox.translate(self.entity.pos - cam)
+    
+    glColor3f(1,0,1)
+    
+    glBegin(GL_LINE_LOOP)
+    glVertex2f(bb.a().x, bb.a().y)
+    glVertex2f(bb.b().x, bb.b().y)
+    glVertex2f(bb.c().x, bb.c().y)
+    glVertex2f(bb.d().x, bb.d().y)
+    glEnd()
+    
+    glPopAttrib()
+    
+    
 
   def update(self, dt):
     

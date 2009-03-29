@@ -151,7 +151,7 @@ class Entity(object):
       self.vel.y = 0
   
   def fire(self):
-    projectile = Entity(self.level, next_projectile_name(), euclid.Vector2(self.pos.x, self.pos.y), 0.5, 0.5)
+    projectile = Entity(self.level, next_projectile_name(), euclid.Vector2(self.pos.x, self.pos.y - 1.8), 0.5, 0.5)
     projectile.physics_update = physics.projectile_physics
     projectile.vel = self.view_direction*euclid.Vector2(10, 0)
   
