@@ -128,7 +128,10 @@ class Entity(object):
     return self.on_floor
   
   def jump(self, amount):
-    self.state = 'jump_roll'
+    if self.view_direction < 0:
+      self.state = 'jump_roll_right'
+    else:
+      self.state = 'jump_roll_left'
     self.jump_force.y = amount
     if amount != 0:
       self.vel.y -= 16
