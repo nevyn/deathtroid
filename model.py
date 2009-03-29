@@ -87,11 +87,12 @@ def next_projectile_name():
 
 class Entity(object):
   """docstring for Entity"""
-  def __init__(self, level, name, pos, width, height):
+  def __init__(self, level, type_, name, pos, width, height):
     super(Entity, self).__init__()
     self.level = None # Set by level.add_entity
     level.add_entity(self)
     self.pos = pos
+    self.type = type_
     self.name = name
     self.vel = euclid.Vector2(0., 0.)
     self.acc = euclid.Vector2(0., 0.)
@@ -157,7 +158,7 @@ class Entity(object):
       self.vel.y = 0
   
   def fire(self):
-    projectile = Entity(self.level, next_projectile_name(), euclid.Vector2(self.pos.x, self.pos.y - 1.8), 0.5, 0.5)
+    projectile = Entity(self.level, "shot", next_projectile_name(), euclid.Vector2(self.pos.x, self.pos.y - 1.8), 0.5, 0.5)
     projectile.physics_update = physics.projectile_physics
     projectile.vel = self.view_direction*euclid.Vector2(10, 0)
   
@@ -205,13 +206,14 @@ class Entity(object):
     h = float(rep["size"][1])
     x = float(rep["pos"][0])
     y = float(rep["pos"][1])
-    entity = Entity(inLevel, rep["name"], euclid.Vector2(x, y), w, h)
+    entity = Entity(inLevel, rep["type"], rep["name"], euclid.Vector2(x, y), w, h)
     return entity
   
   
   def rep(self):
     return {
       "name": self.name,
+      "type": self.type,
       "pos": [self.pos.x, self.pos.y],
       "state": self.state,
       "boundingbox": [self.boundingbox.min.x, self.boundingbox.min.y, self.boundingbox.max.x, self.boundingbox.max.y],
@@ -225,6 +227,7 @@ class Entity(object):
     self.boundingbox.min.y = float(rep["boundingbox"][1])
     self.boundingbox.max.x = float(rep["boundingbox"][2])
     self.boundingbox.max.y = float(rep["boundingbox"][3])
+    self.state = rep["state"]
     
     
     
