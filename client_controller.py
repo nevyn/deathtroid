@@ -52,8 +52,12 @@ class ClientController(object):
       self.t = t
       
       entity = self.game.level.entity_by_name(payload["name"])
+      
+      width = float(payload["width"])
+      height = float(payload["width"])
+      
       if entity is None:
-        entity = self.game.level.create_entity(payload["name"])
+        entity = model.Entity(self.game.level, payload["name"], euclid.Vector2(0,0), width, height)
         entView = view.SpriteView(entity, resources.get_sprite("samus"))
         entView.set_animation("run_left")
         self.view.level_view.entity_views.append( entView )
@@ -67,6 +71,7 @@ class ClientController(object):
       entity.boundingbox.min.y = float(payload["boundingbox"][1])
       entity.boundingbox.max.x = float(payload["boundingbox"][2])
       entity.boundingbox.max.y = float(payload["boundingbox"][3])
+      
       oldState = entity.state
       entity.state = payload["state"]
       if oldState != entity.state:

@@ -95,7 +95,7 @@ class ServerController(object):
     
     self.playerChanged(player)
     
-    E = model.Entity(self.game.level, "player "+name, euclid.Vector2(random.randint(1, 10),3))
+    E = model.Entity(self.game.level, "player "+name, euclid.Vector2(random.randint(1, 10),3), 0.75, 2.5)
     player.set_entity(E)
     
   def broadcast(self, msgName, data):    
@@ -110,7 +110,9 @@ class ServerController(object):
       "name": entity.name,
       "pos": [entity.pos.x, entity.pos.y],
       "state": entity.state,
-      "boundingbox": [entity.boundingbox.min.x, entity.boundingbox.min.y, entity.boundingbox.max.x, entity.boundingbox.max.y]
+      "boundingbox": [entity.boundingbox.min.x, entity.boundingbox.min.y, entity.boundingbox.max.x, entity.boundingbox.max.y],
+      "width": entity.width,
+      "height": entity.height
     }
   
     self.broadcast("entityChanged", entityRep)

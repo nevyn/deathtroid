@@ -58,9 +58,13 @@ def forcebased_physics(ent, tilemap, dt):
       pass
     else:
        ent.pos.x = new_pos.x
-    
+
 def static_physics(ent, tilemap, dt):
   pass
+
+def projectile_physics(ent, tilemap, dt):
+  print "hej", ent.pos
+  ent.pos += ent.vel*dt
 
 def fulfysik(ent, tilemap, dt):
   ent.pos.x += 1.3 * dt

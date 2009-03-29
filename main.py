@@ -75,6 +75,9 @@ def on_key_release(symbol, modifiers):
     elif symbol == key.Z:
       game_controller.action("stop_jump")
       
+    elif symbol == key.X:
+      game_controller.action("stop_fire")
+      
       
     elif symbol == key.F:
       fullscreen = not fullscreen
