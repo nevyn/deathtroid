@@ -57,8 +57,8 @@ class ClientController(object):
         entView = view.SpriteView(entity, resources.get_sprite("samus"))
         entView.set_animation("run_left")
         self.view.level_view.entity_views.append( entView )
-        if len(self.game.level.entities) == 1:
-          self.view.follow = self.game.level.entities[0]
+        if entity.name == "player "+self.name:
+          self.view.follow = entity
         
       entity.pos.x = float(payload["pos"][0])
       entity.pos.y = float(payload["pos"][1])
