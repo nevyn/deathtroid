@@ -68,6 +68,7 @@ class ClientController(object):
     payload = data['Payload']
     
     if(msgName == "entityChanged"):
+      print "Entity updated", payload
       entity = self.game.level.entity_by_name(payload["name"])
       if entity is None:
         entity = self.game.level.create_entity(payload["name"])
