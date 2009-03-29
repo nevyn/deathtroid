@@ -13,6 +13,8 @@ import demjson
 import view
 import euclid
 import random
+import asyncore
+
 import resources
 import network
   
@@ -33,16 +35,14 @@ class ServerController(object):
       
   def update(self, dt):
     self.game.update(dt)
+    asyncore.loop(timeout=0.01,count=1)
   
   def close(self):
     pass
   
   # Network
   
-  def gotData(self, connection, term):
-    msgName = term["Message-Name"]
-    payload = term["Payload"]
-    
+  def gotData(self, connection, msgName, payload):
     if msgName == "login":
       self.gotLogin(connection, payload)
     elif msgName == "player_action":
@@ -75,7 +75,7 @@ class ServerController(object):
     print "NEW CONNECTION ", conn
     player = self.game.player_by_connection(conn)
     
-    conn.send("pleaseLogin", {})
+    network.send(conn, "pleaseLogin", {})
     
     print "please login"
   
@@ -92,12 +92,10 @@ class ServerController(object):
     E = model.Entity(self.game.level, "player "+name, euclid.Vector2(random.randint(1, 10),3))
     player.set_entity(E)
     
-  def broadcast(self, msgName, data):
-    payload = demjson.encode(data)
-    
+  def broadcast(self, msgName, data):    
     for p in self.game.players:
       c = p.connection
-      c.send(msgName, data)
+      network.send(c, msgName, data)
       
   
   # Model delegates

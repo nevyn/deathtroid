@@ -1,13 +1,51 @@
-import twisted
-from twisted.internet.protocol import Protocol, Factory, ClientFactory
-from twisted.protocols.basic import NetstringReceiver
-import pygletreactor
-pygletreactor.install() # <- this must come before...
-from twisted.internet import reactor, task # <- ...importing this reactor!
-
 import struct
 import demjson
+from BLIP import *
 
+class NetworkDelegate(object):
+  def newConnection(connection):
+    pass
+  def gotData(connection, msgName, payload):
+    pass
+
+def send(connection, msgName, payload):
+  req = OutgoingRequest(connection, "",
+    {
+      "msgName": msgName,
+      "payload": demjson.encode(payload)
+    })
+  req.compressed = True
+  req.noReply = True
+  return req.send()
+
+
+def newData2(delegate, msg):
+  msgName = msg["msgName"]
+  payload = demjson.decode(msg["payload"])
+  delegate.gotData(msg.connection, msgName, payload)
+
+def startServer(port, delegate):
+  listener = Listener(port)
+  def newConnection(conn):
+    delegate.newConnection(conn)
+  
+  def newData(msg):
+    newData2(delegate, msg)
+  
+  listener.onRequest = newData
+  listener.onConnected = newConnection
+
+def startClient(host, port, delegate):
+  conn = Connection( (host,port) )
+  
+  def newData(msg):
+    newData2(delegate, msg)
+  
+  conn.onRequest = newData
+  delegate.newConnection(conn)
+
+      
+"""
 class DeathtroidProtocol(NetstringReceiver):
   def connectionMade(self):
     print "connection made"
@@ -64,4 +102,4 @@ def startServer(port, ctrlr):
   
 def startClient(host, port, ctrlr):
   reactor.connectTCP(host, port, DeathtroidClientFactory(ctrlr))
-
+"""

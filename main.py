@@ -15,9 +15,9 @@ from pyglet import clock
 from pyglet.gl import *
 from pyglet.window import key
 
-import pygletreactor
-pygletreactor.install() # <- this must come before...
-from twisted.internet import reactor, task # <- ...importing this reactor!
+#import pygletreactor
+#pygletreactor.install()
+#from twisted.internet import reactor
 
 import client_controller
 import server_controller
@@ -84,7 +84,7 @@ def on_key_release(symbol, modifiers):
 
 @win.event
 def on_close():
-    reactor.stop()
+    #reactor.stop()
 
     # Return true to ensure that no other handlers
     # on the stack receive the on_close event
@@ -144,13 +144,14 @@ server = game_controller = None
 
 if(roles == "server" or roles == "both"):
   server = server_controller.ServerController()
-  clock.schedule_interval(server.update, 1./20.)
+  clock.schedule_interval(server.update, 1./30.)
 
 if(roles == "client" or roles == "both"):
   host = "localhost"
   if(roles == "client"): host = sys.argv[3]
   game_controller = client_controller.ClientController(name, host)
-  clock.schedule_interval(game_controller.update, 1./30.)
+  clock.schedule_interval(game_controller.update, 1./50.)
 
 
-reactor.run()
+#reactor.run()
+pyglet.app.EventLoop().run()
