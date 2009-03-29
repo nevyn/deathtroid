@@ -78,7 +78,6 @@ class ClientController(object):
     
   def update(self, dt):
     self.view.update(dt)
-    asyncore.loop(timeout=0.01,count=1)
   
   def draw(self):
     self.view.draw()    
