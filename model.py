@@ -115,7 +115,7 @@ class Entity(object):
     if amount != 0:
       self.vel.y -= 16
     elif self.vel.y < 0:
-      self.vel.y = self.level.game.gravity().y * self.mass
+      self.vel.y = 0
   
   def update(self, tilemap, dt):
     if self.physics_update:
