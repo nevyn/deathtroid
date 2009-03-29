@@ -31,6 +31,10 @@ def get_tileset(name):
   ts = Tileset(name)
   tilesets[name] = ts
   return ts
+  
+def update(dt):
+  for t, v in tilesets.items():
+    v.update(dt)
 
 
 class Texture(object):
@@ -62,11 +66,12 @@ class TextureStrip(object):
     # with power-of-two sides internally. Use this to 
     # calculate UV for each part.
     real_w = self.texture.data.tex_coords[3]
+    real_h = self.texture.data.tex_coords[7]
     tjump = (1.0 / self.num_parts) * real_w
     
     for i in range(self.num_parts):
       mi = euclid.Vector2(i * tjump, 0.0)
-      ma = euclid.Vector2(i * tjump + tjump, 1.0)
+      ma = euclid.Vector2(i * tjump + tjump, real_h)
       self.coords.append( boundingbox.BoundingBox(mi, ma) )
       print self.coords[i]
 
@@ -164,9 +169,7 @@ class Tileset(object):
   def coords_for_tile(self, tile):
     return self.strip.coords[self.tiles[tile].current]
     
-  def update(self, dt):
-    #print "Uppdaterar TILES"
-        
+  def update(self, dt):        
     for t in self.tiles:
       t.current += 1
       if t.current >= t.start + t.length:

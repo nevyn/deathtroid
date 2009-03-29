@@ -5,10 +5,15 @@ import euclid
 class BoundingBox (object):
   min = None
   max = None
-  def __init__(self, min, max):
+  def __init__(self, _min, _max):
     super(BoundingBox, self).__init__()
-    self.min = min
-    self.max = max
+    self.min = _min
+    self.max = _max
+    
+    self.pa = self.min
+    self.pb = euclid.Vector2(self.min.x, self.max.y)
+    self.pc = self.max
+    self.pd = euclid.Vector2(self.max.x, self.min.y)
   
   def translate(self, point):
     return BoundingBox(self.min + point, self.max + point)

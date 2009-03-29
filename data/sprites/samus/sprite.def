@@ -31,7 +31,24 @@
 			"fps" : 2.0,
 			"loopstart" : 0,
 			"frames" : 8,
-			"texture" : "jump_roll",
+			"texture" : "jump_roll"
+		},
+		"stand_left" : {
+			"size" : [3.0, 3.0],
+			"center" : [1.5, 3.0],
+			"fps" : 2.0,
+			"loopstart" : 0,
+			"frames" : 4,
+			"texture" : "stand_left"
+		},
+		"stand_right" : {
+			"size" : [3.0, 3.0],
+			"center" : [1.5, 3.0],
+			"fps" : 2.0,
+			"loopstart" : 0,
+			"frames" : 4,
+			"texture" : "stand_right"
 		}
+
 	}
 }
