@@ -34,7 +34,7 @@ class Player (object):
   def set_entity(self, Ent):
     self.entity = Ent
     self.entity.boundingbox = BoundingBox(euclid.Vector2(-self.entity.width/2, -self.entity.height), euclid.Vector2(self.entity.width/2, 0))
-    Entity.physics_update = physics.forcebased_physics
+    self.entity.physics_update = physics.forcebased_physics
   
   def update(self, dt):
     pass
@@ -76,9 +76,16 @@ class Game(object):
     self.players.append(p)
     return p
 
+
+projectile_id = 0
+def next_projectile_name():
+  global projectile_id
+  projectile_id += 1
+  return "projectile "+str(projectile_id)
+
 class Entity(object):
   """docstring for Entity"""
-  def __init__(self, level, name, pos):
+  def __init__(self, level, name, pos, width, height):
     super(Entity, self).__init__()
     self.level = None
     level.add_entity(self)
@@ -93,9 +100,10 @@ class Entity(object):
     self.max_vel = euclid.Vector2(7, 25)
     self.on_floor = False
     self.on_wall = False
+    self.physics_update = physics.static_physics
     
-    self.width = 0.75
-    self.height = 2.5
+    self.width = width
+    self.height = height
     
     self.boundingbox = BoundingBox(euclid.Vector2(-self.width/2, -self.height/2), euclid.Vector2(self.width/2, self.height/2))
     
@@ -140,9 +148,14 @@ class Entity(object):
     elif self.vel.y < 0:
       self.vel.y = 0
   
+  def fire(self):
+    projectile = Entity(self.level, next_projectile_name(), euclid.Vector2(self.pos.x, self.pos.y), 0.5, 0.5)
+    projectile.physics_update = physics.projectile_physics
+    projectile.vel = self.view_direction*euclid.Vector2(10, 0)
+  
   def update(self, tilemap, dt):
     if self.physics_update:
-      self.physics_update(tilemap, dt)
+      self.physics_update(self, tilemap, dt)
     
     if self.state == 'jump_roll_left' or self.state == 'jump_roll_right':
       if self.on_floor:
@@ -178,8 +191,6 @@ class Entity(object):
       return locals()
   boundingbox = property(**boundingbox())
 
-Entity.physics_update = physics.static_physics
-
 
     
     
@@ -211,16 +222,14 @@ class Level(object):
     #e = Entity(self, name, euclid.Vector2(0,0))
     
     return None
-    
-  def create_entity(self, name):
-    return Entity(self, name, euclid.Vector2(0,0))
-    
+        
   def update(self, dt):
     for ts in self.tilesets:
       ts.update(dt)
     
     # update entities
     for entity in self.entities:
+      print entity.name
       entity.update(self.main_layer.tilemap, dt)
       
     # check collisions
