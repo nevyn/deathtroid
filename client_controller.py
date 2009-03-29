@@ -46,9 +46,9 @@ class ClientController(object):
     
     if(msgName == "entityChanged"):
       
-      print "Entity updated", payload
+      #print "Entity updated", payload
       t = datetime.datetime.now()
-      print 'dt:', t - self.t
+      #print 'dt:', t - self.t
       self.t = t
       
       entity = self.game.level.entity_by_name(payload["name"])
