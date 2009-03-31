@@ -17,7 +17,7 @@ import view
 import model
 import resources
 import network
-import logic
+import logics
   
 
 class ServerController(object):
@@ -29,7 +29,7 @@ class ServerController(object):
     self.game = model.Game("foolevel")
     self.game.delegate = self
     
-    self.logic = logic.Logic() # todo: DeathmatchLogic() or something
+    self.logic = logics.Logic() # todo: DeathmatchLogic() or something
     
     network.startServer(18245, self)
     
@@ -49,33 +49,9 @@ class ServerController(object):
     elif msgName == "player_action":
       player = self.game.player_by_connection(connection)
 
-      pe = player.entity
-
-      cmd = payload["action"]
-      if(cmd == "move_left"):
-        pe.set_movement(-24,0)
-        if pe.state != "jump_roll_right" and pe.state != "jump_roll_left":
-          pe.state = "running_left"
-        pe.view_direction = -1
-      elif(cmd == "move_right"):
-        pe.set_movement(24,0)
-        if pe.state != "jump_roll_right" and pe.state != "jump_roll_left":
-          pe.state = "running_right"
-        pe.view_direction = 1
-      elif(cmd == "jump"):
-        if pe.can_jump():
-          pe.jump(-2500)
-      elif(cmd == "stop_moving_left"):
-        pe.set_movement(24,0)
-        pe.state = "stand_left"
-      elif(cmd == "stop_moving_right"):
-        pe.set_movement(-24,0)
-        pe.state = "stand_right"
-      elif(cmd == "stop_jump"):
-        pe.jump(0)
-        
-      elif(cmd == "fire"):
-        pe.fire()
+      action = payload["action"]
+      
+      self.logic.player_action(player, action)
     
     else:
       print "Unknown message:", payload
@@ -102,8 +78,8 @@ class ServerController(object):
     for ent in self.game.level.entities:
       network.send(connection, "entityCreated", ent.rep("full"))
     
-    E = model.Entity(self.game.level, "samus", "player "+name, euclid.Vector2(random.randint(1, 10),3), 0.75, 2.5)
-    player.set_entity(E)
+    self.logic.player_logged_in(player, self.game)
+    
     
   def broadcast(self, msgName, data):    
     for p in self.game.players:
@@ -116,6 +92,8 @@ class ServerController(object):
     self.broadcast("entityChanged", entity.rep(parts))
   
   def entityCreated(self, entity):
+    self.logic.initializeEntity(entity)
+    
     self.broadcast("entityCreated", entity.rep("full"))
     
   def entityRemoved(self, entity):

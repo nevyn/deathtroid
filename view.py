@@ -85,7 +85,7 @@ class LevelView(object):
     for fg in self.foreground_views:
       fg.draw(cam)
       
-    print "TOTAL tiles drawn:", tiles_drawn
+    #print "TOTAL tiles drawn:", tiles_drawn
       
   def update(self, dt):
     for bg in self.background_views:
@@ -124,8 +124,8 @@ class LayerView(object):
     
     ts = self.layer.tileset
     
-    print "DRAWING", self.layer.name
-    print "  PRE: tiles_drawn", tiles_drawn
+    #print "DRAWING", self.layer.name
+    #print "  PRE: tiles_drawn", tiles_drawn
     
     # vi försöker få den här positionen inom -tilemap.height > n > tilemap.height
     # fast bara om den repeatar?
@@ -140,7 +140,7 @@ class LayerView(object):
       while position.y < -self.layer.tilemap.height:
         position.y += self.layer.tilemap.height
     
-    print "   draw at pos:",position
+    #print "   draw at pos:",position
     
     glPushMatrix()
     
@@ -184,8 +184,8 @@ class LayerView(object):
       #if position.y > 0.0: position.y -= self.layer.tilemap.height
       
     #print "   tilemap: ", self.layer.tilemap.non_empty_count()
-    print "   xrepeats:", xrepeats
-    print "   yrepeats:", yrepeats
+    #print "   xrepeats:", xrepeats
+    #print "   yrepeats:", yrepeats
       
       
     #xrepeats = yrepeats = 1
@@ -256,8 +256,8 @@ class LayerView(object):
     
     tiles_drawn += local_tiles_drawn
     
-    print "  POST: i drew", local_tiles_drawn
-    print "  POST: tiles_drawn",tiles_drawn
+    #print "  POST: i drew", local_tiles_drawn
+    #print "  POST: tiles_drawn",tiles_drawn
     
          
 class SpriteView(object):
