@@ -94,13 +94,13 @@ class Entity(object):
   - Name must be unique (or None if it'll be set in the delegate's entityCreated).
   - Pos is an euclid.Vector2
   """
-  def __init__(self, level, type_, behavior, name, pos, width, height, *behaviorArgs):
+  def __init__(self, level, type_, behaviorName, name, pos, width, height, *behaviorArgs):
     super(Entity, self).__init__()
     self.level = None # Set by level.add_entity
     level.add_entity(self)
     self.pos = pos
     self.type = type_
-    self.behavior = behavior
+    self.behaviorName = behaviorName
     self.name = name
     self.vel = euclid.Vector2(0., 0.)
     self.acc = euclid.Vector2(0., 0.)
@@ -192,7 +192,7 @@ class Entity(object):
     h = float(rep["size"][1])
     x = float(rep["pos"][0])
     y = float(rep["pos"][1])
-    entity = Entity(inLevel, rep["type"], rep["behavior"], rep["name"], euclid.Vector2(x, y), w, h)
+    entity = Entity(inLevel, rep["type"], rep["behaviorName"], rep["name"], euclid.Vector2(x, y), w, h)
     entity.update_from_rep(rep)
     return entity
   
@@ -203,7 +203,7 @@ class Entity(object):
     }
     if parts is "full":
       rep["type"] = self.type
-      rep["behavior"] = self.behavior
+      rep["behaviorName"] = self.behaviorName
       
     if parts is "full" or "boundingbox" in parts:
       rep["boundingbox"] = [self.boundingbox.min.x, self.boundingbox.min.y, self.boundingbox.max.x, self.boundingbox.max.y]
