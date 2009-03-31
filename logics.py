@@ -110,7 +110,7 @@ class AvatarBehavior(Behavior):
       pe.vel.y = 0
   
   def collided(self, other):
-    if other and other.behaviorName == "projectile" and not other.behavior.firingEntity == self.entity:
+    if other and other.behaviorName == "projectile" and other.behavior.firingEntity != self.entity:
       self.health -= 10
       print "Health", self.health
       if self.health <= 0:
