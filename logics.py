@@ -100,16 +100,19 @@ class AvatarBehavior(Behavior):
 
 class ProjectileBehavior(Behavior):
   """Behavior for anything fired from a gun."""
-  def __init__(self, entity, firingAvatar):
+  def __init__(self, entity, firingEntity):
     super(ProjectileBehavior, self).__init__(entity)
     entity.physics_update = physics.projectile_physics
-    entity.vel = firingAvatar.view_direction*euclid.Vector2(10, 0)
+    entity.vel = firingEntity.view_direction*euclid.Vector2(10, 0)
     entity.name = next_projectile_name()
+    
+    self.firingEntity = firingEntity
     
     entity.state = ["r"]
   
   def collided(self, other):
-    self.entity.remove()
+    if other != self.firingEntity:
+      self.entity.remove()
     
 
 projectile_id = 0

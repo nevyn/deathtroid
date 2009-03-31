@@ -354,16 +354,19 @@ class SpriteView(object):
             
       
   def entity_state_updated(self):
-    direction = "right"
-    if "view_left" in self.entity.state:
-      direction = "left"
+    if self.entity.type == 'samus':
+      direction = "right"
+      if "view_left" in self.entity.state:
+        direction = "left"
     
-    action = "stand"
-    if "jump" in self.entity.state:
-      action = "jump_roll"
-    elif "run" in self.entity.state:
-      action = "run"
+      action = "stand"
+      if "jump" in self.entity.state:
+        action = "jump_roll"
+      elif "run" in self.entity.state:
+        action = "run"
     
-    anim = '%s_%s' % (action, direction)
+      anim = '%s_%s' % (action, direction)
     
-    self.set_animation(anim)
+      self.set_animation(anim)
+    else:
+      self.set_animation(self.entity.state[0])
