@@ -11,6 +11,7 @@ class NetworkDelegate(object):
   def gotData(connection, msgName, payload):
     pass
 
+
 def send(connection, msgName, payload):
   req = OutgoingRequest(connection, "",
     {
@@ -56,7 +57,7 @@ def startPolling():
   #SelectThread().start()
 
 def poll(asdf):
-  asyncore.loop(timeout=0.01, count=2)
+  asyncore.poll(0.01)
 
 
 class SelectThread(threading.Thread):
@@ -64,7 +65,6 @@ class SelectThread(threading.Thread):
   def __init__(self):
     threading.Thread.__init__(self)
     
-  
   def run(self):
      asyncore.loop()
 
