@@ -18,6 +18,7 @@ import model
 import resources
 import network
 import logics
+import physics
   
 
 class ServerController(object):
@@ -30,6 +31,7 @@ class ServerController(object):
     self.game.delegate = self
     
     self.logic = logics.Logic(self.game) # todo: DeathmatchLogic() or something
+    self.physics = physics.Physics(self.game)
     
     network.startServer(18245, self)
     
@@ -91,8 +93,9 @@ class ServerController(object):
   def entityChanged(self, entity, parts):
     self.broadcast("entityChanged", entity.rep(parts))
   
-  def initEntity(self, entity, args):
-    self.logic.initializeEntity(entity, args)
+  def initEntity(self, entity, behaviourArgs):
+    self.logic.initializeEntity(entity, behaviourArgs)
+    self.physics.initializeEntity(entity, None)
   
   def entityCreated(self, entity):
     self.broadcast("entityCreated", entity.rep("full"))

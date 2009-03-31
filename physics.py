@@ -26,6 +26,40 @@ def is_colliding(a, b):
 def collision(tilemap, bb):
   return tilemap.intersection(bb.a(), bb.b()) or tilemap.intersection(bb.b(), bb.c()) or tilemap.intersection(bb.c(), bb.d()) or tilemap.intersection(bb.d(), bb.a()) or None
 
+class Physics(object):
+  def __init__(self, game):
+    super(Physics, self).__init__()
+    self.game = game
+  
+  def initializeEntity(self, entity, args):
+    classes = {
+      "force": ForcebasedPhysics,
+      "static" : StaticPhysics,
+      "projectile": ProjectilePhysics
+    }
+    if entity.physicsName in classes:
+      entity.physics = classes[entity.physicsName](entity)
+
+class PhysicsModel(object):
+  def __init__(self, entity):
+    super(PhysicsModel, self).__init__()
+    self.entity = entity
+  
+  def update():
+    pass
+
+class ForcebasedPhysics(PhysicsModel):
+  def __init__(self, entity):
+    super(ForcebasedPhysics, self).__init__(entity)
+
+class StaticPhysics(PhysicsModel):
+  def __init__(self, entity):
+    super(StaticPhysics, self).__init__(entity)
+  
+class ProjectilePhysics(PhysicsModel):
+  def __init__(self, entity):
+    super(ProjectilePhysics, self).__init__(entity)
+  
 def forcebased_physics(ent, tilemap, dt):
     gravity = ent.level.gravity() * ent.mass
     forces = [ent.move_force, ent.jump_force, gravity]
