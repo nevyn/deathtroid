@@ -206,9 +206,7 @@ class Entity(object):
       self.physics_update(self, tilemap, dt)
     
     if "jump" in self.state:
-      print "in air"
       if self.on_floor:
-        print "jumping but landed"
         self.remove_state("jump")
     
     if(self.level.game.delegate):
