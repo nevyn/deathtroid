@@ -19,6 +19,27 @@ from boundingbox import *
 
 import demjson
 
+# This is taken from itertools from python2.6
+def combinations(iterable, r):
+    # combinations('ABCD', 2) --> AB AC AD BC BD CD
+    # combinations(range(4), 3) --> 012 013 023 123
+    pool = tuple(iterable)
+    n = len(pool)
+    if r > n:
+        return
+    indices = range(r)
+    yield tuple(pool[i] for i in indices)
+    while True:
+        for i in reversed(range(r)):
+            if indices[i] != i + n - r:
+                break
+        else:
+            return
+        indices[i] += 1
+        for j in range(i+1, r):
+            indices[j] = indices[j-1] + 1
+        yield tuple(pool[i] for i in indices)
+
 class GameDelegate:
   # parts is an array which contains any of: pos, state
   def entityChanged(self, entity, parts_that_changed):
@@ -297,12 +318,10 @@ class Level(object):
       entity.update(self.main_layer.tilemap, dt)
       
     # check collisions
-    for a in self.entities:
-      for b in self.entities:
-        if a == b:
-          continue
-        if (a.pos - b.pos).magnitude() < 2.0:
-          self.game.delegate.entitiesCollidedAt(a, b, a.pos)
+    for a, b in combinations(self.entities, 2) :
+      if physics.is_colliding(a, b):
+        print a.name, 'collides with', b.name
+        self.game.delegate.entitiesCollidedAt(a, b, a.pos)
         
     
   def load_main_layer(self):

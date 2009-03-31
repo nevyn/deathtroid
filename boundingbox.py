@@ -33,3 +33,15 @@ class BoundingBox (object):
   def __repr__(self):
     return 'BoundingBox: (%f, %f) - (%f, %f)' % (self.min.x, self.min.y, self.max.x, self.max.y)
   
+  def is_overlapping(self, other):
+    amin = self.min
+    amax = self.max
+    bmin = other.min
+    bmax = other.max
+    
+    if amin.x > bmax.x: return False
+    if amax.x < bmin.x: return False
+    if amin.y > bmax.y: return False
+    if amax.y < bmin.y: return False
+    
+    return True
