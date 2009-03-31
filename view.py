@@ -275,6 +275,7 @@ class SpriteView(object):
     # vilket håll entityn är på väg. Det är dessutom inte nån
     # vektor-riktning utan mer "höger" och "vänster" och kanske "uppåt"
     self.dir = 0
+    self.last_view_direction = "right"
     
     self.current_animation = None
     self.current_frame = 0
@@ -355,9 +356,12 @@ class SpriteView(object):
       
   def entity_state_updated(self):
     if self.entity.type == 'samus':
-      direction = "right"
+      direction = self.last_view_direction
       if "view_left" in self.entity.state:
         direction = "left"
+      elif "view_right" in self.entity.state:
+        direction = "right"
+      self.last_view_direction = direction
     
       action = "stand"
       if "jump" in self.entity.state:
