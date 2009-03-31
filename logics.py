@@ -31,13 +31,11 @@ class Logic(object):
       pe.set_movement(-24,0)
       pe.add_state("run")
       pe.add_state("view_left")
-      pe.remove_state("view_right")
       pe.view_direction = -1
     elif(action == "move_right"):
       pe.set_movement(24,0)
       pe.add_state("run")
       pe.add_state("view_right")
-      pe.remove_state("view_left")
       pe.view_direction = 1
     elif(action == "jump"):
       if pe.behavior.can_jump():
@@ -45,10 +43,14 @@ class Logic(object):
     
     elif(action == "stop_moving_left"):
       pe.set_movement(24,0)
-      pe.remove_state("run")
+      pe.remove_state("view_left")
+      if pe.move_force.x == 0:
+        pe.remove_state("run")
     elif(action == "stop_moving_right"):
       pe.set_movement(-24,0)
-      pe.remove_state("run")
+      pe.remove_state("view_right")
+      if pe.move_force.x == 0:
+        pe.remove_state("run")
     elif(action == "stop_jump"):
       pe.behavior.jump(0)
       
