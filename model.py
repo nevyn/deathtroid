@@ -26,6 +26,12 @@ class GameDelegate:
   
   def entityCreated(self, entity):
     pass
+  
+  def entitiesCollidedAt(self, entity):
+    pass
+  
+  def playerChanged(self, player):
+    pass
 
 class Player (object):
   def __init__(self):

@@ -8,15 +8,16 @@ Copyright (c) 2009 Third Cog Software. All rights reserved.
 
 import sys
 import os
-import model
 import demjson
-import view
 import euclid
 import random
 import asyncore
 
+import view
+import model
 import resources
 import network
+import logic
   
 
 class ServerController(object):
@@ -27,6 +28,8 @@ class ServerController(object):
     
     self.game = model.Game("foolevel")
     self.game.delegate = self
+    
+    self.logic = logic.Logic() # todo: DeathmatchLogic() or something
     
     network.startServer(18245, self)
     
@@ -120,4 +123,8 @@ class ServerController(object):
     
   def playerChanged(self, player):
     pass
-    
+  
+  def entitiesCollidedAt(self, entA, entB, point):
+    self.logic.collision(entA, entB, point)
+  
+  

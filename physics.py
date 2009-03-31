@@ -71,7 +71,7 @@ def projectile_physics(ent, tilemap, dt):
   col = collision(tilemap, ent.boundingbox.translate(euclid.Vector2(ent.pos.x, ent.pos.y)))
   if col != None:
     (x,y) = col
-    logic.collision(ent, None, col)
+    ent.level.game.delegate.entitiesCollidedAt(ent, None, col)
 
 def fulfysik(ent, tilemap, dt):
   ent.pos.x += 1.3 * dt
