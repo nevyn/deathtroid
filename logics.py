@@ -79,11 +79,11 @@ class AvatarBehavior(Behavior):
     entity.jump_force = euclid.Vector2(0,0)
     entity.on_floor = False
     entity.on_wall = False
-    entity.add_state("view_right")
+    entity.state = ["view_right"]
     
   def fire(self):
     pe = self.entity
-    projectile = model.Entity(pe.level, "shot", "projectile", None, euclid.Vector2(pe.pos.x, pe.pos.y - 1.8), 0.5, 0.5, pe)
+    projectile = model.Entity(pe.level, "bullet1", "projectile", None, euclid.Vector2(pe.pos.x, pe.pos.y - 1.8), 0.5, 0.5, pe)
   
   def can_jump(self):
     return self.entity.on_floor
@@ -105,6 +105,8 @@ class ProjectileBehavior(Behavior):
     entity.physics_update = physics.projectile_physics
     entity.vel = firingAvatar.view_direction*euclid.Vector2(10, 0)
     entity.name = next_projectile_name()
+    
+    entity.state = ["r"]
   
   def collided(self, other):
     self.entity.remove()
