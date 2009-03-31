@@ -27,7 +27,7 @@ class GameDelegate:
   def entityCreated(self, entity):
     pass
   
-  def entitiesCollidedAt(self, entity):
+  def entitiesCollidedAt(self, entity1, entity2, point):
     pass
   
   def playerChanged(self, player):
@@ -168,12 +168,8 @@ class Entity(object):
           self.state = 'jump_roll_right'
     
     if(self.level.game.delegate):
-      self.level.game.delegate.entityChanged(self, ["pos", "state"])
-    
-  def collision(self, ent):
-    if (self.pos - ent.pos).magnitude() < 1:
-      print 'collision between %s and %s !!1!1!!!ONE' % (self.name, ent.name)
-      
+      self.level.game.delegate.entityChanged(self, ["pos"])
+
   def boundingbox():
       doc = "The boundingbox property."
       def fget(self):
@@ -276,7 +272,8 @@ class Level(object):
       for b in self.entities:
         if a == b:
           continue
-        a.collision(b)
+        self.game.delegate.entitiesCollidedAt(a, b, (1,2))
+        
     
   def load_main_layer(self):
     layer_data_file = open("data/levels/" + self.name + "/main.layer")
