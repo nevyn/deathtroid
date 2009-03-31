@@ -12,11 +12,10 @@ class Logic(object):
     super(Logic, self).__init__()
     
   def collision(self, a, b, point):
-    (x,y) = point
-    print 'collition between %s and %s at tile %dx%d' % (a,b,x,y)
-    a.vel.x = 0
-    a.vel.y = 0
-    a.remove()
+    if a:
+      a.behavior.collided(b)
+    if b:
+      b.behavior.collided(a)
 
   def player_action(self, player, action):
     pe = player.entity
@@ -65,6 +64,9 @@ class Behavior(object):
   def __init__(self, entity):
     super(Behavior, self).__init__()
     self.entity = entity
+  
+  def collided(self, other):
+    pass
     
 
 class AvatarBehavior(Behavior):
@@ -103,6 +105,9 @@ class ProjectileBehavior(Behavior):
     entity.physics_update = physics.projectile_physics
     entity.vel = firingAvatar.view_direction*euclid.Vector2(10, 0)
     entity.name = next_projectile_name()
+  
+  def collided(self, other):
+    self.entity.remove()
     
 
 projectile_id = 0
