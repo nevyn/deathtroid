@@ -18,6 +18,11 @@ def calc_acceleration(forces, mass):
   inv_mass = 1.0 / mass
   return reduce(lambda acc, f: acc + f * inv_mass, forces)
 
+def is_colliding(a, b):
+  bba = a.boundingbox.translate(a.pos)
+  bbb = b.boundingbox.translate(b.pos)
+  return bba.is_overlapping(bbb)
+
 def collision(tilemap, bb):
   return tilemap.intersection(bb.a(), bb.b()) or tilemap.intersection(bb.b(), bb.c()) or tilemap.intersection(bb.c(), bb.d()) or tilemap.intersection(bb.d(), bb.a()) or None
 
