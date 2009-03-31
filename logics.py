@@ -32,8 +32,8 @@ class Logic(object):
         pe.state = "running_right"
       pe.view_direction = 1
     elif(action == "jump"):
-      if pe.behaviorHelper.can_jump():
-        pe.behaviorHelper.jump(-2500)
+      if pe.behavior.can_jump():
+        pe.behavior.jump(-2500)
     
     elif(action == "stop_moving_left"):
       pe.set_movement(24,0)
@@ -42,10 +42,10 @@ class Logic(object):
       pe.set_movement(-24,0)
       pe.state = "stand_right"
     elif(action == "stop_jump"):
-      pe.behaviorHelper.jump(0)
+      pe.behavior.jump(0)
       
     elif(action == "fire"):
-      pe.behaviorHelper.fire()
+      pe.behavior.fire()
   
   def player_logged_in(self, player, to_game):
     E = model.Entity(to_game.level, "samus", "avatar", "player "+player.name, euclid.Vector2(random.randint(1, 10),3), 0.75, 2.5)
@@ -57,8 +57,8 @@ class Logic(object):
       "avatar": AvatarBehavior,
       "projectile": ProjectileBehavior
     }
-    if entity.behavior in behaviors:
-      entity.behaviorHelper = behaviors[entity.behavior](entity, *args)
+    if entity.behaviorName in behaviors:
+      entity.behavior = behaviors[entity.behaviorName](entity, *args)
 
 class Behavior(object):
   """Base class for all behaviors"""
