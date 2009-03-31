@@ -81,7 +81,7 @@ class Animation(object):
   #def __init__(self, texturename, frames, fps, loopstart):
   def __init__(self, texturename, data):
     self.size = euclid.Vector2(data["size"][0], data["size"][1])
-    self.center = euclid.Vector2(data["center"][0], data["size"][1])
+    self.center = euclid.Vector2(data["center"][0], data["center"][1])
     
     self.fps = data["fps"]
     self.loopstart = data["loopstart"]

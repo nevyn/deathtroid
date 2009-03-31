@@ -83,6 +83,7 @@ class ClientController(object):
     
     elif(msgName == "entityRemoved"):
       entity = self.game.level.entity_by_name(payload)
+      print "Entity removed:", entity
       self.view.level_view.entity_removed(entity)
       entity.remove()
     elif(msgName == "pleaseLogin"):

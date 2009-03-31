@@ -112,11 +112,11 @@ class Entity(object):
     self.width = width
     self.height = height
     
-    self.boundingbox = BoundingBox(euclid.Vector2(-self.width/2, -self.height/2), euclid.Vector2(self.width/2, self.height/2))
+    self._boundingbox = BoundingBox(euclid.Vector2(-self.width/2, -self.height/2), euclid.Vector2(self.width/2, self.height/2))
     
     self.view_direction = -1
     
-    self.state = []
+    self._state = []
     
     if self.level.game.delegate:
       self.level.game.delegate.initEntity(self, behaviorArgs)
@@ -279,6 +279,7 @@ class Level(object):
       entity.update(self.main_layer.tilemap, dt)
       
     # check collisions
+    return
     for a in self.entities:
       for b in self.entities:
         if a == b:
