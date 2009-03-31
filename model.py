@@ -38,14 +38,31 @@ class Player (object):
     self.entity = None
     self.name = "Unnamed"
     self.connection = None
+    self._score = 0
   
   def set_entity(self, Ent):
     self.entity = Ent
+    if not Ent:
+      return
     self.entity.boundingbox = BoundingBox(euclid.Vector2(-self.entity.width/2, -self.entity.height), euclid.Vector2(self.entity.width/2, 0))
     self.entity.physics_update = physics.forcebased_physics
   
   def update(self, dt):
     pass
+    
+  def score():
+      doc = "The score property."
+      def fget(self):
+          return self._score
+      def fset(self, value):
+          self._score = value
+          if self.game.delegate:
+            self.game.delegate.scoreChangedForPlayer(self)
+            self.game.delegate.playerChanged(self)
+      def fdel(self):
+          del self._score
+      return locals()
+  score = property(**score())
   
 class Game(object):
   """docstring for Game"""
@@ -81,6 +98,7 @@ class Game(object):
         return p
     p = Player()
     p.connection = conn
+    p.game = self
     self.players.append(p)
     return p
     
@@ -114,7 +132,7 @@ class Entity(object):
     
     self._boundingbox = BoundingBox(euclid.Vector2(-self.width/2, -self.height/2), euclid.Vector2(self.width/2, self.height/2))
     
-    self.view_direction = -1
+    self.view_direction = 1
     
     self._state = []
     
@@ -279,12 +297,12 @@ class Level(object):
       entity.update(self.main_layer.tilemap, dt)
       
     # check collisions
-    return
     for a in self.entities:
       for b in self.entities:
         if a == b:
           continue
-        self.game.delegate.entitiesCollidedAt(a, b, (1,2))
+        if (a.pos - b.pos).magnitude() < 2.0:
+          self.game.delegate.entitiesCollidedAt(a, b, a.pos)
         
     
   def load_main_layer(self):
