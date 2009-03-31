@@ -52,18 +52,25 @@ class Logic(object):
     player.set_entity(E)
     
   
-  def initializeEntity(self, entity):
+  def initializeEntity(self, entity, args):
     behaviors = {
-      "avatar": AvatarBehavior
+      "avatar": AvatarBehavior,
+      "projectile": ProjectileBehavior
     }
     if entity.behavior in behaviors:
-      entity.behaviorHelper = behaviors[entity.behavior](entity)
+      entity.behaviorHelper = behaviors[entity.behavior](entity, *args)
 
-class AvatarBehavior(object):
+class Behavior(object):
+  """Base class for all behaviors"""
+  def __init__(self, entity):
+    super(Behavior, self).__init__()
+    self.entity = entity
+    
+
+class AvatarBehavior(Behavior):
   """Behavior for an entity that represents a player in-game"""
   def __init__(self, entity):
-    super(AvatarBehavior, self).__init__()
-    self.entity = entity
+    super(AvatarBehavior, self).__init__(entity)
     entity.move_force = euclid.Vector2(0,0)
     entity.jump_force = euclid.Vector2(0,0)
     entity.on_floor = False
@@ -72,7 +79,7 @@ class AvatarBehavior(object):
     
   def fire(self):
     pe = self.entity
-    projectile = model.Entity(pe.level, "shot", "projectile", None, euclid.Vector2(pe.pos.x, pe.pos.y - 1.8), 0.5, 0.5)
+    projectile = model.Entity(pe.level, "shot", "projectile", None, euclid.Vector2(pe.pos.x, pe.pos.y - 1.8), 0.5, 0.5, pe)
   
   def can_jump(self):
     return self.entity.on_floor
@@ -89,13 +96,12 @@ class AvatarBehavior(object):
     elif pe.vel.y < 0:
       pe.vel.y = 0
 
-class ProjectileBehavior(object):
+class ProjectileBehavior(Behavior):
   """Behavior for anything fired from a gun."""
-  def __init__(self, entity):
-    super(ProjectileBehavior, self).__init__()
-    self.entity = entity
-    projectile.physics_update = physics.projectile_physics
-    projectile.vel = pe.view_direction*euclid.Vector2(10, 0)
+  def __init__(self, entity, firingAvatar):
+    super(ProjectileBehavior, self).__init__(entity)
+    entity.physics_update = physics.projectile_physics
+    entity.vel = firingAvatar.view_direction*euclid.Vector2(10, 0)
     entity.name = next_projectile_name()
     
 
