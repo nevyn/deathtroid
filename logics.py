@@ -22,13 +22,15 @@ class Logic(object):
     
     if(action == "move_left"):
       pe.set_movement(-24,0)
-      if pe.state != "jump_roll_right" and pe.state != "jump_roll_left":
-        pe.state = "running_left"
+      pe.add_state("run")
+      pe.add_state("view_left")
+      pe.remove_state("view_right")
       pe.view_direction = -1
     elif(action == "move_right"):
       pe.set_movement(24,0)
-      if pe.state != "jump_roll_right" and pe.state != "jump_roll_left":
-        pe.state = "running_right"
+      pe.add_state("run")
+      pe.add_state("view_right")
+      pe.remove_state("view_left")
       pe.view_direction = 1
     elif(action == "jump"):
       if pe.behavior.can_jump():
@@ -36,10 +38,10 @@ class Logic(object):
     
     elif(action == "stop_moving_left"):
       pe.set_movement(24,0)
-      pe.state = "stand_left"
+      pe.remove_state("run")
     elif(action == "stop_moving_right"):
       pe.set_movement(-24,0)
-      pe.state = "stand_right"
+      pe.remove_state("run")
     elif(action == "stop_jump"):
       pe.behavior.jump(0)
       
@@ -77,7 +79,7 @@ class AvatarBehavior(Behavior):
     entity.jump_force = euclid.Vector2(0,0)
     entity.on_floor = False
     entity.on_wall = False
-    entity.state = "stand_right"
+    entity.add_state("view_right")
     
   def fire(self):
     pe = self.entity
@@ -88,14 +90,12 @@ class AvatarBehavior(Behavior):
   
   def jump(self, amount):
     pe = self.entity
-    if pe.view_direction < 0:
-      pe.state = 'jump_roll_right'
-    else:
-      pe.state = 'jump_roll_left'
     pe.jump_force.y = amount
     if amount != 0:
+      pe.add_state("jump")
       pe.vel.y -= 16
     elif pe.vel.y < 0:
+      pe.remove_state("jump")
       pe.vel.y = 0
 
 class ProjectileBehavior(Behavior):

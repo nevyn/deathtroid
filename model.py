@@ -116,7 +116,7 @@ class Entity(object):
     
     self.view_direction = -1
     
-    self.state = "idle"
+    self.state = []
     
     if self.level.game.delegate:
       self.level.game.delegate.initEntity(self, behaviorArgs)
@@ -133,6 +133,9 @@ class Entity(object):
       def fget(self):
           return self._state
       def fset(self, value):
+          if not isinstance(value, list):
+            raise "old style state forbidden, use {add,remove}_state instead"
+          
           self._state = value
           if(self.level.game.delegate):
             self.level.game.delegate.entityChanged(self, ["state"])
@@ -140,6 +143,14 @@ class Entity(object):
       return locals()
   state = property(**state())
   
+  def add_state(self, state):
+    if not state in self.state:
+      self.state = self.state + [state]
+  
+  def remove_state(self, state):
+    if state in self._state:
+      self._state.remove(state)
+    self.state = self._state
   
   def set_movement(self, x, y):
     self.move_force.x += x
