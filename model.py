@@ -205,17 +205,11 @@ class Entity(object):
     if self.physics_update:
       self.physics_update(self, tilemap, dt)
     
-    if self.state == 'jump_roll_left' or self.state == 'jump_roll_right':
+    if "jump" in self.state:
+      print "in air"
       if self.on_floor:
-        if self.view_direction < 0:
-          self.state = 'stand_left'
-        else:
-          self.state = 'stand_right'
-      else:
-        if self.view_direction < 0:
-          self.state = 'jump_roll_left'
-        else:
-          self.state = 'jump_roll_right'
+        print "jumping but landed"
+        self.remove_state("jump")
     
     if(self.level.game.delegate):
       self.level.game.delegate.entityChanged(self, ["pos"])
