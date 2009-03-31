@@ -91,7 +91,7 @@ class Entity(object):
   """An entity in the game world.
   - Type is the exact type of the entity, and will be used to deduce which sprite and visual representation to use
   - Behavior is used to lookup logics behavior for the entity
-  - Name must be unique.
+  - Name must be unique (or None if it'll be set in the delegate's entityCreated).
   - Pos is an euclid.Vector2
   """
   def __init__(self, level, type_, behavior, name, pos, width, height):
@@ -105,12 +105,8 @@ class Entity(object):
     self.vel = euclid.Vector2(0., 0.)
     self.acc = euclid.Vector2(0., 0.)
 
-    self.move_force = euclid.Vector2(0,0)
-    self.jump_force = euclid.Vector2(0,0)
     self.mass = 120
     self.max_vel = euclid.Vector2(7, 25)
-    self.on_floor = False
-    self.on_wall = False
     self.physics_update = physics.static_physics
     
     self.width = width
@@ -120,7 +116,7 @@ class Entity(object):
     
     self.view_direction = -1
     
-    self.state = "running_left"
+    self.state = "idle"
     
     if self.level.game.delegate:
       self.level.game.delegate.entityCreated(self)

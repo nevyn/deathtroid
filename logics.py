@@ -64,12 +64,15 @@ class AvatarBehavior(object):
   def __init__(self, entity):
     super(AvatarBehavior, self).__init__()
     self.entity = entity
+    entity.move_force = euclid.Vector2(0,0)
+    entity.jump_force = euclid.Vector2(0,0)
+    entity.on_floor = False
+    entity.on_wall = False
+    entity.state = "stand_right"
     
   def fire(self):
     pe = self.entity
-    projectile = model.Entity(pe.level, "shot", "projectile", next_projectile_name(), euclid.Vector2(pe.pos.x, pe.pos.y - 1.8), 0.5, 0.5)
-    projectile.physics_update = physics.projectile_physics
-    projectile.vel = pe.view_direction*euclid.Vector2(10, 0)
+    projectile = model.Entity(pe.level, "shot", "projectile", None, euclid.Vector2(pe.pos.x, pe.pos.y - 1.8), 0.5, 0.5)
   
   def can_jump(self):
     return self.entity.on_floor
@@ -86,6 +89,15 @@ class AvatarBehavior(object):
     elif pe.vel.y < 0:
       pe.vel.y = 0
 
+class ProjectileBehavior(object):
+  """Behavior for anything fired from a gun."""
+  def __init__(self, entity):
+    super(ProjectileBehavior, self).__init__()
+    self.entity = entity
+    projectile.physics_update = physics.projectile_physics
+    projectile.vel = pe.view_direction*euclid.Vector2(10, 0)
+    entity.name = next_projectile_name()
+    
 
 projectile_id = 0
 def next_projectile_name():
