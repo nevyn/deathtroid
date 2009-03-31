@@ -94,7 +94,7 @@ class Entity(object):
   - Name must be unique (or None if it'll be set in the delegate's entityCreated).
   - Pos is an euclid.Vector2
   """
-  def __init__(self, level, type_, behavior, name, pos, width, height):
+  def __init__(self, level, type_, behavior, name, pos, width, height, *behaviorArgs):
     super(Entity, self).__init__()
     self.level = None # Set by level.add_entity
     level.add_entity(self)
@@ -119,6 +119,7 @@ class Entity(object):
     self.state = "idle"
     
     if self.level.game.delegate:
+      self.level.game.delegate.initEntity(self, behaviorArgs)
       self.level.game.delegate.entityCreated(self)
   
   def remove(self):

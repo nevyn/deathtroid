@@ -91,9 +91,10 @@ class ServerController(object):
   def entityChanged(self, entity, parts):
     self.broadcast("entityChanged", entity.rep(parts))
   
+  def initEntity(self, entity, args):
+    self.logic.initializeEntity(entity, args)
+  
   def entityCreated(self, entity):
-    self.logic.initializeEntity(entity)
-    
     self.broadcast("entityCreated", entity.rep("full"))
     
   def entityRemoved(self, entity):
