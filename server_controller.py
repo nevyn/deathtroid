@@ -29,7 +29,7 @@ class ServerController(object):
     self.game = model.Game("foolevel")
     self.game.delegate = self
     
-    self.logic = logics.Logic() # todo: DeathmatchLogic() or something
+    self.logic = logics.Logic(self.game) # todo: DeathmatchLogic() or something
     
     network.startServer(18245, self)
     
@@ -78,7 +78,7 @@ class ServerController(object):
     for ent in self.game.level.entities:
       network.send(connection, "entityCreated", ent.rep("full"))
     
-    self.logic.player_logged_in(player, self.game)
+    self.logic.player_logged_in(player)
     
     
   def broadcast(self, msgName, data):    
@@ -102,7 +102,15 @@ class ServerController(object):
     
   def playerChanged(self, player):
     pass
-  
+    
+  def scoreChangedForPlayer(self, player):
+    print "    \n\n"
+    print "    Score board:"
+    print "    ------------"
+    for p in self.game.players:
+      print "     ", p.name, ": ", p.score
+    print "\n\n"
+    
   def entitiesCollidedAt(self, entA, entB, point):
     self.logic.collision(entA, entB, point)
   

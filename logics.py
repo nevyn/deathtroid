@@ -8,10 +8,12 @@ import model
 
 class Logic(object):
   """Logic handler; what to do with player input, collisions, etc"""
-  def __init__(self):
+  def __init__(self, game):
     super(Logic, self).__init__()
+    self.game = game
     
   def collision(self, a, b, point):
+
     if a:
       a.behavior.collided(b)
     if b:
@@ -19,6 +21,11 @@ class Logic(object):
 
   def player_action(self, player, action):
     pe = player.entity
+    
+    if not pe:
+      if action == "fire":
+        self.spawn_player(player)
+      return
     
     if(action == "move_left"):
       pe.set_movement(-24,0)
@@ -48,10 +55,13 @@ class Logic(object):
     elif(action == "fire"):
       pe.behavior.fire()
   
-  def player_logged_in(self, player, to_game):
-    E = model.Entity(to_game.level, "samus", "avatar", "player "+player.name, euclid.Vector2(random.randint(1, 10),3), 0.75, 2.5)
+  def player_logged_in(self, player):
+    self.spawn_player(player)
+  
+  def spawn_player(self, player):
+    E = model.Entity(self.game.level, "samus", "avatar", "player "+player.name, euclid.Vector2(random.randint(1, 10),3), 0.75, 2.5)
+    E.player = player
     player.set_entity(E)
-    
   
   def initializeEntity(self, entity, args):
     behaviors = {
@@ -80,6 +90,7 @@ class AvatarBehavior(Behavior):
     entity.on_floor = False
     entity.on_wall = False
     entity.state = ["view_right"]
+    self.health = 100
     
   def fire(self):
     pe = self.entity
@@ -97,13 +108,25 @@ class AvatarBehavior(Behavior):
     elif pe.vel.y < 0:
       pe.remove_state("jump")
       pe.vel.y = 0
-
+  
+  def collided(self, other):
+    if other and other.behaviorName == "projectile" and not other.behavior.firingEntity == self.entity:
+      self.health -= 10
+      print "Health", self.health
+      if self.health <= 0:
+        other.behavior.firingEntity.player.score += 1
+        self.die()
+  
+  def die(self):
+    self.entity.player.set_entity(None)
+    self.entity.remove()
+  
 class ProjectileBehavior(Behavior):
   """Behavior for anything fired from a gun."""
   def __init__(self, entity, firingEntity):
     super(ProjectileBehavior, self).__init__(entity)
     entity.physics_update = physics.projectile_physics
-    entity.vel = firingEntity.view_direction*euclid.Vector2(10, 0)
+    entity.vel = firingEntity.view_direction*euclid.Vector2(20, 0)
     entity.name = next_projectile_name()
     
     self.firingEntity = firingEntity
@@ -111,7 +134,7 @@ class ProjectileBehavior(Behavior):
     entity.state = ["r"]
   
   def collided(self, other):
-    if other != self.firingEntity:
+    if not other or (other != self.firingEntity and other.behaviorName != "projectile"):
       self.entity.remove()
     
 
