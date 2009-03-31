@@ -2,7 +2,7 @@
 
 import euclid
 import math
-import logic
+import logics
 
 def calc_velocity(vel, acc, max_vel, dt):
   vel += acc * dt

@@ -87,20 +87,20 @@ class Game(object):
   def is_on_server():
     return self.delegate != None
 
-projectile_id = 0
-def next_projectile_name():
-  global projectile_id
-  projectile_id += 1
-  return "projectile "+str(projectile_id)
-
 class Entity(object):
-  """docstring for Entity"""
-  def __init__(self, level, type_, name, pos, width, height):
+  """An entity in the game world.
+  - Type is the exact type of the entity, and will be used to deduce which sprite and visual representation to use
+  - Behavior is used to lookup logics behavior for the entity
+  - Name must be unique.
+  - Pos is an euclid.Vector2
+  """
+  def __init__(self, level, type_, behavior, name, pos, width, height):
     super(Entity, self).__init__()
     self.level = None # Set by level.add_entity
     level.add_entity(self)
     self.pos = pos
     self.type = type_
+    self.behavior = behavior
     self.name = name
     self.vel = euclid.Vector2(0., 0.)
     self.acc = euclid.Vector2(0., 0.)
@@ -153,26 +153,7 @@ class Entity(object):
   
   def set_mass(self, mass):
     self.mass = mass
-
-  def can_jump(self):
-    return self.on_floor
-  
-  def jump(self, amount):
-    if self.view_direction < 0:
-      self.state = 'jump_roll_right'
-    else:
-      self.state = 'jump_roll_left'
-    self.jump_force.y = amount
-    if amount != 0:
-      self.vel.y -= 16
-    elif self.vel.y < 0:
-      self.vel.y = 0
-  
-  def fire(self):
-    projectile = Entity(self.level, "shot", next_projectile_name(), euclid.Vector2(self.pos.x, self.pos.y - 1.8), 0.5, 0.5)
-    projectile.physics_update = physics.projectile_physics
-    projectile.vel = self.view_direction*euclid.Vector2(10, 0)
-  
+    
   def update(self, tilemap, dt):
     if self.physics_update:
       self.physics_update(self, tilemap, dt)
@@ -214,7 +195,7 @@ class Entity(object):
     h = float(rep["size"][1])
     x = float(rep["pos"][0])
     y = float(rep["pos"][1])
-    entity = Entity(inLevel, rep["type"], rep["name"], euclid.Vector2(x, y), w, h)
+    entity = Entity(inLevel, rep["type"], rep["behavior"], rep["name"], euclid.Vector2(x, y), w, h)
     entity.update_from_rep(rep)
     return entity
   
@@ -225,6 +206,7 @@ class Entity(object):
     }
     if parts is "full":
       rep["type"] = self.type
+      rep["behavior"] = self.behavior
       
     if parts is "full" or "boundingbox" in parts:
       rep["boundingbox"] = [self.boundingbox.min.x, self.boundingbox.min.y, self.boundingbox.max.x, self.boundingbox.max.y]
@@ -282,7 +264,6 @@ class Level(object):
     for e in self.entities:
       if e.name == name:
         return e
-    #e = Entity(self, name, euclid.Vector2(0,0))
     
     return None
         
