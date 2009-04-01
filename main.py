@@ -234,6 +234,9 @@ class Deathtroid(window.Window):
         self.editor_open = True
 
   def on_mouse_release(self, x, y, button, modifiers):
+    
+    if not self.server:
+      return
   
     if button == window.mouse.LEFT:
       (x, y) = self.tile_under_cursor(x, y)
