@@ -66,7 +66,6 @@ class Player (object):
     self.entity = Ent
     if not Ent:
       return
-    self.entity.boundingbox = BoundingBox(euclid.Vector2(-self.entity.width/2, -self.entity.height), euclid.Vector2(self.entity.width/2, 0))
   
   def update(self, dt):
     pass

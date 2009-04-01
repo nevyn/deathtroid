@@ -5,6 +5,7 @@ import random
 
 import physics
 import model
+from boundingbox import *
 
 class Logic(object):
   """Logic handler; what to do with player input, collisions, etc"""
@@ -96,6 +97,7 @@ class AvatarBehavior(Behavior):
     entity.on_floor = False
     entity.on_wall = False
     entity.state = ["view_right"]
+    entity.boundingbox = BoundingBox(euclid.Vector2(-self.entity.width/2, -self.entity.height), euclid.Vector2(self.entity.width/2, 0))
     self.health = 100
     
   def fire(self):
