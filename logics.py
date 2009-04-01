@@ -114,10 +114,12 @@ class AvatarBehavior(Behavior):
       pe.vel.y = 0
   
   def update(self, dt):
-    pe = self.entity
-    if "jump" in pe.state:
-      if pe.on_floor:
-        pe.remove_state("jump")
+    if "jump" in self.entity.state:
+      if self.entity.on_floor:
+        self.on_landing()
+  
+  def on_landing(self):
+    self.entity.remove_state("jump")
   
   def collided(self, other):
     if other and other.behaviorName == "projectile" and other.behavior.firingEntity != self.entity:
