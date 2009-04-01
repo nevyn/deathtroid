@@ -61,7 +61,7 @@ class Logic(object):
     self.spawn_player(player)
   
   def spawn_player(self, player):
-    E = model.Entity(self.game.level, "samus", "avatar", "force", "player "+player.name, euclid.Vector2(random.randint(1, 10),3), 0.75, 2.5)
+    E = model.Entity(self.game.level, "samus", "avatar", "force", "player "+player.name, euclid.Vector2(random.randint(1, 10),3), 0.75, 2.5, physics={'mass': 120})
     E.player = player
     player.set_entity(E)
   
@@ -127,7 +127,6 @@ class ProjectileBehavior(Behavior):
   """Behavior for anything fired from a gun."""
   def __init__(self, entity, firingEntity):
     super(ProjectileBehavior, self).__init__(entity)
-    entity.physics_update = physics.projectile_physics
     entity.vel = firingEntity.view_direction*euclid.Vector2(20, 0)
     entity.name = next_projectile_name()
     
