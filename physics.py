@@ -54,6 +54,7 @@ class ForcebasedPhysics(PhysicsModel):
   def __init__(self, entity, mass = None):
     super(ForcebasedPhysics, self).__init__(entity)
     self.mass = mass
+    self.acc = euclid.Vector2(0., 0.)
   
   def update(self, tilemap, dt):
     ent = self.entity
@@ -61,8 +62,8 @@ class ForcebasedPhysics(PhysicsModel):
     gravity = ent.level.gravity() * self.mass
     forces = [ent.move_force, ent.jump_force, gravity]
     
-    ent.acc = calc_acceleration(forces, self.mass)
-    ent.vel = calc_velocity(ent.vel, ent.acc, ent.max_vel, dt)
+    self.acc = calc_acceleration(forces, self.mass)
+    ent.vel = calc_velocity(ent.vel, self.acc, ent.max_vel, dt)
     if ent.jump_force.y < 0:
       ent.jump_force.y -= ent.vel.y
 
