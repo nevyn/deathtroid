@@ -53,7 +53,8 @@ class MenuController(object):
       print "Server of client: ", self.server_or_client
       if self.server_or_client == "client":
         print "Host: ", self.host
-
+    else:
+      self.view.goto(state)
 
   def keyboard_event(self, action):
     
