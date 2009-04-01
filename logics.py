@@ -61,7 +61,8 @@ class Logic(object):
     self.spawn_player(player)
   
   def spawn_player(self, player):
-    E = model.Entity(self.game.level, "samus", "avatar", "force", "player "+player.name, euclid.Vector2(random.randint(1, 10),3), 0.75, 2.5, physics={'mass': 120})
+    
+    E = model.Entity(self.game.level, "samus", "player "+player.name, euclid.Vector2(random.randint(1, 10),3))
     E.player = player
     player.set_entity(E)
   
@@ -88,7 +89,7 @@ class Behavior(object):
 
 class AvatarBehavior(Behavior):
   """Behavior for an entity that represents a player in-game"""
-  def __init__(self, entity):
+  def __init__(self, entity, **args):
     super(AvatarBehavior, self).__init__(entity)
     entity.move_force = euclid.Vector2(0,0)
     entity.jump_force = euclid.Vector2(0,0)
@@ -99,7 +100,7 @@ class AvatarBehavior(Behavior):
     
   def fire(self):
     pe = self.entity
-    projectile = model.Entity(pe.level, "bullet1", "projectile", "projectile", None, euclid.Vector2(pe.pos.x, pe.pos.y - 1.8), 0.5, 0.5, behavior={'firingEntity': pe})
+    projectile = model.Entity(pe.level, "bullet1", None, euclid.Vector2(pe.pos.x, pe.pos.y - 1.8), behavior={'firingEntity': pe})
   
   def can_jump(self):
     return self.entity.on_floor
@@ -135,7 +136,7 @@ class AvatarBehavior(Behavior):
   
 class ProjectileBehavior(Behavior):
   """Behavior for anything fired from a gun."""
-  def __init__(self, entity, firingEntity):
+  def __init__(self, entity, firingEntity, **args):
     super(ProjectileBehavior, self).__init__(entity)
     entity.vel = firingEntity.view_direction*euclid.Vector2(20, 0)
     entity.name = next_projectile_name()

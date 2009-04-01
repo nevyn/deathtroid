@@ -93,7 +93,8 @@ class ServerController(object):
   def entityChanged(self, entity, parts):
     self.broadcast("entityChanged", entity.rep(parts))
   
-  def initEntity(self, entity, behavior = {}, physics = {}):
+  def initEntity(self, entity, behavior = {}, physics = {}, **args):
+    print 'initentity', behavior, physics, args
     self.logic.initializeEntity(entity, **behavior)
     self.physics.initializeEntity(entity, **physics)
   

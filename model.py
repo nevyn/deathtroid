@@ -14,6 +14,7 @@ import physics
 import pyglet
 import resources
 import math
+import demjson
 from pyglet.gl import *
 from boundingbox import *
 
@@ -125,6 +126,14 @@ class Game(object):
   def is_on_server():
     return self.delegate != None
 
+def dictkeys_to_ascii(d):
+  tmp = {}
+  for key, value in d.items():
+    if isinstance(value, dict):
+      value = dictkeys_to_ascii(value)
+    tmp[str(key)] = value
+  return tmp
+
 class Entity(object):
   """An entity in the game world.
   - Type is the exact type of the entity, and will be used to deduce which sprite and visual representation to use
@@ -132,21 +141,27 @@ class Entity(object):
   - Name must be unique (or None if it'll be set in the delegate's entityCreated).
   - Pos is an euclid.Vector2
   """
-  def __init__(self, level, type_, behaviorName, physicsName, name, pos, width, height, **elementArgs):
+  def __init__(self, level, type_, name, pos, **args):
     super(Entity, self).__init__()
     self.level = None # Set by level.add_entity
     level.add_entity(self)
-    self.pos = pos
+    
     self.type = type_
-    self.behaviorName = behaviorName
-    self.physicsName = physicsName
     self.name = name
+    self.pos = pos
+    
+    defaults = dictkeys_to_ascii( demjson.decodef("data/entity/%s.json" % (type_)) )
+    for key, value in args.items():
+      defaults[key].update(value)
+    print defaults
+    
+    self.behaviorName = defaults['behavior']['name']
+    self.physicsName = defaults['physics']['name']
+    self.width = defaults['width']
+    self.height = defaults['height']
     
     self.vel = euclid.Vector2(0., 0.)
     self.max_vel = euclid.Vector2(7, 25)
-    
-    self.width = width
-    self.height = height
     
     self._boundingbox = BoundingBox(euclid.Vector2(-self.width/2, -self.height/2), euclid.Vector2(self.width/2, self.height/2))
     
@@ -155,7 +170,7 @@ class Entity(object):
     self._state = []
     
     if self.level.game.delegate:
-      self.level.game.delegate.initEntity(self, **elementArgs)
+      self.level.game.delegate.initEntity(self, **defaults)
       self.level.game.delegate.entityCreated(self)
     
   
@@ -227,7 +242,7 @@ class Entity(object):
     h = float(rep["size"][1])
     x = float(rep["pos"][0])
     y = float(rep["pos"][1])
-    entity = Entity(inLevel, rep["type"], rep["behaviorName"], None, rep["name"], euclid.Vector2(x, y), w, h)
+    entity = Entity(inLevel, rep["type"], rep["name"], euclid.Vector2(x, y))
     entity.update_from_rep(rep)
     return entity
   
