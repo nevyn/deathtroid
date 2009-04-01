@@ -3,7 +3,9 @@
 	"height": 		2.5,
 	
 	"behavior": {
-		"name":		"avatar"
+		"name":		"avatar",
+		"jump_width": 1.0,
+		"jump_height": 1.0
 	},
 	
 	"physics": {

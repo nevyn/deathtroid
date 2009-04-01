@@ -90,14 +90,18 @@ class Behavior(object):
 
 class AvatarBehavior(Behavior):
   """Behavior for an entity that represents a player in-game"""
-  def __init__(self, entity, **args):
+  def __init__(self, entity, jump_width, jump_height, **args):
     super(AvatarBehavior, self).__init__(entity)
     entity.move_force = euclid.Vector2(0,0)
     entity.jump_force = euclid.Vector2(0,0)
     entity.on_floor = False
     entity.on_wall = False
     entity.state = ["view_right"]
-    entity.boundingbox = BoundingBox(euclid.Vector2(-self.entity.width/2, -self.entity.height), euclid.Vector2(self.entity.width/2, 0))
+    
+    self.normal_bb = BoundingBox(euclid.Vector2(-entity.width/2, -entity.height), euclid.Vector2(entity.width/2, 0))
+    self.jump_bb = BoundingBox(euclid.Vector2(-jump_width/2, -jump_height/2-entity.height/2), euclid.Vector2(jump_width/2, jump_height/2-entity.height/2))
+    entity.boundingbox = self.normal_bb
+    
     self.health = 100
     
   def fire(self):
@@ -111,6 +115,7 @@ class AvatarBehavior(Behavior):
     pe = self.entity
     pe.jump_force.y = amount
     if amount != 0:
+      self.entity.boundingbox = self.jump_bb
       pe.add_state("jump")
       pe.vel.y -= 16
     elif pe.vel.y < 0:
@@ -122,6 +127,7 @@ class AvatarBehavior(Behavior):
         self.on_landing()
   
   def on_landing(self):
+    self.entity.boundingbox = self.normal_bb
     self.entity.remove_state("jump")
   
   def collided(self, other):
