@@ -205,9 +205,8 @@ class Entity(object):
     if self.physics:
       self.physics.update(tilemap, dt)
     
-    if "jump" in self.state:
-      if self.on_floor:
-        self.remove_state("jump")
+    if self.behavior:
+      self.behavior.update(dt)
     
     if(self.level.game.delegate):
       self.level.game.delegate.entityChanged(self, ["pos"])
