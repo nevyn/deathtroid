@@ -1996,6 +1996,9 @@ def encode( obj, strict=False, compactly=True, escape_unicode=False, encoding=No
         txt = bom + txt
     return txt
 
+def decodef(filename, strict=False, encoding=None, **kw ):
+  file = open(filename)
+  return decode(file.read(), strict, encoding, **kw)
 
 def decode( txt, strict=False, encoding=None, **kw ):
     """Decodes a JSON-encoded string into a Python object.

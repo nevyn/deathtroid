@@ -37,8 +37,9 @@ class PhysicsModel(object):
     pass
 
 class ForcebasedPhysics(PhysicsModel):
-  def __init__(self, entity, mass = None):
+  def __init__(self, entity, mass = None, **args):
     super(ForcebasedPhysics, self).__init__(entity)
+    print 'mass:', mass
     self.mass = mass
     self.acc = euclid.Vector2(0., 0.)
   
@@ -102,11 +103,11 @@ class ForcebasedPhysics(PhysicsModel):
     return reduce(lambda acc, f: acc + f * inv_mass, forces)
 
 class StaticPhysics(PhysicsModel):
-  def __init__(self, entity):
+  def __init__(self, entity, **args):
     super(StaticPhysics, self).__init__(entity)
   
 class ProjectilePhysics(PhysicsModel):
-  def __init__(self, entity):
+  def __init__(self, entity, **args):
     super(ProjectilePhysics, self).__init__(entity)
   
   def update(self, tilemap, dt):

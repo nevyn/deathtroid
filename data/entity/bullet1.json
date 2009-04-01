@@ -1,0 +1,12 @@
+{
+	"width": 		0.5,
+	"height": 		0.5,
+	
+	"behavior": {
+		"name":		"projectile"
+	},
+	
+	"physics": {
+		"name":		"projectile"
+	}
+}
