@@ -44,6 +44,8 @@ class Deathtroid(window.Window):
 
     self.current_tile = 0
     self.num_tiles = 14
+    
+    self.editor_open = False
 
     if (len(argv) == 3 or len(argv) == 4):
 
@@ -110,6 +112,7 @@ class Deathtroid(window.Window):
   def on_draw(self):
     if self.client:
       self.client.draw()
+      self.editor_draw()
     elif self.menu:
       self.clear()
       self.menu.draw()
@@ -151,10 +154,18 @@ class Deathtroid(window.Window):
         self.set_fullscreen(fullscreen)
       
       elif symbol == key.S:
-        ubbe = demjson.encode(self.server.game.level.main_layer.tilemap.map)
-        dfdfdf = open('data/levels/foolevel/main.layer', 'w')
-        print dfdfdf
-        dfdfdf.write(ubbe)
+        layerfile = open('data/levels/foolevel/main.layer', 'r')
+        old = demjson.decode(layerfile.read())
+        layerfile.close()
+      
+        old["map"] = self.server.game.level.main_layer.tilemap.map
+      
+        new = demjson.encode(old)
+      
+      
+        layerfile = open('data/levels/foolevel/main.layer', 'w')
+        layerfile.write(new)
+        layerfile.close()
         print "sparade!"
 
   def on_close(self):
@@ -166,7 +177,45 @@ class Deathtroid(window.Window):
 
 
 
+  def tile_under_cursor(self, x, y):
+    y = 480 - y
 
+    vp = euclid.Vector2(self.client.view.cam.x*32, self.client.view.cam.y*32)
+
+    x += vp.x
+    y += vp.y
+
+    x = int(x)
+    y = int(y)
+
+    x /= 32
+    y /= 32
+    return (x, y)
+
+  def editor_draw(self):
+    if not self.editor_open:
+      return
+  
+    ts = self.client.view.level_view.main_view.layer.tileset
+    ts.texture().bind()
+    w = len(ts.tiles)+3
+    glTranslatef(1,0,0)
+    glScalef(w, 1, 1)
+  
+    glBegin(GL_QUADS)
+    glTexCoord2f(0.0, 1.0)
+    glVertex2f(0,     0)
+  
+    glTexCoord2f(0.0, 0.0)
+    glVertex2f(0,     1)
+  
+    glTexCoord2f(1.0, 0.0)
+    glVertex2f(1, 1)
+  
+    glTexCoord2f(1.0, 1.0)
+    glVertex2f(1, 0)
+    glEnd()
+  
   
   def on_mouse_press(self, x, y, button, modifiers):
     server = self.server
@@ -174,37 +223,30 @@ class Deathtroid(window.Window):
     if self.menu:
       if button == pyglet.window.mouse.LEFT:
         self.menu.mouse_pressed(x, y)
-  
     elif client and server:
-      y = 480 - y
+      if button == window.mouse.RIGHT:
+        self.editor_open = True
 
-      vp = euclid.Vector2(client.view.cam.x*32, client.view.cam.y*32)
-
-      x += vp.x
-      y += vp.y
-
-      x = int(x)
-      y = int(y)
-
-      x /= 32
-      y /= 32
-
-      print "cam: ", client.view.cam
-
-      #x += client.view.cam.x
-      #y += int(client.view.cam.y)
-
-
-      print "sätt i ", x, y
-      if button == window.mouse.LEFT:
-    
-        server.game.level.main_layer.tilemap.map[y][x] = (server.game.level.main_layer.tilemap.map[y][x] - 1) % self.num_tiles
-        client.game.level.main_layer.tilemap.map[y][x] = (client.game.level.main_layer.tilemap.map[y][x] - 1) % self.num_tiles
-    
-      elif button == window.mouse.RIGHT:    
-        server.game.level.main_layer.tilemap.map[y][x] = (server.game.level.main_layer.tilemap.map[y][x] + 1) % self.num_tiles
-        client.game.level.main_layer.tilemap.map[y][x] = (client.game.level.main_layer.tilemap.map[y][x] + 1) % self.num_tiles    
-
+  def on_mouse_release(self, x, y, button, modifiers):
+  
+    if button == window.mouse.LEFT:
+      (x, y) = self.tile_under_cursor(x, y)
+      self.server.game.level.main_layer.tilemap.map[y][x] = self.current_tile
+      self.client.game.level.main_layer.tilemap.map[y][x] = self.current_tile
+  
+    if button == window.mouse.RIGHT:
+      tx = x/32
+      ty = (480-y)/32
+  
+      if ty > 0 or tx > len(self.client.view.level_view.main_view.layer.tileset.tiles):
+        (x, y) = self.tile_under_cursor(x, y)
+        self.current_tile = self.server.game.level.main_layer.tilemap.map[y][x]
+        print "chose ", self.current_tile
+      else:
+        self.current_tile = tx
+        print "chose from palette ", self.current_tile
+  
+    self.editor_open = False
 
   def on_mouse_motion(self, x, y, dx, dy):
     if self.menu:

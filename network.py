@@ -69,6 +69,7 @@ def startPolling(sdRef = None):
   #SelectThread().start()
 
 def poll(asdf, sdRef):
+  #asyncore.loop(timeout=0.01, count=2)
   asyncore.poll(0.01)
   
   if sdRef:
@@ -80,7 +81,9 @@ class SelectThread(threading.Thread):
   
   def __init__(self):
     threading.Thread.__init__(self)
-    
+  
+  #def 
+  
   def run(self):
      asyncore.loop()
 
