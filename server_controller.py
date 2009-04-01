@@ -22,17 +22,18 @@ import physics
 
 class ServerController(object):
   """docstring for ServerController"""
-  def __init__(self):
-    print "Starting server"
+  def __init__(self, name):
+    print "Starting server", name
     super(ServerController, self).__init__()
     
+    self.name = name
     self.game = model.Game("foolevel")
     self.game.delegate = self
     
     self.logic = logics.Logic(self.game) # todo: DeathmatchLogic() or something
     self.physics = physics.Physics(self.game)
     
-    network.startServer(18245, self)
+    network.startServer(name, 18245, self)
     
     print "Server is running"
       

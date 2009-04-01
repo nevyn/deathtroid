@@ -30,7 +30,7 @@ def newData2(delegate, msg):
   payload = pickle.loads(msg["payload"]) #demjson.decode(msg["payload"])
   delegate.gotData(msg.connection, msgName, payload)
 
-def startServer(port, delegate):
+def startServer(name, port, delegate):
   listener = Listener(port)
   
   def register_callback(sdRef, flags, errorCode, name, regtype, domain):
@@ -46,7 +46,7 @@ def startServer(port, delegate):
   def newData(msg):
     newData2(delegate, msg)
   
-  sdRef = pybonjour.DNSServiceRegister(name = "deathroid", regtype = "_test._tcp", port = port, callBack = register_callback)
+  sdRef = pybonjour.DNSServiceRegister(name = name, regtype = "_deathtroid._tcp", port = port, callBack = register_callback)
   
   listener.onRequest = newData
   listener.onConnected = newConnection
@@ -75,7 +75,7 @@ def poll(asdf, sdRef):
     ready = select.select([sdRef], [], [], 0)
     if sdRef in ready[0]:
       pybonjour.DNSServiceProcessResult(sdRef)
-
+  
 class SelectThread(threading.Thread):
   
   def __init__(self):

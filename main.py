@@ -70,12 +70,12 @@ class Deathtroid(window.Window):
       print "Usage: python main.py {playerName} [server|client {host}|both]"
       self.start_menu()
 
-  def start_game(self, controller, player_name = "Samus", host="localhost"):
+  def start_game(self, controller, player_name = "Samus", host="localhost", game_name = "Deathroid"):
     self.menu = None
     
     if controller == "server" or controller == "both":
       if self.server == None:
-        self.server = server_controller.ServerController()
+        self.server = server_controller.ServerController(game_name)
       clock.schedule_interval(self.server.update, 1./30.)
     
     if controller == "client" or controller == "both":
