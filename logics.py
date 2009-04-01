@@ -79,6 +79,9 @@ class Behavior(object):
     super(Behavior, self).__init__()
     self.entity = entity
   
+  def update(self, dt):
+    pass
+  
   def collided(self, other):
     pass
     
@@ -109,6 +112,12 @@ class AvatarBehavior(Behavior):
       pe.vel.y -= 16
     elif pe.vel.y < 0:
       pe.vel.y = 0
+  
+  def update(self, dt):
+    pe = self.entity
+    if "jump" in pe.state:
+      if pe.on_floor:
+        pe.remove_state("jump")
   
   def collided(self, other):
     if other and other.behaviorName == "projectile" and other.behavior.firingEntity != self.entity:
