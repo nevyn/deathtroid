@@ -108,7 +108,6 @@ class AvatarBehavior(Behavior):
       pe.add_state("jump")
       pe.vel.y -= 16
     elif pe.vel.y < 0:
-      pe.remove_state("jump")
       pe.vel.y = 0
   
   def collided(self, other):
