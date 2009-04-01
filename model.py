@@ -133,7 +133,7 @@ class Entity(object):
   - Name must be unique (or None if it'll be set in the delegate's entityCreated).
   - Pos is an euclid.Vector2
   """
-  def __init__(self, level, type_, behaviorName, physicsName, name, pos, width, height, *behaviorArgs):
+  def __init__(self, level, type_, behaviorName, physicsName, name, pos, width, height, **elementArgs):
     super(Entity, self).__init__()
     self.level = None # Set by level.add_entity
     level.add_entity(self)
@@ -144,7 +144,8 @@ class Entity(object):
     self.name = name
     self.vel = euclid.Vector2(0., 0.)
     self.acc = euclid.Vector2(0., 0.)
-
+    
+    
     self.mass = 120
     self.max_vel = euclid.Vector2(7, 25)
     self.physics_update = physics.static_physics
@@ -159,8 +160,9 @@ class Entity(object):
     self._state = []
     
     if self.level.game.delegate:
-      self.level.game.delegate.initEntity(self, behaviorArgs)
+      self.level.game.delegate.initEntity(self, **elementArgs)
       self.level.game.delegate.entityCreated(self)
+    
   
   def remove(self):
     if self.level.game.delegate:

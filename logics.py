@@ -65,13 +65,13 @@ class Logic(object):
     E.player = player
     player.set_entity(E)
   
-  def initializeEntity(self, entity, args):
+  def initializeEntity(self, entity, **args):
     behaviors = {
       "avatar": AvatarBehavior,
       "projectile": ProjectileBehavior
     }
     if entity.behaviorName in behaviors:
-      entity.behavior = behaviors[entity.behaviorName](entity, *args)
+      entity.behavior = behaviors[entity.behaviorName](entity, **args)
 
 class Behavior(object):
   """Base class for all behaviors"""
@@ -96,7 +96,7 @@ class AvatarBehavior(Behavior):
     
   def fire(self):
     pe = self.entity
-    projectile = model.Entity(pe.level, "bullet1", "projectile", "projectile", None, euclid.Vector2(pe.pos.x, pe.pos.y - 1.8), 0.5, 0.5, pe)
+    projectile = model.Entity(pe.level, "bullet1", "projectile", "projectile", None, euclid.Vector2(pe.pos.x, pe.pos.y - 1.8), 0.5, 0.5, behavior={'firingEntity': pe})
   
   def can_jump(self):
     return self.entity.on_floor
