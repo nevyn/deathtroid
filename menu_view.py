@@ -1,10 +1,11 @@
 from pyglet.gl import *
 
 class MenuScreen(object):
-  def __init__(self, menu):
+  def __init__(self, controller):
     """docstring for __init"""
     super(MenuScreen, self).__init__()
-    self.menu = menu
+    self.controller = controller
+    self.window = controller.window
     self.init()
     
   def init(self):
@@ -46,10 +47,10 @@ class NameScreen(MenuScreen):
     self.caret1.position = len(document1.text)
     
   def enter(self):
-    self.menu.window.push_handlers(self.caret1)
+    self.window.push_handlers(self.caret1)
 
   def exit(self):
-    self.menu.window.remove_handlers(self.caret1)
+    self.window.remove_handlers(self.caret1)
     
   def draw(self):
     self.enter_name_image.blit(320-(self.enter_name_image.width/2),280)
@@ -57,9 +58,9 @@ class NameScreen(MenuScreen):
     
   def keyboard_event(self, action):
     if action == "pressed_enter":
-      self.menu.controller.set_player_name(self.enter_name_layout.document.text)
+      self.controller.set_player_name(self.enter_name_layout.document.text)
       self.current_state = "server_or_client"
-      self.menu.controller.change_state("server_or_client")
+      self.controller.change_state("server_or_client")
 
     
 class ServerClientScreen(MenuScreen):
@@ -85,11 +86,11 @@ class ServerClientScreen(MenuScreen):
   def mouse_pressed(self, x, y):
     if x > self.server_x and x < (self.server_x+self.sc_server.width) and y > self.server_y and y < (self.server_y+self.sc_server.height):
       self.current_state = "start_game"
-      self.menu.controller.set_server_or_client("server")
-      self.menu.controller.change_state("start_game")
+      self.controller.set_server_or_client("server")
+      self.controller.change_state("start_game")
     elif x > self.client_x and x < (self.client_x+self.sc_client.width) and y > self.client_y and y < (self.client_y+self.sc_client.height):
-      self.menu.controller.set_server_or_client("client")
-      self.menu.controller.change_state("enter_host")
+      self.controller.set_server_or_client("client")
+      self.controller.change_state("enter_host")
 
   def mouse_moved(self, x, y):
     if x > self.server_x and x < (self.server_x+self.sc_server.width) and y > self.server_y and y < (self.server_y+self.sc_server.height):
@@ -140,53 +141,14 @@ class HostScreen(MenuScreen):
     self.enter_host_layout.draw()
     
   def enter(self):
-    self.menu.window.push_handlers(self.caret2)
+    self.window.push_handlers(self.caret2)
 
   def exit(self):
-    self.menu.window.remove_handlers(self.caret2)
+    self.window.remove_handlers(self.caret2)
     
   def keyboard_event(self, action):
     if action == "pressed_enter":
-      self.menu.controller.set_host(self.enter_host_layout.document.text)
+      self.controller.set_host(self.enter_host_layout.document.text)
       self.current_state = "start_game"
-      self.menu.controller.change_state("start_game")
+      self.controller.change_state("start_game")
 
-    
-class MenuView(object):
-  def __init__(self, window, state, controller):
-    super(MenuView, self).__init__()
-    
-    self.window = window
-    self.current_state = state
-    self.controller = controller
-
-    self.screens = {
-      "enter_name": NameScreen(self),
-      "server_or_client": ServerClientScreen(self),
-      "enter_host": HostScreen(self)
-    }
-    
-    self.current = None
-    self.goto(state)
-
-  def goto(self, name):
-    if self.current:
-      self.current.exit()
-    
-    self.current = self.screens[name]
-    
-    if self.current:
-      self.current.enter()
-
-  def draw(self):
-    self.current.draw()  
-
-  def keyboard_event(self, action):
-    self.current.keyboard_event(action)
-    
-  def mouse_pressed(self, x, y):
-    self.current.mouse_pressed(x, y)
-    
-  def mouse_moved(self, x, y):
-    self.current.mouse_moved(x, y)      
-    

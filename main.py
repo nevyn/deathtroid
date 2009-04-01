@@ -74,7 +74,7 @@ class Deathtroid(window.Window):
 
   def start_game(self, controller, player_name = "Samus", host="localhost", game_name = "Deathroid"):
     self.menu = None
-    
+    self.init_gl()
     if controller == "server" or controller == "both":
       if self.server == None:
         self.server = server_controller.ServerController(game_name)
@@ -87,14 +87,18 @@ class Deathtroid(window.Window):
     
 
   def start_menu(self):
-  
     self.server = None
     self.client = None
     if self.menu == None:
       self.menu = menu_controller.MenuController(self)
     clock.schedule(self.menu.update)
     
-    
+  def init_gl(self):
+    glViewport(0, 0, self.width, self.height)
+    glMatrixMode(gl.GL_PROJECTION)
+    glLoadIdentity()
+    glOrtho(0, 20, 15, 0, -1, 1)
+    glMatrixMode(gl.GL_MODELVIEW)
 
   def on_resize(self, width, height):
     if self.client:
@@ -135,6 +139,8 @@ class Deathtroid(window.Window):
     elif self.menu:
       if symbol == key.ENTER:
         self.menu.keyboard_event("pressed_enter")
+      elif symbol == key.ESCAPE:
+        self.menu.keyboard_event("pressed_escape")
 
   def on_key_release(self, symbol, modifiers):
     if self.client:
@@ -151,7 +157,7 @@ class Deathtroid(window.Window):
       
       
       elif symbol == key.F:
-        self.set_fullscreen(fullscreen)
+        self.set_fullscreen(not self.fullscreen)
       
       elif symbol == key.S:
         layerfile = open('data/levels/foolevel/main.layer', 'r')
