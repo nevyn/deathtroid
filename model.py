@@ -141,10 +141,8 @@ class Entity(object):
     self.behaviorName = behaviorName
     self.physicsName = physicsName
     self.name = name
+    
     self.vel = euclid.Vector2(0., 0.)
-    self.acc = euclid.Vector2(0., 0.)
-    
-    
     self.max_vel = euclid.Vector2(7, 25)
     
     self.width = width
