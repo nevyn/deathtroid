@@ -4,20 +4,6 @@ import euclid
 import math
 import logics
 
-def calc_velocity(vel, acc, max_vel, dt):
-  vel += acc * dt
-
-  if vel.x < -max_vel.x:
-    vel.x = -max_vel.x
-  elif vel.x > max_vel.x:
-    vel.x = max_vel.x
-  
-  return vel
-
-def calc_acceleration(forces, mass):
-  inv_mass = 1.0 / mass
-  return reduce(lambda acc, f: acc + f * inv_mass, forces)
-
 def is_colliding(a, b):
   bba = a.boundingbox.translate(a.pos)
   bbb = b.boundingbox.translate(b.pos)
@@ -62,8 +48,8 @@ class ForcebasedPhysics(PhysicsModel):
     gravity = ent.level.gravity() * self.mass
     forces = [ent.move_force, ent.jump_force, gravity]
     
-    self.acc = calc_acceleration(forces, self.mass)
-    ent.vel = calc_velocity(ent.vel, self.acc, ent.max_vel, dt)
+    self.acc = self.calc_acceleration(forces, self.mass)
+    ent.vel = self.calc_velocity(ent.vel, self.acc, ent.max_vel, dt)
     if ent.jump_force.y < 0:
       ent.jump_force.y -= ent.vel.y
 
@@ -98,6 +84,22 @@ class ForcebasedPhysics(PhysicsModel):
       pass
     else:
        ent.pos.x = new_pos.x
+
+  @staticmethod
+  def calc_velocity(vel, acc, max_vel, dt):
+    vel += acc * dt
+
+    if vel.x < -max_vel.x:
+      vel.x = -max_vel.x
+    elif vel.x > max_vel.x:
+      vel.x = max_vel.x
+
+    return vel
+
+  @staticmethod
+  def calc_acceleration(forces, mass):
+    inv_mass = 1.0 / mass
+    return reduce(lambda acc, f: acc + f * inv_mass, forces)
 
 class StaticPhysics(PhysicsModel):
   def __init__(self, entity):
