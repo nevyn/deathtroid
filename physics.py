@@ -31,14 +31,14 @@ class Physics(object):
     super(Physics, self).__init__()
     self.game = game
   
-  def initializeEntity(self, entity, args):
+  def initializeEntity(self, entity, **args):
     classes = {
       "force": ForcebasedPhysics,
       "static" : StaticPhysics,
       "projectile": ProjectilePhysics
     }
     if entity.physicsName in classes:
-      entity.physics = classes[entity.physicsName](entity)
+      entity.physics = classes[entity.physicsName](entity, **args)
 
 class PhysicsModel(object):
   def __init__(self, entity):

@@ -93,9 +93,9 @@ class ServerController(object):
   def entityChanged(self, entity, parts):
     self.broadcast("entityChanged", entity.rep(parts))
   
-  def initEntity(self, entity, behaviourArgs):
-    self.logic.initializeEntity(entity, behaviourArgs)
-    self.physics.initializeEntity(entity, None)
+  def initEntity(self, entity, behavior = {}, physics = {}):
+    self.logic.initializeEntity(entity, **behavior)
+    self.physics.initializeEntity(entity, **physics)
   
   def entityCreated(self, entity):
     #todo: if the ent is an avatar for the player we're sending this msg to, append "this is you" to the dict, so that the client doesn't have to rely on the entity name to locate itself. might also use owner=playerID, and sync players to the client
