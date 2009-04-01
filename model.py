@@ -66,7 +66,6 @@ class Player (object):
     if not Ent:
       return
     self.entity.boundingbox = BoundingBox(euclid.Vector2(-self.entity.width/2, -self.entity.height), euclid.Vector2(self.entity.width/2, 0))
-    self.entity.physics_update = physics.forcebased_physics
   
   def update(self, dt):
     pass
@@ -146,9 +145,7 @@ class Entity(object):
     self.acc = euclid.Vector2(0., 0.)
     
     
-    self.mass = 120
     self.max_vel = euclid.Vector2(7, 25)
-    self.physics_update = physics.static_physics
     
     self.width = width
     self.height = height
@@ -205,8 +202,8 @@ class Entity(object):
     self.mass = mass
     
   def update(self, tilemap, dt):
-    if self.physics_update:
-      self.physics_update(self, tilemap, dt)
+    if self.physics:
+      self.physics.update(tilemap, dt)
     
     if "jump" in self.state:
       if self.on_floor:
@@ -233,7 +230,7 @@ class Entity(object):
     h = float(rep["size"][1])
     x = float(rep["pos"][0])
     y = float(rep["pos"][1])
-    entity = Entity(inLevel, rep["type"], rep["behaviorName"], rep["physicsName"], rep["name"], euclid.Vector2(x, y), w, h)
+    entity = Entity(inLevel, rep["type"], rep["behaviorName"], None, rep["name"], euclid.Vector2(x, y), w, h)
     entity.update_from_rep(rep)
     return entity
   
@@ -245,7 +242,6 @@ class Entity(object):
     if parts is "full":
       rep["type"] = self.type
       rep["behaviorName"] = self.behaviorName
-      rep["physicsName"] = self.physicsName
       
     if parts is "full" or "boundingbox" in parts:
       rep["boundingbox"] = [self.boundingbox.min.x, self.boundingbox.min.y, self.boundingbox.max.x, self.boundingbox.max.y]

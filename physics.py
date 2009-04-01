@@ -37,7 +37,9 @@ class Physics(object):
       "static" : StaticPhysics,
       "projectile": ProjectilePhysics
     }
+    entity.physics = None
     if entity.physicsName in classes:
+      print 'creating physics class', entity.physicsName, 'with args', args
       entity.physics = classes[entity.physicsName](entity, **args)
 
 class PhysicsModel(object):
@@ -45,26 +47,21 @@ class PhysicsModel(object):
     super(PhysicsModel, self).__init__()
     self.entity = entity
   
-  def update():
+  def update(self, tilemap, dt):
     pass
 
 class ForcebasedPhysics(PhysicsModel):
-  def __init__(self, entity):
+  def __init__(self, entity, mass = None):
     super(ForcebasedPhysics, self).__init__(entity)
-
-class StaticPhysics(PhysicsModel):
-  def __init__(self, entity):
-    super(StaticPhysics, self).__init__(entity)
+    self.mass = mass
   
-class ProjectilePhysics(PhysicsModel):
-  def __init__(self, entity):
-    super(ProjectilePhysics, self).__init__(entity)
-  
-def forcebased_physics(ent, tilemap, dt):
-    gravity = ent.level.gravity() * ent.mass
+  def update(self, tilemap, dt):
+    ent = self.entity
+    
+    gravity = ent.level.gravity() * self.mass
     forces = [ent.move_force, ent.jump_force, gravity]
     
-    ent.acc = calc_acceleration(forces, ent.mass)
+    ent.acc = calc_acceleration(forces, self.mass)
     ent.vel = calc_velocity(ent.vel, ent.acc, ent.max_vel, dt)
     if ent.jump_force.y < 0:
       ent.jump_force.y -= ent.vel.y
@@ -101,16 +98,20 @@ def forcebased_physics(ent, tilemap, dt):
     else:
        ent.pos.x = new_pos.x
 
-def static_physics(ent, tilemap, dt):
-  pass
-
-def projectile_physics(ent, tilemap, dt):
-  ent.pos += ent.vel*dt
+class StaticPhysics(PhysicsModel):
+  def __init__(self, entity):
+    super(StaticPhysics, self).__init__(entity)
   
-  col = collision(tilemap, ent.boundingbox.translate(euclid.Vector2(ent.pos.x, ent.pos.y)))
-  if col != None:
-    (x,y) = col
-    ent.level.game.delegate.entitiesCollidedAt(ent, None, col)
+class ProjectilePhysics(PhysicsModel):
+  def __init__(self, entity):
+    super(ProjectilePhysics, self).__init__(entity)
+  
+  def update(self, tilemap, dt):
+    ent = self.entity
+    
+    ent.pos += ent.vel*dt
 
-def fulfysik(ent, tilemap, dt):
-  ent.pos.x += 1.3 * dt
+    col = collision(tilemap, ent.boundingbox.translate(euclid.Vector2(ent.pos.x, ent.pos.y)))
+    if col != None:
+      (x,y) = col
+      ent.level.game.delegate.entitiesCollidedAt(ent, None, col)
