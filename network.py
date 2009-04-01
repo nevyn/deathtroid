@@ -4,6 +4,8 @@ from BLIP import *
 from pyglet import clock
 import cPickle as pickle
 import threading
+import select
+import pybonjour
 
 class NetworkDelegate(object):
   def newConnection(connection):
@@ -30,16 +32,26 @@ def newData2(delegate, msg):
 
 def startServer(port, delegate):
   listener = Listener(port)
+  
+  def register_callback(sdRef, flags, errorCode, name, regtype, domain):
+    if errorCode == pybonjour.kDNSServiceErr_NoError:
+            print 'Registered service:'
+            print '  name    =', name
+            print '  regtype =', regtype
+            print '  domain  =', domain
+            
   def newConnection(conn):
     delegate.newConnection(conn)
   
   def newData(msg):
     newData2(delegate, msg)
   
+  sdRef = pybonjour.DNSServiceRegister(name = "deathroid", regtype = "_test._tcp", port = port, callBack = register_callback)
+  
   listener.onRequest = newData
   listener.onConnected = newConnection
   
-  startPolling()
+  startPolling(sdRef)
 
 def startClient(host, port, delegate):
   conn = Connection( (host,port) )
@@ -52,13 +64,17 @@ def startClient(host, port, delegate):
   
   startPolling()
 
-def startPolling():
-  clock.schedule(poll)
+def startPolling(sdRef = None):
+  clock.schedule(poll, sdRef)
   #SelectThread().start()
 
-def poll(asdf):
+def poll(asdf, sdRef):
   asyncore.poll(0.01)
-
+  
+  if sdRef:
+    ready = select.select([sdRef], [], [], 0)
+    if sdRef in ready[0]:
+      pybonjour.DNSServiceProcessResult(sdRef)
 
 class SelectThread(threading.Thread):
   

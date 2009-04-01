@@ -19,7 +19,6 @@ import resources
 import network
 import logics
 import physics
-  
 
 class ServerController(object):
   """docstring for ServerController"""
