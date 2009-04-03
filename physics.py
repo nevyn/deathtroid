@@ -56,6 +56,9 @@ class ForcebasedPhysics(PhysicsModel):
 
     new_pos = ent.pos + ent.vel * dt
     
+    if new_pos.x < 0 or new_pos.x > tilemap.width:
+      new_pos.x = ent.pos.x
+    
     bb = ent.boundingbox
     
     vertical_collision = collision(tilemap, bb.translate(euclid.Vector2(ent.pos.x, new_pos.y)))
@@ -75,11 +78,12 @@ class ForcebasedPhysics(PhysicsModel):
       # value.
       if ent.on_floor:
         (x,y) = vertical_collision
-        while tilemap.tile_at_point(euclid.Vector2(x,y)) != 0:
-          y -= 1
-        y +=1-0.0000000001
-        if abs(y - ent.pos.y) < 1:
-          ent.pos.y = y
+        if x >= 0 and x < tilemap.width:
+          while tilemap.tile_at_point(euclid.Vector2(x,y)) != 0:
+            y -= 1
+          y +=1-0.0000000001
+          if abs(y - ent.pos.y) < 1:
+            ent.pos.y = y
     else:
       ent.pos.y = new_pos.y
     
