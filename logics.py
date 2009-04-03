@@ -8,7 +8,7 @@ import model
 from boundingbox import *
 
 class LogicDelegate:
-  def play_sound_at(soundName, position):
+  def play_sound(soundName, options):
     pass
 
 class Logic(object):
@@ -66,8 +66,8 @@ class Logic(object):
   def player_logged_in(self, player):
     self.spawn_player(player)
   
-  def play_sound_at(self, soundName, position):
-    self.delegate.play_sound_at(soundName, position)
+  def play_sound(self, soundName, options = {}):
+    self.delegate.play_sound(soundName, options)
   
   def spawn_player(self, player):
     
@@ -116,7 +116,8 @@ class AvatarBehavior(Behavior):
   def fire(self):
     pe = self.entity
     projectile = model.Entity(pe.level, "bullet1", None, euclid.Vector2(pe.pos.x, pe.pos.y - 1.8), behavior={'firingEntity': pe})
-    self.logic.play_sound_at("BaseShot", pe.pos)
+    #self.logic.play_sound("BaseShot", {"position": [pe.pos.x, pe.pos.y]})
+    self.logic.play_sound("BaseShot", {"follow": projectile.name})
   
   def can_jump(self):
     return self.entity.on_floor
@@ -127,6 +128,9 @@ class AvatarBehavior(Behavior):
     if amount != 0:
       self.entity.boundingbox = self.jump_bb
       pe.add_state("jump")
+      
+      self.logic
+      
       pe.vel.y -= 16
     elif pe.vel.y < 0:
       pe.vel.y = 0

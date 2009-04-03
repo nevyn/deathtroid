@@ -91,9 +91,7 @@ class ClientController(object):
       self.send("login", {"name": self.name})
     
     elif(msgName == "playSound"):
-      where = euclid.Vector2(payload["position"][0], payload["position"][1])
-      resources.get_sound(payload["name"]).playAt(where)
-
+      self.play_sound(payload["name"], payload["options"])
       
     else:
       print "ClientController: UNKNOWN MESSAGE: ", msgName, payload
@@ -112,3 +110,15 @@ class ClientController(object):
   
   def draw(self):
     self.view.draw()    
+
+  def play_sound(self, name, options):
+    sound = resources.get_sound(name)
+    voice = None
+    if "position" in options:
+      pos = euclid.Vector2(options["position"][0], options["position"][1])
+      voice = sound.playAt(pos)
+    elif "follow" in options:
+      followEnt = self.game.level.entity_by_name(options["follow"])
+      voice = sound.playFollowing(followEnt)
+      
+    

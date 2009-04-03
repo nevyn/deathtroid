@@ -6,6 +6,7 @@ import boundingbox
 
 import pyglet
 from pyglet.gl import *
+from pyglet import clock
 
 
 ############# Graphics
@@ -207,6 +208,7 @@ def get_sound(name):
   sounds[name] = sound
   return sound
 
+
 class Sound(object):
   """Sound resource."""
   def __init__(self, name):
@@ -216,10 +218,50 @@ class Sound(object):
     self.mediaSource = pyglet.media.load("data/sounds/"+name+".wav", streaming = False)
   
   def play(self):
-    return self.mediaSource.play()
+    return Voice(self.mediaSource.play())
     
   def playAt(self, where):
     
-    player = self.play()
-    player.position = (where.x/4., where.y/4., 0)
-    return player
+    voice = self.play()
+    voice.position = euclid.Vector2(where.x, where.y)
+    return voice
+    
+  def playFollowing(self, entity):
+    voice = self.playAt(entity.pos)
+    voice.follow(entity)
+    return voice
+
+class Voice(object):
+  """A single, currently playing sound."""
+  def __init__(self, player):
+    super(Voice, self).__init__()
+    self.player = player
+  
+  def position():
+      doc = "Position of the voice in the world. Don't use the underlying player's position, that one isn't translated to world space."
+      def fget(self):
+        return euclid.Vector2(self.player.position[0]*4., self.player.position[1]*4.)
+      def fset(self, vec):
+        self.player.position = (vec.x/4., vec.y/4, 0.)
+      return locals()
+  position = property(**position())
+
+  def follow(self, entity):
+    self.entity = entity
+    clock.schedule_interval(self.update, 1./10.)
+    self.player.on_eos = self.stream_ended
+  
+  def stream_ended(self):
+    if self.player.eos_action != pyglet.media.Player.EOS_LOOP:
+      self.stop()
+  
+  def stop(self):
+    clock.unschedule(self.update)
+    self.player.pause()
+  
+  def update(self, dt):
+    if self.entity.removed:
+      self.stop()
+      return
+      
+    self.position = self.entity.pos

@@ -149,6 +149,8 @@ class Entity(object):
     self.name = name
     self.pos = pos
     
+    self.removed = False
+    
     defaults = dictkeys_to_ascii( demjson.decodef("data/entity/%s.json" % (type_)) )
     for key, value in args.items():
       defaults[key].update(value)
@@ -178,6 +180,7 @@ class Entity(object):
       self.level.game.delegate.entityRemoved(self)
     
     self.level.remove_entity(self)
+    self.removed = True
   
   def state():
       doc = "The state property."
@@ -303,7 +306,7 @@ class Level(object):
     ent.level = self
     self.entities.append(ent)
   
-  def remove_entity(self, ent):
+  def remove_entity(self, ent): # Use entity.remove instead!!
     self.entities.remove(ent)
     
   def entity_by_name(self, name):

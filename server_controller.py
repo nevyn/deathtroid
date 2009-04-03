@@ -120,6 +120,6 @@ class ServerController(object):
     self.logic.collision(entA, entB, point)
   
   # Logic delegates
-  def play_sound_at(self, soundName, position):
-    self.broadcast("playSound", {"name":soundName, "position":[position.x, position.y]})
+  def play_sound(self, soundName, options = {}):
+    self.broadcast("playSound", {"name":soundName, "options":options})
 
