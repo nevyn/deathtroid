@@ -60,7 +60,7 @@ class Deathtroid(window.Window):
 
       #if(roles == "server" or roles == "both"):
       #  server = server_controller.ServerController()
-      #  clock.schedule_interval(server.update, 1./30.)
+      #  clock.schedule_interval_soft(server.update, 1./30.)
 
       #if(roles == "client" or roles == "both"):
       #  host = "localhost"
@@ -78,7 +78,7 @@ class Deathtroid(window.Window):
     if controller == "server" or controller == "both":
       if self.server == None:
         self.server = server_controller.ServerController(game_name)
-      clock.schedule_interval(self.server.update, 1./30.)
+      clock.schedule_interval_soft(self.server.update, 1./30.)
     
     if controller == "client" or controller == "both":
       if self.client == None:

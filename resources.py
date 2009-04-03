@@ -218,7 +218,10 @@ class Sound(object):
     self.mediaSource = pyglet.media.load("data/sounds/"+name+".wav", streaming = False)
   
   def play(self):
-    return Voice(self.mediaSource.play())
+    player = pyglet.media.Player()
+    player.queue(self.mediaSource)
+    player.play()
+    return Voice(player)
     
   def playAt(self, where):
     
@@ -236,20 +239,44 @@ class Voice(object):
   def __init__(self, player):
     super(Voice, self).__init__()
     self.player = player
+    self.player.on_eos = self.stream_ended
+    self._loop = False
+    print "stream start", self.player, self.player.on_eos
   
   def position():
-      doc = "Position of the voice in the world. Don't use the underlying player's position, that one isn't translated to world space."
-      def fget(self):
-        return euclid.Vector2(self.player.position[0]*4., self.player.position[1]*4.)
-      def fset(self, vec):
-        self.player.position = (vec.x/4., vec.y/4, 0.)
-      return locals()
+    doc = "Position of the voice in the world. Don't use the underlying player's position, that one isn't translated to world space."
+    def fget(self):
+      return euclid.Vector2(self.player.position[0]*4., self.player.position[1]*4.)
+    def fset(self, vec):
+      self.player.position = (vec.x/4., vec.y/4, 0.)
+    return locals()
   position = property(**position())
+  
+  def callback():
+    doc = "A callback that is called with 10hz during sound play"
+    def fget(self):
+      return self._callback
+    def fset(self, value):
+      if value:
+        clock.schedule_interval_soft(self.update, 1./10.)
+      self._callback = value
+    def fdel(self):
+      del self._callback
+    return locals()
+  callback = property(**callback())
+  
+  def volume():
+    doc = "Sound volume."
+    def fget(self):
+      return self.player.volume
+    def fset(self, value):
+      self.player.volume = value
+    return locals()
+  volume = property(**volume())
 
   def follow(self, entity):
     self.entity = entity
-    clock.schedule_interval(self.update, 1./10.)
-    self.player.on_eos = self.stream_ended
+    clock.schedule_interval_soft(self.update, 1./10.)
   
   def stream_ended(self):
     if self.player.eos_action != pyglet.media.Player.EOS_LOOP:
@@ -263,5 +290,12 @@ class Voice(object):
     if self.entity.removed:
       self.stop()
       return
-      
+    
+    if self.callback:
+      self.callback(self)
+    
     self.position = self.entity.pos
+  
+  def loop(self):
+    self.player.eos_action = pyglet.media.Player.EOS_LOOP
+

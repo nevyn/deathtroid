@@ -36,6 +36,8 @@ class ClientController(object):
     
     self.entityViews = []
     
+    self.saved_sounds = {}
+    
     print "Client is running"
   
   def newConnection(self, conn):
@@ -91,8 +93,11 @@ class ClientController(object):
       self.send("login", {"name": self.name})
     
     elif(msgName == "playSound"):
-      self.play_sound(payload["name"], payload["options"])
-      
+      self.play_sound(payload["name"], **payload["options"])
+    
+    elif(msgName == "stopSound"):
+      self.stop_sound(payload["id"])
+    
     else:
       print "ClientController: UNKNOWN MESSAGE: ", msgName, payload
     
@@ -111,14 +116,31 @@ class ClientController(object):
   def draw(self):
     self.view.draw()    
 
-  def play_sound(self, name, options):
+  def play_sound(self, name, position = None, follow = None, id = None, loop = False, volume = 1.0, callback = None):
     sound = resources.get_sound(name)
     voice = None
-    if "position" in options:
-      pos = euclid.Vector2(options["position"][0], options["position"][1])
+    if position:
+      pos = euclid.Vector2(position[0], position[1])
       voice = sound.playAt(pos)
-    elif "follow" in options:
-      followEnt = self.game.level.entity_by_name(options["follow"])
+    elif follow:
+      followEnt = self.game.level.entity_by_name(follow)
       voice = sound.playFollowing(followEnt)
+    else:
+      voice = sound.play()
       
+    if id:
+      self.saved_sounds[id] = voice
+      
+    voice.volume = volume
+    
+    if callback:
+      voice.callback = callback
+    
+    if loop:
+      voice.loop()
+      
+  
+  def stop_sound(self, soundID):
+    self.saved_sounds[soundID].stop()
+    del self.saved_sounds[soundID]
     

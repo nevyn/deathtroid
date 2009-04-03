@@ -1,0 +1,30 @@
+DEATHTROID
+============
+
+What?
+----------
+Deathmatch multiplayer Metroid.
+
+Deps
+----------
+- pyglets  http://pyopengl.sourceforge.net/
+- pyopengl http://pyopengl.sourceforge.net/
+
+And how do I run it?
+----------
+With menu:
+
+- `python main.py`
+
+From commandline:
+
+- `python main.py [username] both` # to start server and join it
+- `python main.py [username] client [host]` # to connect to a game
+
+Who are you guys?
+----------
+- Per Borgman <sterdo@gmail.com>
+- David Sveningsson <ext@sidvind.com> http://sidvind.com/
+- Patrik Sjöberg <voxxar@gmail.com> http://voxar.net/
+- Amanda Rösler <amanda.rosler@gmail.com> http://amandarosler.com/
+- Joachim Bengtsson <joachimb@gmail.com> http://nevyn.nu/

@@ -94,7 +94,6 @@ class ServerController(object):
     self.broadcast("entityChanged", entity.rep(parts))
   
   def initEntity(self, entity, behavior = {}, physics = {}, **args):
-    print 'initentity', behavior, physics, args
     self.logic.initializeEntity(entity, **behavior)
     self.physics.initializeEntity(entity, **physics)
   
@@ -123,3 +122,5 @@ class ServerController(object):
   def play_sound(self, soundName, options = {}):
     self.broadcast("playSound", {"name":soundName, "options":options})
 
+  def stop_sound(self, soundID):
+    self.broadcast("stopSound", {"id": soundID})
