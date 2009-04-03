@@ -79,7 +79,7 @@ class ForcebasedPhysics(PhysicsModel):
       if ent.on_floor:
         (x,y) = vertical_collision
         if x >= 0 and x < tilemap.width:
-          while tilemap.tile_at_point(euclid.Vector2(x,y)) != 0:
+          while tilemap.tile_at_point(euclid.Vector2(x,y)) != 0 and y > 0:
             y -= 1
           y +=1-0.0000000001
           if abs(y - ent.pos.y) < 1:
