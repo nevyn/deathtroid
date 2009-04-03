@@ -30,7 +30,7 @@ class ServerController(object):
     self.game = model.Game("foolevel")
     self.game.delegate = self
     
-    self.logic = logics.Logic(self.game) # todo: DeathmatchLogic() or something
+    self.logic = logics.Logic(self.game, self) # todo: DeathmatchLogic() or something
     self.physics = physics.Physics(self.game)
     
     network.startServer(name, 18245, self)
@@ -119,4 +119,7 @@ class ServerController(object):
   def entitiesCollidedAt(self, entA, entB, point):
     self.logic.collision(entA, entB, point)
   
-  
+  # Logic delegates
+  def play_sound_at(self, soundName, position):
+    self.broadcast("playSound", {"name":soundName, "position":[position.x, position.y]})
+

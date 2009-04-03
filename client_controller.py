@@ -61,7 +61,7 @@ class ClientController(object):
       if entity.name == "player "+self.name:
         self.view.follow = entity
     
-    if(msgName == "entityChanged"):
+    elif(msgName == "entityChanged"):
       
       #print "Entity updated", payload
       t = datetime.datetime.now()
@@ -89,6 +89,9 @@ class ClientController(object):
     elif(msgName == "pleaseLogin"):
       print "I should log in"
       self.send("login", {"name": self.name})
+      
+    else:
+      print "ClientController: UNKNOWN MESSAGE: ", msgName, payload
     
   
   def send(self, msgName, data):

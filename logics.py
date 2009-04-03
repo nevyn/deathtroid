@@ -7,11 +7,16 @@ import physics
 import model
 from boundingbox import *
 
+class LogicDelegate:
+  def play_sound_at(soundName, position):
+    pass
+
 class Logic(object):
   """Logic handler; what to do with player input, collisions, etc"""
-  def __init__(self, game):
+  def __init__(self, game, delegate):
     super(Logic, self).__init__()
     self.game = game
+    self.delegate = delegate
     
   def collision(self, a, b, point):
 
@@ -61,6 +66,9 @@ class Logic(object):
   def player_logged_in(self, player):
     self.spawn_player(player)
   
+  def play_sound_at(self, soundName, position):
+    self.delegate.play_sound_at(soundName, position)
+  
   def spawn_player(self, player):
     
     E = model.Entity(self.game.level, "samus", "player "+player.name, euclid.Vector2(random.randint(1, 10),3))
@@ -73,13 +81,14 @@ class Logic(object):
       "projectile": ProjectileBehavior
     }
     if entity.behaviorName in behaviors:
-      entity.behavior = behaviors[entity.behaviorName](entity, **args)
+      entity.behavior = behaviors[entity.behaviorName](entity, self, **args)
 
 class Behavior(object):
   """Base class for all behaviors"""
-  def __init__(self, entity):
+  def __init__(self, entity, logic):
     super(Behavior, self).__init__()
     self.entity = entity
+    self.logic = logic
   
   def update(self, dt):
     pass
@@ -90,8 +99,8 @@ class Behavior(object):
 
 class AvatarBehavior(Behavior):
   """Behavior for an entity that represents a player in-game"""
-  def __init__(self, entity, jump_width, jump_height, **args):
-    super(AvatarBehavior, self).__init__(entity)
+  def __init__(self, entity, logic, jump_width, jump_height, **args):
+    super(AvatarBehavior, self).__init__(entity, logic)
     entity.move_force = euclid.Vector2(0,0)
     entity.jump_force = euclid.Vector2(0,0)
     entity.on_floor = False
@@ -107,6 +116,7 @@ class AvatarBehavior(Behavior):
   def fire(self):
     pe = self.entity
     projectile = model.Entity(pe.level, "bullet1", None, euclid.Vector2(pe.pos.x, pe.pos.y - 1.8), behavior={'firingEntity': pe})
+    self.logic.play_sound_at("bullet1", pe.pos)
   
   def can_jump(self):
     return self.entity.on_floor
@@ -144,8 +154,8 @@ class AvatarBehavior(Behavior):
   
 class ProjectileBehavior(Behavior):
   """Behavior for anything fired from a gun."""
-  def __init__(self, entity, firingEntity, **args):
-    super(ProjectileBehavior, self).__init__(entity)
+  def __init__(self, entity, logic, firingEntity, **args):
+    super(ProjectileBehavior, self).__init__(entity, logic)
     entity.vel = firingEntity.view_direction*euclid.Vector2(20, 0)
     entity.name = next_projectile_name()
     
