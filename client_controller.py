@@ -92,7 +92,7 @@ class ClientController(object):
     
     elif(msgName == "playSound"):
       where = euclid.Vector2(payload["position"][0], payload["position"][1])
-      resources.get_sound(payload["name"]).play()
+      resources.get_sound(payload["name"]).playAt(where)
 
       
     else:
@@ -108,6 +108,7 @@ class ClientController(object):
     
   def update(self, dt):
     self.view.update(dt)
+    resources.cam_changed(self.view.cam)
   
   def draw(self):
     self.view.draw()    

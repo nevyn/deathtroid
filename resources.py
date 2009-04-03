@@ -184,6 +184,20 @@ class Tileset(object):
 
 ########### Sounds
 
+cam = euclid.Vector2(0,0)
+
+midOfScreen = euclid.Vector2(20./2, 16./2)
+
+def cam_changed(newCam):
+  cam.x = newCam.x
+  cam.y = newCam.y
+  
+  midCam = cam + midOfScreen
+  
+  pyglet.media.listener.forward_orientation = (0., 0., 1.)
+  pyglet.media.listener.up_orientation      = (0., -2., 0.)
+  pyglet.media.listener.position = (midCam.x/4., midCam.y/4., -2.)
+
 sounds = {}
 
 def get_sound(name):
@@ -202,5 +216,10 @@ class Sound(object):
     self.mediaSource = pyglet.media.load("data/sounds/"+name+".wav", streaming = False)
   
   def play(self):
-    self.mediaSource.play()
+    return self.mediaSource.play()
     
+  def playAt(self, where):
+    
+    player = self.play()
+    player.position = (where.x/4., where.y/4., 0)
+    return player

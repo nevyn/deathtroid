@@ -19,6 +19,7 @@ class View(object):
     
     self.game = game
     self.level_view = LevelView(game)
+    self.cam = euclid.Vector2(0, 0)
     
     self.follow = None
     
@@ -30,7 +31,7 @@ class View(object):
     # Move camera to correct position
     if self.follow is not None:
       
-      self.cam = euclid.Vector2(self.follow.pos.x, self.follow.pos.y);
+      self.cam = euclid.Vector2(self.follow.pos.x, self.follow.pos.y)
       self.cam.x -= 10.0
       self.cam.y -= 10.0
       
