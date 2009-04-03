@@ -116,7 +116,7 @@ class AvatarBehavior(Behavior):
   def fire(self):
     pe = self.entity
     projectile = model.Entity(pe.level, "bullet1", None, euclid.Vector2(pe.pos.x, pe.pos.y - 1.8), behavior={'firingEntity': pe})
-    self.logic.play_sound_at("bullet1", pe.pos)
+    self.logic.play_sound_at("BaseShot", pe.pos)
   
   def can_jump(self):
     return self.entity.on_floor

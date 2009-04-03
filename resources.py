@@ -7,9 +7,12 @@ import boundingbox
 import pyglet
 from pyglet.gl import *
 
+
+############# Graphics
+
 textures = {}
 sprites = {} 
-tilesets = {}   
+tilesets = {}
 
 def get_texture(name):
   if name in textures: return textures[name]
@@ -31,11 +34,10 @@ def get_tileset(name):
   ts = Tileset(name)
   tilesets[name] = ts
   return ts
-  
+
 def update(dt):
   for t, v in tilesets.items():
     v.update(dt)
-
 
 class Texture(object):
   """docstring for Texture"""
@@ -178,4 +180,27 @@ class Tileset(object):
       t.current += 1
       if t.current >= t.start + t.length:
         t.current = t.start
+
+
+########### Sounds
+
+sounds = {}
+
+def get_sound(name):
+  if name in sounds: return sounds[name]
+  
+  sound = Sound(name)
+  sounds[name] = sound
+  return sound
+
+class Sound(object):
+  """Sound resource."""
+  def __init__(self, name):
+    super(Sound, self).__init__()
+    self.name = name
+    
+    self.mediaSource = pyglet.media.load("data/sounds/"+name+".wav", streaming = False)
+  
+  def play(self):
+    self.mediaSource.play()
     

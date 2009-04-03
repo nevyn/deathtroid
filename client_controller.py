@@ -89,6 +89,11 @@ class ClientController(object):
     elif(msgName == "pleaseLogin"):
       print "I should log in"
       self.send("login", {"name": self.name})
+    
+    elif(msgName == "playSound"):
+      where = euclid.Vector2(payload["position"][0], payload["position"][1])
+      resources.get_sound(payload["name"]).play()
+
       
     else:
       print "ClientController: UNKNOWN MESSAGE: ", msgName, payload
