@@ -2,13 +2,17 @@
 
 import euclid
 import random
+import uuid
 
 import physics
 import model
 from boundingbox import *
 
 class LogicDelegate:
-  def play_sound(soundName, options):
+  def play_sound(self, soundName, options):
+    pass
+    
+  def stop_sound(self, soundID):
     pass
 
 class Logic(object):
@@ -68,6 +72,9 @@ class Logic(object):
   
   def play_sound(self, soundName, options = {}):
     self.delegate.play_sound(soundName, options)
+    
+  def stop_sound(self, soundID):
+    self.delegate.stop_sound(soundID)
   
   def spawn_player(self, player):
     
@@ -95,7 +102,12 @@ class Behavior(object):
   
   def collided(self, other):
     pass
-    
+
+
+def volumeIncreaseCallback(voice):
+  if voice.volume < 0.3:
+    voice.volume += 0.01
+
 
 class AvatarBehavior(Behavior):
   """Behavior for an entity that represents a player in-game"""
@@ -111,13 +123,14 @@ class AvatarBehavior(Behavior):
     self.jump_bb = BoundingBox(euclid.Vector2(-jump_width/2, -jump_height/2-entity.height/2), euclid.Vector2(jump_width/2, jump_height/2-entity.height/2))
     entity.boundingbox = self.normal_bb
     
+    self.was_in_air = True
+    
     self.health = 100
     
   def fire(self):
     pe = self.entity
     projectile = model.Entity(pe.level, "bullet1", None, euclid.Vector2(pe.pos.x, pe.pos.y - 1.8), behavior={'firingEntity': pe})
-    #self.logic.play_sound("BaseShot", {"position": [pe.pos.x, pe.pos.y]})
-    self.logic.play_sound("BaseShot", {"follow": projectile.name})
+    self.logic.play_sound("BaseShot", {"position": [pe.pos.x, pe.pos.y]})
   
   def can_jump(self):
     return self.entity.on_floor
@@ -129,20 +142,25 @@ class AvatarBehavior(Behavior):
       self.entity.boundingbox = self.jump_bb
       pe.add_state("jump")
       
-      self.logic
+      self.spinSoundID = uuid.uuid4().hex
+      self.logic.play_sound("Spin", {"follow": pe.name, "id":  self.spinSoundID, "loop": True, "callback": volumeIncreaseCallback, "volume": 0.05})
       
       pe.vel.y -= 16
     elif pe.vel.y < 0:
       pe.vel.y = 0
   
   def update(self, dt):
-    if "jump" in self.entity.state:
-      if self.entity.on_floor:
-        self.on_landing()
+    if self.was_in_air and self.entity.on_floor:
+      self.on_landing()
+        
+    self.was_in_air = not self.entity.on_floor
   
   def on_landing(self):
-    self.entity.boundingbox = self.normal_bb
-    self.entity.remove_state("jump")
+    if "jump" in self.entity.state:
+      self.entity.boundingbox = self.normal_bb
+      self.entity.remove_state("jump")
+      self.logic.stop_sound(self.spinSoundID)
+    self.logic.play_sound("Land", {"position": [self.entity.pos.x, self.entity.pos.y]})
   
   def collided(self, other):
     if other and other.behaviorName == "projectile" and other.behavior.firingEntity != self.entity:
@@ -170,6 +188,7 @@ class ProjectileBehavior(Behavior):
   def collided(self, other):
     if not other or (other != self.firingEntity and other.behaviorName != "projectile"):
       self.entity.remove()
+      self.logic.play_sound("Burst", {"position": [self.entity.pos.x, self.entity.pos.y]})
     
 
 projectile_id = 0
