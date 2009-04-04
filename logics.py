@@ -183,7 +183,12 @@ class ProjectileBehavior(Behavior):
     
     self.firingEntity = firingEntity
     
-    entity.state = ["r"]
+    print "view direction", firingEntity.view_direction
+    
+    if firingEntity.view_direction == 1:
+      entity.state = ["r"]
+    else:
+      entity.state = ["l"]
   
   def collided(self, other):
     if not other or (other != self.firingEntity and other.behaviorName != "projectile"):

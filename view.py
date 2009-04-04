@@ -336,10 +336,10 @@ class SpriteView(object):
     glColor3f(1,0,1)
     
     glBegin(GL_LINE_LOOP)
-    glVertex2f(bb.a().x, bb.a().y)
-    glVertex2f(bb.b().x, bb.b().y)
-    glVertex2f(bb.c().x, bb.c().y)
-    glVertex2f(bb.d().x, bb.d().y)
+    #glVertex2f(bb.a().x, bb.a().y)
+    #glVertex2f(bb.b().x, bb.b().y)
+    #glVertex2f(bb.c().x, bb.c().y)
+    #glVertex2f(bb.d().x, bb.d().y)
     glEnd()
     
     glPopAttrib()

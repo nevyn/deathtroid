@@ -237,14 +237,20 @@ class Sound(object):
 class Voice(object):
   """A single, currently playing sound."""
   def __init__(self, player):
+    """'player' is a pyglet.media.Player, not a model.Player"""
     super(Voice, self).__init__()
     self.player = player
     self.player.on_eos = self.stream_ended
-    self._loop = False
-    print "stream start", self.player, self.player.on_eos
+    self._callback = None
+    
+  def schedule_update_if_needed(self):
+    clock.unschedule(self.update)
+    if self._callback or self.entity:
+      clock.schedule_interval_soft(self.update, 1./10.)
+      
   
   def position():
-    doc = "Position of the voice in the world. Don't use the underlying player's position, that one isn't translated to world space."
+    doc = "Position of the voice in the world. Don't use the underlying player's position, that one is in another space."
     def fget(self):
       return euclid.Vector2(self.player.position[0]*4., self.player.position[1]*4.)
     def fset(self, vec):
@@ -257,9 +263,8 @@ class Voice(object):
     def fget(self):
       return self._callback
     def fset(self, value):
-      if value:
-        clock.schedule_interval_soft(self.update, 1./10.)
       self._callback = value
+      self.schedule_update_if_needed()
     def fdel(self):
       del self._callback
     return locals()
@@ -276,7 +281,7 @@ class Voice(object):
 
   def follow(self, entity):
     self.entity = entity
-    clock.schedule_interval_soft(self.update, 1./10.)
+    self.schedule_update_if_needed()
   
   def stream_ended(self):
     if self.player.eos_action != pyglet.media.Player.EOS_LOOP:
@@ -287,15 +292,27 @@ class Voice(object):
     self.player.pause()
   
   def update(self, dt):
-    if self.entity.removed:
-      self.stop()
-      return
+    if self.entity:
+      if self.entity.removed:
+        self.stop()
+      else:
+        self.position = self.entity.pos
     
     if self.callback:
       self.callback(self)
     
-    self.position = self.entity.pos
   
-  def loop(self):
-    self.player.eos_action = pyglet.media.Player.EOS_LOOP
+  def loop():
+      doc = "Whether to loop this voice. Bool."
+      def fget(self):
+          return self.player.eos_action == pyglet.media.Player.EOS_LOOP
+      def fset(self, value):
+        if value:
+          self.old_eos_action = self.player.eos_action
+          self.player.eos_action = pyglet.media.Player.EOS_LOOP
+        else:
+          self.player.eos_action = self.old_eos_action
+      return locals()
+  loop = property(**loop())
+  
 

@@ -137,7 +137,7 @@ class ClientController(object):
       voice.callback = callback
     
     if loop:
-      voice.loop()
+      voice.loop = True
       
   
   def stop_sound(self, soundID):
