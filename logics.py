@@ -103,6 +103,10 @@ class Behavior(object):
   
   def collided(self, other):
     pass
+    
+  def play_sound(self, name, opts = {}):
+    opts["position"] = [self.entity.pos.x, self.entity.pos.y]
+    self.logic.play_sound(name, opts)
 
 
 def volumeIncreaseCallback(voice):
@@ -160,15 +164,21 @@ class AvatarBehavior(Behavior):
       self.entity.boundingbox = self.normal_bb
       self.entity.remove_state("jump")
       self.logic.stop_sound(self.spinSoundID)
-    self.logic.play_sound("Land", {"position": [self.entity.pos.x, self.entity.pos.y]})
+    self.play_sound("Land")
   
   def collided(self, other):
     if other and other.behaviorName == "projectile" and other.behavior.firingEntity != self.entity:
-      self.health -= 10
-      print "Health", self.health
-      if self.health <= 0:
-        other.behavior.firingEntity.player.score += 1
-        self.die()
+      self.damage(10)
+  
+  def damage(self, amount):
+    self.health -= 10
+    self.play_sound("Injured")
+    
+    print "Health", self.health
+    if self.health <= 0:
+      other.behavior.firingEntity.player.score += 1
+      self.die()
+    
   
   def die(self):
     self.entity.player.set_entity(None)
@@ -183,7 +193,7 @@ class ProjectileBehavior(Behavior):
     
     self.firingEntity = firingEntity
     
-    self.logic.play_sound("BaseShot", {"position": [entity.pos.x, entity.pos.y]})
+    self.play_sound("BaseShot")
     
     if firingEntity.view_direction == 1:
       entity.state = ["r"]
@@ -203,7 +213,7 @@ class ExplosionBehavior(Behavior):
     entity.name = next_anonymous_name(self)
     entity.state = ["explode"]
     
-    self.logic.play_sound("Burst", {"position": [self.entity.pos.x, self.entity.pos.y]})
+    self.play_sound("Burst")
     
     clock.schedule_once(self.remove, .5)
     
