@@ -32,7 +32,9 @@ class ClientController(object):
     self.view = view.View(self.game)
     self.t = datetime.datetime.now()
     
-    network.startClient(host, 18245, self)
+    self.network = network.BestNetwork()
+    
+    self.network.startClient(host, 18245, self)
     
     self.entityViews = []
     
@@ -103,7 +105,7 @@ class ClientController(object):
     
   
   def send(self, msgName, data):
-    network.send(self.connection, msgName, data)
+    self.network.send(self.connection, msgName, data)
 
   
   def action(self, what):

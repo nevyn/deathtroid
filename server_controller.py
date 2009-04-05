@@ -33,7 +33,8 @@ class ServerController(object):
     self.logic = logics.Logic(self.game, self) # todo: DeathmatchLogic() or something
     self.physics = physics.Physics(self.game)
     
-    network.startServer(name, 18245, self)
+    self.network = network.BestNetwork()
+    self.network.startServer(name, 18245, self)
     
     print "Server is running"
       
@@ -63,7 +64,7 @@ class ServerController(object):
     print "NEW CONNECTION ", conn
     player = self.game.player_by_connection(conn)
     
-    network.send(conn, "pleaseLogin", {})
+    self.network.send(conn, "pleaseLogin", {})
     
     print "please login"
   
@@ -78,7 +79,7 @@ class ServerController(object):
     self.playerChanged(player)
     
     for ent in self.game.level.entities:
-      network.send(connection, "entityCreated", ent.rep("full"))
+      self.network.send(connection, "entityCreated", ent.rep("full"))
     
     self.logic.player_logged_in(player)
     
@@ -86,7 +87,7 @@ class ServerController(object):
   def broadcast(self, msgName, data):    
     for p in self.game.players:
       c = p.connection
-      network.send(c, msgName, data)
+      self.network.send(c, msgName, data)
       
   
   # Model delegates

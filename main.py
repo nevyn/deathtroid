@@ -72,7 +72,7 @@ class Deathtroid(window.Window):
       print "Usage: python main.py {playerName} [server|client {host}|both]"
       self.start_menu()
 
-  def start_game(self, controller, player_name = "Samus", host="localhost", game_name = "Deathroid"):
+  def start_game(self, controller, player_name = "Samus", host="localhost", game_name = "Deathtroid"):
     self.menu = None
     self.init_gl()
     if controller == "server" or controller == "both":
