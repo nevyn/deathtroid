@@ -7,6 +7,7 @@ import uuid
 import physics
 import model
 from boundingbox import *
+from pyglet import clock
 
 class LogicDelegate:
   def play_sound(self, soundName, options):
@@ -77,7 +78,6 @@ class Logic(object):
     self.delegate.stop_sound(soundID)
   
   def spawn_player(self, player):
-    
     E = model.Entity(self.game.level, "samus", "player "+player.name, euclid.Vector2(random.randint(1, 10),3))
     E.player = player
     player.set_entity(E)
@@ -85,7 +85,8 @@ class Logic(object):
   def initializeEntity(self, entity, **args):
     behaviors = {
       "avatar": AvatarBehavior,
-      "projectile": ProjectileBehavior
+      "projectile": ProjectileBehavior,
+      "explosion": ExplosionBehavior
     }
     if entity.behaviorName in behaviors:
       entity.behavior = behaviors[entity.behaviorName](entity, self, **args)
@@ -130,7 +131,6 @@ class AvatarBehavior(Behavior):
   def fire(self):
     pe = self.entity
     projectile = model.Entity(pe.level, "bullet1", None, euclid.Vector2(pe.pos.x, pe.pos.y - 1.8), behavior={'firingEntity': pe})
-    self.logic.play_sound("BaseShot", {"position": [pe.pos.x, pe.pos.y]})
   
   def can_jump(self):
     return self.entity.on_floor
@@ -179,11 +179,11 @@ class ProjectileBehavior(Behavior):
   def __init__(self, entity, logic, firingEntity, **args):
     super(ProjectileBehavior, self).__init__(entity, logic)
     entity.vel = firingEntity.view_direction*euclid.Vector2(20, 0)
-    entity.name = next_projectile_name()
+    entity.name = next_anonymous_name(self)
     
     self.firingEntity = firingEntity
     
-    print "view direction", firingEntity.view_direction
+    self.logic.play_sound("BaseShot", {"position": [entity.pos.x, entity.pos.y]})
     
     if firingEntity.view_direction == 1:
       entity.state = ["r"]
@@ -192,12 +192,27 @@ class ProjectileBehavior(Behavior):
   
   def collided(self, other):
     if not other or (other != self.firingEntity and other.behaviorName != "projectile"):
+      model.Entity(self.entity.level, "smallexplosion", None, self.entity.pos.copy())
       self.entity.remove()
-      self.logic.play_sound("Burst", {"position": [self.entity.pos.x, self.entity.pos.y]})
+      
+
+class ExplosionBehavior(Behavior):
+  def __init__(self, entity, logic, **args):
+    super(ExplosionBehavior, self).__init__(entity, logic)
+    
+    entity.name = next_anonymous_name(self)
+    entity.state = ["explode"]
+    
+    self.logic.play_sound("Burst", {"position": [self.entity.pos.x, self.entity.pos.y]})
+    
+    clock.schedule_once(self.remove, .5)
+    
+  def remove(self, *asdf):
+    self.entity.remove()
     
 
-projectile_id = 0
-def next_projectile_name():
-  global projectile_id
-  projectile_id += 1
-  return "projectile "+str(projectile_id)
+anonymous_id = 0
+def next_anonymous_name(beha):
+  global anonymous_id
+  anonymous_id += 1
+  return "temporary "+beha.entity.type+" entity #"+str(anonymous_id)

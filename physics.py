@@ -5,6 +5,8 @@ import math
 import logics
 
 def is_colliding(a, b):
+  if a.physics.nocollide or b.physics.nocollide:
+    return False
   bba = a.boundingbox.translate(a.pos)
   bbb = b.boundingbox.translate(b.pos)
   return bba.is_overlapping(bbb)
@@ -29,16 +31,17 @@ class Physics(object):
       entity.physics = classes[entity.physicsName](entity, **args)
 
 class PhysicsModel(object):
-  def __init__(self, entity):
+  def __init__(self, entity, **args):
     super(PhysicsModel, self).__init__()
     self.entity = entity
+    self.nocollide = True if "nocollide" in args and args["nocollide"] == True else False
   
   def update(self, tilemap, dt):
     pass
 
 class ForcebasedPhysics(PhysicsModel):
   def __init__(self, entity, mass = None, **args):
-    super(ForcebasedPhysics, self).__init__(entity)
+    super(ForcebasedPhysics, self).__init__(entity, **args)
     print 'mass:', mass
     self.mass = mass
     self.acc = euclid.Vector2(0., 0.)
@@ -110,11 +113,11 @@ class ForcebasedPhysics(PhysicsModel):
 
 class StaticPhysics(PhysicsModel):
   def __init__(self, entity, **args):
-    super(StaticPhysics, self).__init__(entity)
+    super(StaticPhysics, self).__init__(entity, **args)
   
 class ProjectilePhysics(PhysicsModel):
   def __init__(self, entity, **args):
-    super(ProjectilePhysics, self).__init__(entity)
+    super(ProjectilePhysics, self).__init__(entity, **args)
   
   def update(self, tilemap, dt):
     ent = self.entity

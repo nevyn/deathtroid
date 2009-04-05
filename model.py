@@ -156,8 +156,8 @@ class Entity(object):
       defaults[key].update(value)
     print defaults
     
-    self.behaviorName = defaults['behavior']['name']
-    self.physicsName = defaults['physics']['name']
+    self.behaviorName = defaults['behavior']['name'] if "behavior" in defaults else "none"
+    self.physicsName = defaults['physics']['name'] if "physics" in defaults else "static"
     self.width = defaults['width']
     self.height = defaults['height']
     
