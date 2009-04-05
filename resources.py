@@ -217,31 +217,44 @@ class Sound(object):
     
     self.mediaSource = pyglet.media.load("data/sounds/"+name+".wav", streaming = False)
   
-  def play(self):
+  def voice(self, **opts):
     player = pyglet.media.Player()
     player.queue(self.mediaSource)
-    player.play()
-    return Voice(player)
-    
-  def playAt(self, where):
-    
-    voice = self.play()
+    return Voice(player, **opts)
+  
+  def voiceAt(self, where, **opts):
+    voice = self.voice(**opts)
     voice.position = euclid.Vector2(where.x, where.y)
     return voice
-    
-  def playFollowing(self, entity):
-    voice = self.playAt(entity.pos)
+  
+  def voiceFollowing(self, entity, **opts):
+    voice = self.playAt(entity.pos, **opts)
     voice.follow(entity)
     return voice
+  
+  def play(self, **opts):
+    return self.voice(**opts).play()
+    
+  def playAt(self, where, **opts):
+    return self.voiceAt(where, **opts).play()
+    
+  def playFollowing(self, entity, **opts):
+    return self.voiceFollowing(entity, **opts).play()
 
 class Voice(object):
   """A single, currently playing sound."""
-  def __init__(self, player):
+  def __init__(self, player, volume = 1.0, loop = False, callback = None):
     """'player' is a pyglet.media.Player, not a model.Player"""
     super(Voice, self).__init__()
     self.player = player
     self.player.on_eos = self.stream_ended
+    self.old_eos_action = self.player.eos_action
+    self.entity = None
     self._callback = None
+    
+    self.volume = volume
+    self.loop = loop
+    self.callback = callback
     
   def schedule_update_if_needed(self):
     clock.unschedule(self.update)
@@ -282,14 +295,20 @@ class Voice(object):
   def follow(self, entity):
     self.entity = entity
     self.schedule_update_if_needed()
+    return self
   
   def stream_ended(self):
     if self.player.eos_action != pyglet.media.Player.EOS_LOOP:
       self.stop()
   
+  def play(self):
+    self.player.play()
+    return self
+  
   def stop(self):
     clock.unschedule(self.update)
     self.player.pause()
+    return self
   
   def update(self, dt):
     if self.entity:

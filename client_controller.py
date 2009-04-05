@@ -116,28 +116,21 @@ class ClientController(object):
   def draw(self):
     self.view.draw()    
 
-  def play_sound(self, name, position = None, follow = None, id = None, loop = False, volume = 1.0, callback = None):
+  # opts can have volume, loop, callback
+  def play_sound(self, name, position = None, follow = None, id = None, **opts):
     sound = resources.get_sound(name)
     voice = None
     if position:
       pos = euclid.Vector2(position[0], position[1])
-      voice = sound.playAt(pos)
+      voice = sound.playAt(pos, **opts)
     elif follow:
       followEnt = self.game.level.entity_by_name(follow)
-      voice = sound.playFollowing(followEnt)
+      voice = sound.playFollowing(followEnt, **opts)
     else:
-      voice = sound.play()
+      voice = sound.play(**opts)
       
     if id:
-      self.saved_sounds[id] = voice
-      
-    voice.volume = volume
-    
-    if callback:
-      voice.callback = callback
-    
-    if loop:
-      voice.loop = True
+      self.saved_sounds[id] = voice    
       
   
   def stop_sound(self, soundID):

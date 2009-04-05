@@ -110,8 +110,9 @@ class Behavior(object):
 
 
 def volumeIncreaseCallback(voice):
-  if voice.volume < 0.3:
-    voice.volume += 0.01
+  print voice.volume
+  if voice.volume < 0.6:
+    voice.volume += 0.05
 
 
 class AvatarBehavior(Behavior):
@@ -130,6 +131,8 @@ class AvatarBehavior(Behavior):
     
     self.was_in_air = True
     
+    self.healthDangerSoundID = None
+    
     self.health = 100
     
   def fire(self):
@@ -147,7 +150,7 @@ class AvatarBehavior(Behavior):
       pe.add_state("jump")
       
       self.spinSoundID = uuid.uuid4().hex
-      self.logic.play_sound("Spin", {"follow": pe.name, "id":  self.spinSoundID, "loop": True, "callback": volumeIncreaseCallback, "volume": 0.05})
+      self.logic.play_sound("Spin", {"follow": pe.name, "id":  self.spinSoundID, "loop": True, "callback": volumeIncreaseCallback, "volume": 0.1})
       
       pe.vel.y -= 16
     elif pe.vel.y < 0:
@@ -175,6 +178,12 @@ class AvatarBehavior(Behavior):
     self.play_sound("Injured")
     
     print "Health", self.health
+    
+    if self.health <= 30 and not self.healthDangerSoundID:
+      self.healthDangerSoundID = uuid.uuid4().hex
+      #self.logic.play_sound("HealthWarning", {"follow": self.entity.name, "id":  self.healthDangerSoundID, "loop": True, "volume": 0.05, "private_for_player", self.entity.player.name})
+      
+    
     if self.health <= 0:
       other.behavior.firingEntity.player.score += 1
       self.die()
