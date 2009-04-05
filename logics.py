@@ -110,7 +110,6 @@ class Behavior(object):
 
 
 def volumeIncreaseCallback(voice):
-  print voice.volume
   if voice.volume < 0.6:
     voice.volume += 0.05
 
