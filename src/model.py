@@ -313,7 +313,10 @@ class Level(object):
     self.entities.append(ent)
   
   def remove_entity(self, ent): # Use entity.remove instead!!
-    self.entities.remove(ent)
+    if ent in self.entities:
+      self.entities.remove(ent)
+    else:
+      print "WARNING: Double-removing entity!!", ent
     
   def entity_by_name(self, name):
     for e in self.entities:

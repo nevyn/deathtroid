@@ -95,8 +95,8 @@ class Deathtroid(window.Window):
     if controller == "server" or controller == "both":
       if self.server == None:
         self.server = server_controller.ServerController(game_name)
-      clock.schedule(self.server.update)
-      #clock.schedule_interval_soft(self.server.update, 1./30.)
+      #clock.schedule(self.server.update)
+      clock.schedule_interval_soft(self.server.update, 1./30.)
     
     if controller == "client" or controller == "both":
       if self.client == None:
