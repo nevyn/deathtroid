@@ -3,9 +3,9 @@
 		"explode" : {
 			"size" : [1.0, 1.0],
 			"center" : [0.5, 0.5],
-			"fps" : 10.0,
-			"loopstart" : 0,
-			"frames" : 5,
+			"fps" : 20.0,
+			"loopstart" : 4,
+			"frames": 5,
 			"texture" : "smallexplosion"
 		}
 	}

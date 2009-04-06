@@ -118,7 +118,7 @@ class ExplosionBehavior(logics.Behavior):
     
     self.play_sound("Burst")
     
-    clock.schedule_once(self.remove, .5)
+    clock.schedule_once(self.remove, .24)
     
   def remove(self, *asdf):
     self.entity.remove()
