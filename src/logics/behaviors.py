@@ -65,9 +65,9 @@ class AvatarBehavior(logics.Behavior):
   
   def collided(self, other):
     if other and other.behaviorName == "projectile" and other.behavior.firingEntity != self.entity:
-      self.damage(10)
+      self.damage(10, other)
   
-  def damage(self, amount):
+  def damage(self, amount, by = None):
     self.health -= 10
     self.play_sound("Injured")
     
@@ -79,7 +79,7 @@ class AvatarBehavior(logics.Behavior):
       
     
     if self.health <= 0:
-      other.behavior.firingEntity.player.score += 1
+      by.behavior.firingEntity.player.score += 1
       self.die()
     
   
