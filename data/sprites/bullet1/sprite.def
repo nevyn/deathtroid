@@ -3,7 +3,7 @@
 		"r" : {
 			"size" : [1.0, 1.0],
 			"center" : [0.5, 0.5],
-			"fps" : 2.0,
+			"fps" : 50.0,
 			"loopstart" : 0,
 			"frames" : 2,
 			"texture" : "bullet1",
@@ -12,7 +12,7 @@
 		"l" : {
 			"size" : [1.0, 1.0],
 			"center" : [0.5, 0.5],
-			"fps" : 2.0,
+			"fps" : 50.0,
 			"loopstart" : 0,
 			"frames" : 2,
 			"texture" : "bullet1",

@@ -8,6 +8,23 @@ Copyright (c) 2009 Third Cog Software. All rights reserved.
 """
 
 import sys
+#checking deps
+try:
+  import pyglet
+except:
+  print "Pyglet is required for this game."
+  print "Download at http://pyopengl.sourceforge.net/"
+  print "or use easy_install pyglet"
+  sys.exit()
+
+try:
+  import OpenGL.GL
+except:
+  print "PyOpenGL is required for this game."
+  print "Download at http://pyopengl.sourceforge.net/"
+  print "or use easy_install pyopengl"
+  sys.exit()
+
 import os
 from pyglet import window
 from pyglet import app

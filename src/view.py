@@ -280,6 +280,7 @@ class SpriteView(object):
     
     self.current_animation = None
     self.current_frame = 0
+    self.animation_frameduration = 0 #timer
     
   def set_animation(self, anim_name):
     self.current_animation = self.sprite.animations[anim_name]
@@ -349,10 +350,14 @@ class SpriteView(object):
   def update(self, dt):
     
     #print "Uppdaterar SPRITE"
+    spf = 1.0/self.current_animation.fps
+    self.animation_frameduration += dt
     
-    self.current_frame = self.current_frame + 1
-    if self.current_frame >= self.current_animation.num_frames:
-      self.current_frame = self.current_animation.loopstart
+    if self.animation_frameduration >= spf:
+      self.animation_frameduration = 0
+      self.current_frame = self.current_frame + 1
+      if self.current_frame >= self.current_animation.num_frames:
+        self.current_frame = self.current_animation.loopstart
             
       
   def entity_state_updated(self):

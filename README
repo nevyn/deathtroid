@@ -7,8 +7,13 @@ Deathmatch multiplayer Metroid.
 
 Deps
 ----------
-- pyglets  http://pyopengl.sourceforge.net/
+- pyglet   http://pyopengl.sourceforge.net/
 - pyopengl http://pyopengl.sourceforge.net/
+
+Installing Deps
+----------
+easy_install pyglet
+easy_install pyopengl
 
 And how do I run it?
 ----------
