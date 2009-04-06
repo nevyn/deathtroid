@@ -68,16 +68,19 @@ class Server(object):
     
   def run(self):
     while True:
-      readlist, writelist, errorlist = select.select(self.rlist, [], [])
-      for reader in readlist:
-        if reader == self.socket:
-          self.accept()
-        else:
-          conn = self.clients[reader]
-          for msg in conn.recv():
-            self.net.queue.append((conn,msg))
-            
+      self.tick()
     self.socket.close()
+    
+  def tick(self, timeout=None):
+    readlist, writelist, errorlist = select.select(self.rlist, [], [], timeout)
+    for reader in readlist:
+      if reader == self.socket:
+        self.accept()
+      else:
+        conn = self.clients[reader]
+        for msg in conn.recv():
+          self.net.queue.append((conn,msg))
+          
   
 class Client(Connection):
   def __init__(self, net):
@@ -89,9 +92,15 @@ class Client(Connection):
     
   def run(self):
     while True:
+      self.tick()
+    self.socket.close()
+    
+  def tick(self, timeout=None):
+    rl = select.select([self.socket], [], [], timeout)[0]
+    if rl:
       for msg in self.recv():
         self.net.queue.append((self, msg))
-    self.socket.close()
+  
   
 class Voxnet(network.NetworkInterface):
   def __init__(self):
@@ -114,9 +123,7 @@ class Voxnet(network.NetworkInterface):
     
     clock.schedule(self.dispatch)
     
-    t = threading.Thread(target=self.net.run)
-    t.setDaemon(True)
-    t.start()
+    self.startThread()
     
   
   def startClient(self, host, port, delegate):
@@ -129,12 +136,16 @@ class Voxnet(network.NetworkInterface):
     self.net.connect(host, port)
     self.delegate.newConnection(self.net)
     
+    self.startThread()
+    
+  def startThread(self):
     t = threading.Thread(target=self.net.run)
     t.setDaemon(True)
-    t.start()
-    
+    t.start()    
     
   def dispatch(self, dt):
+    t = time.time()
+    #self.net.tick(0) #Use this OR threads
 #    print "dispatch",self.queue
     queue = self.newconnectionqueue
     self.newconnectionqueue = []
@@ -147,4 +158,5 @@ class Voxnet(network.NetworkInterface):
     for conn, msg in queue:
       msgName, payload = pickle.loads(msg)
       self.delegate.gotData(conn, msgName, payload)
+  #  print "dispatch time:%.10f"%((time.time()-t)*1000)
       
