@@ -255,6 +255,9 @@ class Deathtroid(window.Window):
     
     if not self.server:
       return
+    
+    if y > 480:
+      return
   
     if button == window.mouse.LEFT:
       (x, y) = self.tile_under_cursor(x, y)
