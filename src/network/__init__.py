@@ -37,7 +37,12 @@ class NetworkInterface(object):
 __all__ = ["blip_on_asyncore_on_pyglet", "twisted_on_pyglet"]
 
 
+USEBUGGYBUTBETTERVOXNET = True
+
 import blip_on_asyncore_on_pyglet
 #import twisted_on_pyglet
 BestNetwork = blip_on_asyncore_on_pyglet.BLIPOnAsyncoreOnPyglet
-  
+
+if USEBUGGYBUTBETTERVOXNET:
+  import voxnet
+  BestNetwork = voxnet.Voxnet 

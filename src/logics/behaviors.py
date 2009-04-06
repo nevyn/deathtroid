@@ -79,7 +79,7 @@ class AvatarBehavior(logics.Behavior):
       
     
     if self.health <= 0:
-      other.behavior.firingEntity.player.score += 1
+      #other.behavior.firingEntity.player.score += 1
       self.die()
     
   
