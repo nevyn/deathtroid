@@ -153,6 +153,9 @@ class Deathtroid(window.Window):
       
       elif symbol == key.X:
         self.client.action("fire")
+        
+      elif symbol == key.L:
+        self.client.action("lol")
       
     elif self.menu:
       if symbol == key.ENTER:
@@ -172,6 +175,9 @@ class Deathtroid(window.Window):
       
       elif symbol == key.X:
         self.client.action("stop_fire")
+        
+      elif symbol == key.L:
+        self.client.action("stop_lol")
       
       
       elif symbol == key.F:
