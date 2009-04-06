@@ -71,11 +71,11 @@ class Logic(object):
   def player_logged_in(self, player):
     self.spawn_player(player)
   
-  def play_sound(self, soundName, options = {}):
-    self.delegate.play_sound(soundName, options)
+  def play_sound(self, soundName, options = {}, onlyFor=None):
+    self.delegate.play_sound(soundName, options, onlyFor)
     
-  def stop_sound(self, soundID):
-    self.delegate.stop_sound(soundID)
+  def stop_sound(self, soundID, onlyFor=None):
+    self.delegate.stop_sound(soundID, onlyFor)
   
   def spawn_player(self, player):
     E = model.Entity(self.game.level, "samus", "player "+player.name, euclid.Vector2(random.randint(1, 10),3))

@@ -50,7 +50,7 @@ class ServerController(object):
     if msgName == "login":
       self.gotLogin(connection, payload)
     elif msgName == "player_action":
-      player = self.game.player_by_connection(connection)
+      player = self.game.find_or_create_player_by_connection(connection)
 
       action = payload["action"]
       
@@ -62,7 +62,7 @@ class ServerController(object):
   
   def newConnection(self, conn):
     print "NEW CONNECTION ", conn
-    player = self.game.player_by_connection(conn)
+    player = self.game.find_or_create_player_by_connection(conn)
     
     self.network.send(conn, "pleaseLogin", {})
     
@@ -73,7 +73,7 @@ class ServerController(object):
     
     name = payload["name"]
     
-    player = self.game.player_by_connection(connection)
+    player = self.game.find_or_create_player_by_connection(connection)
     player.name = name
     
     self.playerChanged(player)
@@ -84,10 +84,18 @@ class ServerController(object):
     self.logic.player_logged_in(player)
     
     
-  def broadcast(self, msgName, data):    
+  def broadcast(self, msgName, payload):    
     for p in self.game.players:
       c = p.connection
-      self.network.send(c, msgName, data)
+      self.network.send(c, msgName, payload)
+  
+  def send(self, playerName, msgName, payload):
+    pl = self.game.find_player_by_name(playerName)
+    if not pl:
+      raise "WTF, tried sending data to nonexistant player "+playerName
+    
+    self.network.send(pl.connection, msgName, payload)
+      
       
   
   # Model delegates
@@ -120,8 +128,16 @@ class ServerController(object):
     self.logic.collision(entA, entB, point)
   
   # Logic delegates
-  def play_sound(self, soundName, options = {}):
-    self.broadcast("playSound", {"name":soundName, "options":options})
+  def play_sound(self, soundName, options = {}, onlyFor = None):
+    payload = {"name":soundName, "options":options}
+    if onlyFor == None:
+      self.broadcast("playSound", payload)
+    else:
+      self.send(onlyFor, "playSound", payload)
 
-  def stop_sound(self, soundID):
-    self.broadcast("stopSound", {"id": soundID})
+  def stop_sound(self, soundID, onlyFor = None):
+    payload = {"id": soundID}
+    if onlyFor == None:
+      self.broadcast("stopSound", payload)
+    else:
+      self.send(onlyFor, "stopSound", payload)

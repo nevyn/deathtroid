@@ -72,18 +72,33 @@ class AvatarBehavior(logics.Behavior):
     self.health -= 10
     self.play_sound("Injured")
     
-    print "Health", self.health
-    
-    if self.health <= 30 and not self.healthDangerSoundID:
-      self.healthDangerSoundID = uuid.uuid4().hex
-      #self.logic.play_sound("HealthWarning", {"follow": self.entity.name, "id":  self.healthDangerSoundID, "loop": True, "volume": 0.05, "private_for_player", self.entity.player.name})
-      
-    
     if self.health <= 0:
       by.behavior.firingEntity.player.score += 1
       self.die()
+  
+  def health():
+      doc = "The health property."
+      def fget(self):
+          return self._health
+      def fset(self, value):
+          self._health = value
+          self.play_health_alert_if_needed()
+      def fdel(self):
+          del self._health
+      return locals()
+  health = property(**health())
+  
+  def play_health_alert_if_needed(self, forceStop = False):
+    if (self.health > 30 or forceStop) and self.healthDangerSoundID:
+      self.logic.stop_sound(self.healthDangerSoundID, onlyFor=self.entity.player.name)
+    if forceStop: return
     
+    if self.health <= 30 and not self.healthDangerSoundID:
+      self.healthDangerSoundID = uuid.uuid4().hex
+      self.logic.play_sound("lifelow", {"follow": self.entity.name, "id":  self.healthDangerSoundID, "loop": True, "volume": 1.0}, onlyFor=self.entity.player.name)
+  
   
   def die(self):
+    self.play_health_alert_if_needed(forceStop=True)
     self.entity.player.set_entity(None)
     self.entity.remove()

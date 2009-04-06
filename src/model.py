@@ -112,7 +112,7 @@ class Game(object):
   def gravity(self):
     return self.gravity_force
   
-  def player_by_connection(self, conn):
+  def find_or_create_player_by_connection(self, conn):
     for p in self.players:
       if(p.connection == conn):
         return p
@@ -121,6 +121,12 @@ class Game(object):
     p.game = self
     self.players.append(p)
     return p
+    
+  def find_player_by_name(self, name):
+    for p in self.players:
+      if p.name == name:
+        return p
+    return None
     
   def is_on_server():
     return self.delegate != None
