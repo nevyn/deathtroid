@@ -9,6 +9,21 @@ Copyright (c) 2009 Third Cog Software. All rights reserved.
 import threading
 import socket
 
+readQueueCapacity = 5
+writeQueueCapacity = 5
+readallChunksize = 256
+writeChunksize = 1024*4
+
+kEnablePreBuffering      = 1 << 0  #// If set, pre-buffering is enabled
+kDidPassConnectMethod    = 1 << 1  #// If set, disconnection results in delegate call
+kDidCallConnectDelegate  = 1 << 2  #// If set, connect delegate has been called
+kStartingTLS             = 1 << 3  #// If set, we're waiting for TLS negotiation to complete
+kForbidReadsWrites       = 1 << 4  #// If set, no new reads or writes are allowed
+kDisconnectAfterReads    = 1 << 5  #// If set, disconnect after no more reads are queued
+kDisconnectAfterWrites   = 1 << 6  #// If set, disconnect after no more writes are queued
+kClosingWithError        = 1 << 7  #// If set, the socket is being closed due to an error
+
+DEFAULT_PREBUFFERING = True
 
 
 class AsyncSocketDelegate(object):
@@ -91,7 +106,26 @@ class AsyncSocket(object):
   """Aynchronous socket handling."""
   def __init__(self, delegate=None):
     super(AsyncSocket, self).__init__()
+    self.flags = kEnablePreBuffering if DEFAULT_PREBUFFERING else 0
     self.delegate = delegate
+    
+    self.socket = None
+    self.source = None
+    self.socket6 = None
+    self.source6 = None
+    self.runLoop = None
+    self.readStream = None
+    self.writeStream = None
+    
+    self.readQueue = []
+    self.currentRead = None
+    self.readTimer = None
+    
+    self.partialReadBuffer = ""
+    
+    self.writeQueue = []
+    self.currentWrite = None
+    self.writeTimer = None
   
   def delegate():
       doc = "The delegate; any instance implementing any part of the AsyncSocketDelegate protocol. Only set the delegate when it's safe"
@@ -105,7 +139,10 @@ class AsyncSocket(object):
   delegate = property(**delegate())
   
   def canSafelySetDelegate(self):
-    pass
+    return len(self.readQueue) == 0 and len(self.writeQueue) == 0 and self.currentRead = None and self.currentWrite = None
+  
+  
+    
   
   #/**
   #   * Once one of these methods is called, the AsyncSocket instance is locked in, and the rest can't be called without
@@ -186,7 +223,8 @@ class AsyncSocket(object):
     **/"""
   
   def progressOfRead(self, tag):
-    pass
+    if not self.currentRead:
+      return -1
     
   def progressOfWrite(self, tag):
     pass
@@ -198,6 +236,101 @@ class AsyncSocket(object):
      * any data that's left on the socket.
     **/"""
     pass
+  
+
+######## Private
+class AsyncReadPacket(object):
+  """The AsyncReadPacket encompasses the instructions for any given read.
+  The contents of a read packet allows the code to determine if we're:
+  - reading to a certain length
+  - reading to a certain separator
+  - or simply reading the first chunk of available data"""
+  def __init__(self, buf, timeout, tag, readAllAvailableData, terminator, maxLength):
+    super(AsyncReadPacket, self).__init__()
+    self.buf = buf
+    self.timeout = timeout
+    self.tag = tag
+    self.readAllAvailableData = readAllAvailableData
+    self.terminator = terminator
+    self.maxLength = maxLength
+    
+    self.bytesDone = 0
+
+
+  
+  def readLengthForTerm(self):
+    """* For read packets with a set terminator, returns the safe length of data that can be read
+    * without going over a terminator, or the maxLength.
+    * 
+    * It is assumed the terminator has not already been read."""
+    result = len(self.terminator)
+    
+    if result == 1:
+      return result
+    
+    i = max(0, (self.bytesDone - len(self.terminator) + 1))
+    j = min(len(self.terminator) - 1, self.bytesDone)
+    
+    while i < self.bytesDone:
+      subBuffer = self.buf[i:]
+      if subBuffer == self.terminator:
+        result = len(self.terminator) - j
+        break
+      
+      i += 1
+      j -= 1
+    if self.maxLength > 0:
+      return min(result, (self.maxLength - self.bytesDone))
+    else
+      return result
+  
+  def prebufferReadLengthForTerm(self):
+    """
+    * without going over the maxLength.
+    * Assuming pre-buffering is enabled, returns the amount of data that can be read
+    """
+    if self.maxLength > 0:
+      return min(readallChunksize, (self.maxLength - self.bytesDone))
+    else:
+      return readallChunksize
+  
+  def searchForTermAfterPreBuffering(self, numBytes):
+    """* For read packets with a set terminator, scans the packet buffer for the term.
+    * It is assumed the terminator had not been fully read prior to the new bytes.
+    * 
+    * If the term is found, the number of excess bytes after the term are returned.
+    * If the term is not found, this method will return -1.
+    * 
+    * Note: A return value of zero means the term was found at the very end.
+    """
+    
+    if self.terminator == nil:
+      raise "Searching for term in data when there is no term."
+    
+    i = max(0, (self.bytesDone - numBytes - len(self.terminator) + 1))
+    
+    while i + len(self.terminator) <= self.bytesDone:
+      subBuffer = self.buffer[i:]
+      
+      if subBuffer == self.terminator:
+        return self.bytesDone - (i + len(self.terminator))
+        
+      i += 1
+    
+    return -1
+
+class AsyncWritePacket(object):
+  """The AsyncWritePacket encompasses the instructions for any given write"""
+  def __init__(self, data, timeout, tag):
+    super(AsyncWritePacket, self).__init__()
+    self.data = data
+    self.timeout = timeout
+    self.tag = tag
+    self.bytesDone = 0
+
+
+    
+  
   
     
     
