@@ -83,9 +83,9 @@ class Logic(object):
     player.set_entity(E)
   
   def initializeEntity(self, entity, **args):
-    from . import behaviors
+    from . import behaviors, avatar
     behaviors = {
-      "avatar": behaviors.AvatarBehavior,
+      "avatar": avatar.AvatarBehavior,
       "projectile": behaviors.ProjectileBehavior,
       "explosion": behaviors.ExplosionBehavior
     }
