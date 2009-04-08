@@ -1,4 +1,5 @@
 from pyglet.gl import *
+import network
 
 class MenuScreen(object):
   def __init__(self, controller):
@@ -118,7 +119,7 @@ class ServerClientScreen(MenuScreen):
       self.current_client_img = self.sc_client
 
     
-class HostScreen(MenuScreen):
+class EnterHostScreen(MenuScreen):
   def init(self):
     # Enter host
     self.enter_host_image = pyglet.image.load('data/menu/enter_host.png')
@@ -152,3 +153,53 @@ class HostScreen(MenuScreen):
       self.current_state = "start_game"
       self.controller.change_state("start_game")
 
+
+class BrowseScreen(MenuScreen):
+  def init(self):
+    self.document = pyglet.text.decode_html("<b>Server Browser</b><br><i>Voxar</i> 2 players")
+    self.document.set_style(0, 1000000000000, dict(color=(255, 255, 255, 255)))
+    self.layout = pyglet.text.layout.IncrementalTextLayout(self.document, 640, 480, True)
+    
+    self.games = {}
+    self.update_text()
+#    self.layout.anchor_x = "left"
+#    self.layout.view_x = 0
+#    self.layout.x = 320
+#    self.layout.y = 220
+    
+  def update_text(self):
+    html = """<b>Server Browser</b><br>
+    <table><tr>
+      <th>Game name</th><th>Host</th>
+    </tr>
+    <tr>
+      <td>Voxars</td><td>my.ip.com</td>
+    </tr></table>
+    <a href="hej hej">hej</a>
+    """
+    self.document = pyglet.text.decode_html(html)
+    self.document.set_style(0, 1000000000000, dict(color=(255, 255, 255, 255)))
+    
+    self.layout.document = self.document
+
+  def draw(self):
+    self.layout.draw()
+    
+  def enter(self):
+    #self.browser = network.startBrowsing(self)
+    pass
+
+  def exit(self):
+    pass
+    
+  def keyboard_event(self, action):
+    if action == "pressed_enter":
+      pass
+      
+  def gameAdded(self, name, gameinfo):
+    self.games[name] = gameinfo
+    self.update_text()
+
+  def gameRemoved(self, name, host, port):
+    del self.games[name]
+    self.update_text()

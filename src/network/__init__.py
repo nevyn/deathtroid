@@ -14,6 +14,13 @@ class NetworkDelegate(object):
   def gotData(connection, msgName, payload):
     """Data has arrived from 'connection' with the name msgName and the python object 'payload'."""
     pass
+    
+class BrowserDelegate(object):
+  def gameAdded(name, gameinfo):
+    pass
+    
+  def gameRemoved(name):
+    pass
 
 class NetworkInterface(object):
   """Common interface for all the Network implementations"""
@@ -32,7 +39,12 @@ class NetworkInterface(object):
     """Connect to 'host' on 'port'. 'delegate' will be informed of new incoming data."""
     raise "Missing implementation"
 
-
+  def startBrowseLocal(self):
+    """Start browsing LAN games"""
+    pass
+    
+  def stopBrowseLocal(self):
+    """Stop browsing for LAN games"""
 
 __all__ = ["blip_on_asyncore_on_pyglet", "twisted_on_pyglet"]
 

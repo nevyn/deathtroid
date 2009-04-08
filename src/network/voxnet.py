@@ -78,8 +78,10 @@ class Server(object):
         self.accept()
       else:
         conn = self.clients[reader]
-        for msg in conn.recv():
-          self.net.queue.append((conn,msg))
+        msgs = conn.recv()
+        if msgs:
+          for msg in msgs:
+            self.net.queue.append((conn,msg))
           
   
 class Client(Connection):
@@ -98,8 +100,10 @@ class Client(Connection):
   def tick(self, timeout=None):
     rl = select.select([self.socket], [], [], timeout)[0]
     if rl:
-      for msg in self.recv():
-        self.net.queue.append((self, msg))
+      msgs = self.recv()
+      if msgs:
+        for msg in msgs:
+          self.net.queue.append((self, msg))
   
   
 class Voxnet(network.NetworkInterface):
@@ -145,6 +149,9 @@ class Voxnet(network.NetworkInterface):
     
   def dispatch(self, dt):
     t = time.time()
+    
+    #zeroconf
+    
     #self.net.tick(0) #Use this OR threads
 #    print "dispatch",self.queue
     queue = self.newconnectionqueue

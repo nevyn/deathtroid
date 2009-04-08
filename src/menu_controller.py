@@ -8,6 +8,7 @@ class MenuController(object):
     super(MenuController, self).__init__()
     self.window = window
     self.current_state = "enter_name"
+    self.current_state = "browse_host"
 #    self.view = menu_view.MenuView(window, self.current_state, self)
     
     self.queue = []
@@ -18,7 +19,8 @@ class MenuController(object):
     self.screens = {
       "enter_name":       menu_view.NameScreen(self),
       "server_or_client": menu_view.ServerClientScreen(self),
-      "enter_host":       menu_view.HostScreen(self)
+      "enter_host":       menu_view.EnterHostScreen(self),
+      "browse_host":      menu_view.BrowseScreen(self)
     }
     
     self.current_screen = None
@@ -55,7 +57,6 @@ class MenuController(object):
     glLoadIdentity()
     glOrtho(0, 640, 0, 480, -1, 1)
     glMatrixMode(gl.GL_MODELVIEW)
-    
   
   def set_player_name(self, name):
     temp = name.partition("\n")
