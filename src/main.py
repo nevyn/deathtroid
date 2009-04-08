@@ -53,6 +53,8 @@ class Deathtroid(window.Window):
     glPointSize(5)
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST)
     glEnable(GL_BLEND)
+    glDisable(GL_DEPTH_TEST)
+    glDisable(GL_CULL_FACE)
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
     glEnable(GL_TEXTURE_2D)
@@ -91,7 +93,7 @@ class Deathtroid(window.Window):
 
   def start_game(self, controller, player_name = "Samus", host="localhost", game_name = "Deathtroid"):
     self.menu = None
-    self.init_gl()
+    #self.init_gl()
     if controller == "server" or controller == "both":
       if self.server == None:
         self.server = server_controller.ServerController(game_name)
@@ -111,19 +113,20 @@ class Deathtroid(window.Window):
       self.menu = menu_controller.MenuController(self)
     clock.schedule(self.menu.update)
     
-  def init_gl(self):
-    glViewport(0, 0, self.width, self.height)
-    glMatrixMode(gl.GL_PROJECTION)
-    glLoadIdentity()
-    glOrtho(0, 20, 15, 0, -1, 1)
-    glMatrixMode(gl.GL_MODELVIEW)
+#  def init_gl(self):
+#    glViewport(0, 0, self.width, self.height)
+#    glMatrixMode(gl.GL_PROJECTION)
+#    glLoadIdentity()
+#    glOrtho(0, 20, 15, 0, -1, 1)
+#    glMatrixMode(gl.GL_MODELVIEW)
 
   def on_resize(self, width, height):
     if self.client:
       glViewport(0, 0, width, height)
       glMatrixMode(gl.GL_PROJECTION)
       glLoadIdentity()
-      glOrtho(0, 20, 15, 0, -1, 1)
+      #glOrtho(0, 20, 15, 0, -1, 1)
+      gluPerspective(45.0, float(width) / height, 1, 100)
       glMatrixMode(gl.GL_MODELVIEW)
     
     elif self.menu:
