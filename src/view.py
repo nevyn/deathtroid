@@ -33,7 +33,7 @@ class View(object):
     # Move camera to correct position
     if self.follow is not None:
       
-      self.cam_dest = euclid.Vector3(self.follow.pos.x + (5*self.follow.view_direction), self.follow.pos.y, 0.0)
+      self.cam_dest = euclid.Vector3(self.follow.pos.x + (4*self.follow.view_direction), self.follow.pos.y, 0.0)
       self.cam_dest.x -= 10.0
       self.cam_dest.y -= 7.5
       
@@ -44,7 +44,7 @@ class View(object):
       
       # move cam a little closer to cam_dest
       dist = euclid.Vector2(self.cam_dest.x - self.cam.x, self.cam_dest.y - self.cam.y)
-      self.cam = self.cam + (dist.normalized() * abs(dist)) / 5.0
+      self.cam = self.cam + dist.normalized()
       
       #glTranslatef(-self.cam.x, -self.cam.y, 0)
       
