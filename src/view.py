@@ -33,7 +33,7 @@ class View(object):
     # Move camera to correct position
     if self.follow is not None:
       
-      self.cam_dest = euclid.Vector3(self.follow.pos.x + (4*self.follow.view_direction), self.follow.pos.y, 0.0)
+      self.cam_dest = euclid.Vector3(self.follow.pos.x + (3.5*self.follow.view_direction), self.follow.pos.y, 0.0)
       self.cam_dest.x -= 10.0
       self.cam_dest.y -= 7.5
       
@@ -42,9 +42,14 @@ class View(object):
       if self.cam_dest.y < 0.0: self.cam_dest.y = 0.0
       elif self.cam_dest.y > self.game.level.main_layer.tilemap.height - 15: self.cam_dest.y = self.game.level.main_layer.tilemap.height - 15
       
-      # move cam a little closer to cam_dest
+      # move cam closer to cam_dest
       dist = euclid.Vector2(self.cam_dest.x - self.cam.x, self.cam_dest.y - self.cam.y)
-      self.cam = self.cam + dist.normalized()
+      if abs(dist) > 1.0:
+        dist.normalize()
+      #else:
+      #  dist = dist / 5.0
+        
+      self.cam = self.cam + dist * 0.3
       
       #glTranslatef(-self.cam.x, -self.cam.y, 0)
       
