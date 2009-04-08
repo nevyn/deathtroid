@@ -19,7 +19,9 @@ class View(object):
     
     self.game = game
     self.level_view = LevelView(game)
-    self.cam = euclid.Vector2(0, 0)
+    
+    self.cam_dest = euclid.Vector3(0.,0.,0.)
+    self.cam = euclid.Vector2(0., 0.)
     
     self.follow = None
     
@@ -27,22 +29,45 @@ class View(object):
     
     glClear(GL_COLOR_BUFFER_BIT)
     glLoadIdentity()
-    
+                
     # Move camera to correct position
     if self.follow is not None:
       
-      self.cam = euclid.Vector2(self.follow.pos.x, self.follow.pos.y)
-      self.cam.x -= 10.0
-      self.cam.y -= 10.0
+      self.cam_dest = euclid.Vector3(self.follow.pos.x + (3.5*self.follow.view_direction), self.follow.pos.y, 0.0)
+      self.cam_dest.x -= 10.0
+      self.cam_dest.y -= 7.5
       
-      if self.cam.x < 0.0: self.cam.x = 0.0
-      elif self.cam.x > self.game.level.main_layer.tilemap.width - 20: self.cam.x = self.game.level.main_layer.tilemap.width - 20
-      if self.cam.y < 0.0: self.cam.y = 0.0
-      elif self.cam.y > self.game.level.main_layer.tilemap.height - 15: self.cam.y = self.game.level.main_layer.tilemap.height - 15
-
+      if self.cam_dest.x < 0.0: self.cam_dest.x = 0.0
+      elif self.cam_dest.x > self.game.level.main_layer.tilemap.width - 20: self.cam_dest.x = self.game.level.main_layer.tilemap.width - 20
+      if self.cam_dest.y < 0.0: self.cam_dest.y = 0.0
+      elif self.cam_dest.y > self.game.level.main_layer.tilemap.height - 15: self.cam_dest.y = self.game.level.main_layer.tilemap.height - 15
+      
+      # move cam closer to cam_dest
+      dist = euclid.Vector2(self.cam_dest.x - self.cam.x, self.cam_dest.y - self.cam.y)
+      if abs(dist) > 1.0:
+        dist.normalize()
+      #else:
+      #  dist = dist / 5.0
+        
+      self.cam = self.cam + dist * 0.3
+      
       #glTranslatef(-self.cam.x, -self.cam.y, 0)
       
+      glTranslatef(-10,7.5, -18.0)
+      glScalef(1,-1,1)
+      
       self.level_view.draw(self.cam)
+    
+    glDisable(GL_TEXTURE_2D)
+    glBegin(GL_LINES)
+    glColor3f(1.0, 1.0, 1.0)
+    glVertex2f(0,0)
+    glVertex2f(0,2)
+    glVertex2f(0,0)
+    glVertex2f(2,0)
+    glEnd()
+    glEnable(GL_TEXTURE_2D)
+  
         
   def update(self, dt):
     self.level_view.update(dt)

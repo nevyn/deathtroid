@@ -136,6 +136,7 @@ class ClientController(object):
       
   
   def stop_sound(self, soundID):
-    self.saved_sounds[soundID].stop()
-    del self.saved_sounds[soundID]
+    if soundID in self.saved_sounds:
+      self.saved_sounds[soundID].stop()
+      del self.saved_sounds[soundID]
     

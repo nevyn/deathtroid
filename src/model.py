@@ -203,6 +203,18 @@ class Entity(object):
       return locals()
   state = property(**state())
   
+  def view_direction():
+      doc = "-1: Entity is looking left; +1: Entity is looking right"
+      def fget(self):
+          return self._view_direction
+      def fset(self, value):
+          self._view_direction = value
+          if(self.level.game.delegate):
+            self.level.game.delegate.entityChanged(self, ["view_direction"])
+          
+      return locals()
+  view_direction = property(**view_direction())
+  
   def add_state(self, state):
     if not state in self.state:
       self.state = self.state + [state]
@@ -274,6 +286,9 @@ class Entity(object):
     
     if parts is "full" or "state" in parts:
       rep["state"] = self.state
+    
+    if parts is "full" or "view_direction" in parts:
+      rep["view_direction"] = self.view_direction
       
     return rep
   
@@ -289,6 +304,9 @@ class Entity(object):
     
     if "state" in rep:
       self.state = rep["state"]
+    
+    if "view_direction" in rep:
+      self.view_direction = rep["view_direction"]
     
     
     
@@ -313,7 +331,10 @@ class Level(object):
     self.entities.append(ent)
   
   def remove_entity(self, ent): # Use entity.remove instead!!
-    self.entities.remove(ent)
+    if ent in self.entities:
+      self.entities.remove(ent)
+    else:
+      print "WARNING: Double-removing entity!!", ent
     
   def entity_by_name(self, name):
     for e in self.entities:
