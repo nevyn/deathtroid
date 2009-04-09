@@ -10,6 +10,9 @@ from pyglet import clock
 
 RECVSIZE = 1024*4
 
+class ConnectionLost(RuntimeError):
+  pass
+
 class Connection(object):
   def __init__(self, socket):
     self.socket = socket
@@ -77,33 +80,50 @@ class Server(object):
       if reader == self.socket:
         self.accept()
       else:
-        conn = self.clients[reader]
-        msgs = conn.recv()
-        if msgs:
-          for msg in msgs:
-            self.net.queue.append((conn,msg))
+        conn = self.clients.get(reader, None)
+        if conn:
+          try:
+            msgs = conn.recv()
+            if msgs:
+              for msg in msgs:
+                self.net.queue.append((conn,msg))
+          except pysocket.error, e:
+            del self.clients[reader] #remove connection
+            self.rlist.remove(reader)
+            self.net.connectionLost(conn, e) #tell my master
+        else:
+          print "::::: the connection did not exist", reader
           
   
 class Client(Connection):
   def __init__(self, net):
     super(Client, self).__init__(pysocket.socket())
     self.net = net
+    self.running = False
     
   def connect(self, host, port):
     self.socket.connect((host, port))
     
   def run(self):
-    while True:
+    self.running = True
+    while self.running:
       self.tick()
-    self.socket.close()
+    try:
+      self.socket.close()
+    except:
+      pass #if socket allready closed
     
   def tick(self, timeout=None):
     rl = select.select([self.socket], [], [], timeout)[0]
     if rl:
-      msgs = self.recv()
-      if msgs:
-        for msg in msgs:
-          self.net.queue.append((self, msg))
+      try:
+        msgs = self.recv()
+        if msgs:
+          for msg in msgs:
+            self.net.queue.append((self, msg))
+      except pysocket.error, e:
+        #Connection closed
+        self.net.connectionLost(self, e)
   
   
 class Voxnet(network.NetworkInterface):
@@ -111,11 +131,17 @@ class Voxnet(network.NetworkInterface):
     super(Voxnet, self).__init__()
     self.queue = []
     self.newconnectionqueue = []
+    
+  #interface
   
   def send(self, connection, msgName, payload):
     """Send a message named msgName to the connection identified by connection. Payload can be any python term serializable by cPickle."""
     msg = pickle.dumps( (msgName, payload) )
-    connection.send(msg)
+    try:
+      connection.send(msg)
+    except pysocket.error, e:
+      print "Voxnet::send error",e
+      #probably not send lostConnection here. Will be handled by recv but a send might happen after anyways
   
   def startServer(self, name, port, delegate):
     """Start a new listen server on port 'port'. The service will be advertised as 'name' on Zeroconf. 'delegate' will be informed of new connections."""
@@ -129,7 +155,6 @@ class Voxnet(network.NetworkInterface):
     
     self.startThread()
     
-  
   def startClient(self, host, port, delegate):
     """Connect to 'host' on 'port'. 'delegate' will be informed of new incoming data."""
     self.delegate = delegate
@@ -141,18 +166,26 @@ class Voxnet(network.NetworkInterface):
     self.delegate.newConnection(self.net)
     
     self.startThread()
+  
+  
+  #private  
+  def connectionLost(self, conn, reason):
+    """Client or a server connection was lost"""
+    self.delegate.lostConnection(conn, reason)
+
     
   def startThread(self):
+    #Use this OR self.net.tick(0) (dispatch)
     t = threading.Thread(target=self.net.run)
     t.setDaemon(True)
-    t.start()    
+    t.start()
     
   def dispatch(self, dt):
     t = time.time()
     
     #zeroconf
     
-    #self.net.tick(0) #Use this OR threads
+    #self.net.tick(0) #Use this OR threads (startThread)
 #    print "dispatch",self.queue
     queue = self.newconnectionqueue
     self.newconnectionqueue = []

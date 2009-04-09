@@ -128,6 +128,12 @@ class Game(object):
         return p
     return None
     
+  def remove_player(self, player):
+    print "REMOVING PLAYER",player
+    if player.entity:
+      player.entity.remove()
+    self.players.remove(player)
+    
   def is_on_server():
     return self.delegate != None
 

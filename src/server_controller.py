@@ -67,6 +67,11 @@ class ServerController(object):
     self.network.send(conn, "pleaseLogin", {})
     
     print "please login"
+    
+  def lostConnection(self, conn, reason):
+    print "A client got disconnected!",reason
+    player = self.game.find_or_create_player_by_connection(conn)
+    self.game.remove_player(player)
   
   def gotLogin(self, connection, payload):
     print "someone logged in"

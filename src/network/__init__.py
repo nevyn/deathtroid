@@ -11,6 +11,9 @@ class NetworkDelegate(object):
   def newConnection(connection):
     """A Network instance in server mode has received a new connection. The 'connection' object is opaque; only use it to specify who you want to send to when sending data, and to see who you gotData from."""
     pass
+  def lostConnection(conection, reason):
+    """A client dropped or disconnected for some reason"""
+    pass
   def gotData(connection, msgName, payload):
     """Data has arrived from 'connection' with the name msgName and the python object 'payload'."""
     pass

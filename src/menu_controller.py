@@ -8,7 +8,7 @@ class MenuController(object):
     super(MenuController, self).__init__()
     self.window = window
     self.current_state = "enter_name"
-    self.current_state = "browse_host"
+#    self.current_state = "browse_host"
 #    self.view = menu_view.MenuView(window, self.current_state, self)
     
     self.queue = []
