@@ -70,9 +70,22 @@ class Deathtroid(window.Window):
 
       roles = argv[2]
       name = argv[1]
+      host = None
       if(roles == "client"): 
-        host = argv[3]
-        self.start_game(roles, name, host)
+        if len(argv) > 3:
+          host = argv[3]
+        else: 
+          #find first available bonjour
+          import zeroconf
+          games = zeroconf.find_and_resolve("deathtroid", "tcp", 2)
+          if len(games) > 0:
+            fullname, hosttarget, port, txtRecord = games[0]
+            host = hosttarget
+        if host:
+          self.start_game(roles, name, host)
+        else:
+          print "No game found"
+          sys.exit()
       else:
         self.start_game(roles, name)
 

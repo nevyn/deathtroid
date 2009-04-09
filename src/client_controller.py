@@ -49,6 +49,7 @@ class ClientController(object):
   def lostConnection(self, conn, reason):
     print "I got disconnected :'("
     print "try to reconnet or gotomenu?"
+    self.connection = None
   
   def gotData(self, connection, msgName, payload):
     
@@ -109,7 +110,8 @@ class ClientController(object):
     
   
   def send(self, msgName, data):
-    self.network.send(self.connection, msgName, data)
+    if self.connection:
+      self.network.send(self.connection, msgName, data)
 
   
   def action(self, what):

@@ -57,6 +57,7 @@ class Server(object):
     self.rlist = [self.socket]
     self.net = net
     self.clients = {}
+    self.running = False
     
   def listen(self, interface, port):
     self.socket.bind((interface, port))
@@ -70,7 +71,8 @@ class Server(object):
     self.net.newconnectionqueue.append(conn)
     
   def run(self):
-    while True:
+    self.running = True
+    while self.running:
       self.tick()
     self.socket.close()
     
@@ -131,6 +133,8 @@ class Voxnet(network.NetworkInterface):
     super(Voxnet, self).__init__()
     self.queue = []
     self.newconnectionqueue = []
+    self.thread = None
+    self.is_server = False
     
   #interface
   
@@ -145,6 +149,7 @@ class Voxnet(network.NetworkInterface):
   
   def startServer(self, name, port, delegate):
     """Start a new listen server on port 'port'. The service will be advertised as 'name' on Zeroconf. 'delegate' will be informed of new connections."""
+    self.is_server = True
     self.name = name
     self.delegate = delegate
     
@@ -154,6 +159,9 @@ class Voxnet(network.NetworkInterface):
     clock.schedule(self.dispatch)
     
     self.startThread()
+    
+    import zeroconf
+    zeroconf.RegisterService(name, "deathtroid", "tcp", port).start()
     
   def startClient(self, host, port, delegate):
     """Connect to 'host' on 'port'. 'delegate' will be informed of new incoming data."""
@@ -172,6 +180,8 @@ class Voxnet(network.NetworkInterface):
   def connectionLost(self, conn, reason):
     """Client or a server connection was lost"""
     self.delegate.lostConnection(conn, reason)
+    if not self.is_server and self.thread:
+      self.net.running = False
 
     
   def startThread(self):
@@ -179,6 +189,7 @@ class Voxnet(network.NetworkInterface):
     t = threading.Thread(target=self.net.run)
     t.setDaemon(True)
     t.start()
+    self.thread = t
     
   def dispatch(self, dt):
     t = time.time()
