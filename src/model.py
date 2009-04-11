@@ -163,7 +163,7 @@ class Entity(object):
     
     self.removed = False
     
-    defaults = dictkeys_to_ascii( demjson.decodef("data/entity/%s.json" % (type_)) )
+    defaults = dictkeys_to_ascii( demjson.decode(pyglet.resource.file("entity/%s.json" % (type_)).read() ) )
     for key, value in args.items():
       defaults[key].update(value)
     print defaults
@@ -364,13 +364,13 @@ class Level(object):
         
     
   def load_main_layer(self):
-    layer_data_file = open("data/levels/" + self.name + "/main.layer")
+    layer_data_file = pyglet.resource.file("levels/" + self.name + "/main.layer")
     layer_data = demjson.decode(layer_data_file.read())
     
     return Layer(layer_data, "main")    
     
   def load_backgrounds(self):    
-    bg = open("data/levels/" + self.name + "/background.layers")
+    bg = pyglet.resource.file("levels/" + self.name + "/background.layers")
     bgdata = demjson.decode(bg.read())
     
     backs = []
@@ -381,7 +381,7 @@ class Level(object):
     return backs
     
   def load_foregrounds(self):
-    fg = open("data/levels/" + self.name + "/foreground.layers")
+    fg = pyglet.resource.file("levels/" + self.name + "/foreground.layers")
     fgdata = demjson.decode(fg.read())
     
     fores = []

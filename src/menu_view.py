@@ -33,7 +33,7 @@ class MenuScreen(object):
 class NameScreen(MenuScreen):
   def init(self):
     # Enter name
-    self.enter_name_image = pyglet.image.load('data/menu/enter_name.png')
+    self.enter_name_image = pyglet.image.load('menu/enter_name.png')
 
     document1 = pyglet.text.document.FormattedDocument("Samus")
     document1.set_style(0, 5, dict(color=(255, 255, 255, 255)))
@@ -68,10 +68,10 @@ class ServerClientScreen(MenuScreen):
   """docstring for ClassName"""
   def init(self):
      # Server or client
-    self.sc_server = pyglet.image.load('data/menu/server.png')
-    self.sc_server_red = pyglet.image.load('data/menu/server_red.png')
-    self.sc_client = pyglet.image.load('data/menu/client.png')
-    self.sc_client_red = pyglet.image.load('data/menu/client_red.png')
+    self.sc_server = pyglet.image.load('menu/server.png')
+    self.sc_server_red = pyglet.image.load('menu/server_red.png')
+    self.sc_client = pyglet.image.load('menu/client.png')
+    self.sc_client_red = pyglet.image.load('menu/client_red.png')
     self.server_x = 320-(self.sc_server.width/2)
     self.server_y = 240+10
     self.client_x = 320-(self.sc_client.width/2)
@@ -122,7 +122,7 @@ class ServerClientScreen(MenuScreen):
 class EnterHostScreen(MenuScreen):
   def init(self):
     # Enter host
-    self.enter_host_image = pyglet.image.load('data/menu/enter_host.png')
+    self.enter_host_image = pyglet.image.load('menu/enter_host.png')
 
     self.document2 = pyglet.text.document.FormattedDocument("localhost")
     self.document2.set_style(0, 9, dict(color=(255, 255, 255, 255)))

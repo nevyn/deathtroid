@@ -8,7 +8,6 @@ import pyglet
 from pyglet.gl import *
 from pyglet import clock
 
-
 ############# Graphics
 
 textures = {}
@@ -47,7 +46,7 @@ class Texture(object):
     
     print "Loading new texture", filename
     
-    self.data = pyglet.image.load(filename).get_texture()
+    self.data = pyglet.resource.texture(filename)
     
     glBindTexture(GL_TEXTURE_2D, self.data.id)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
@@ -119,7 +118,7 @@ class Sprite(object):
     # List of TextureStrips
     self.animations = {}
     
-    spritedef_file = open("data/sprites/" + name + "/sprite.def")
+    spritedef_file = pyglet.resource.file("sprites/" + name + "/sprite.def")
     
     spritedef = demjson.decode(spritedef_file.read())
     
@@ -132,7 +131,7 @@ class Sprite(object):
     print " animations: (", len(animations), ")"
     
     for k, v in animations.iteritems():    
-      texname = "data/sprites/" + name + "/" + v["texture"] + ".png"
+      texname = "sprites/" + name + "/" + v["texture"] + ".png"
             
       #anim = Animation(texname, v["frames"], v["fps"], v["loopstart"])
       anim = Animation(texname, v)
@@ -160,13 +159,13 @@ class Tileset(object):
     # This is indexed by tilemaps
     self.tiles = []
     
-    tiles_def_file = open("data/tilesets/" + name + ".tiles")
+    tiles_def_file = pyglet.resource.file("tilesets/" + name + ".tiles")
     tiles_def = demjson.decode(tiles_def_file.read())
     
     for t in tiles_def:
       self.tiles.append( Tile(t[0], t[1], t[2]) )
       
-    self.strip = TextureStrip("data/tilesets/" + name + ".png", len(self.tiles))
+    self.strip = TextureStrip("tilesets/" + name + ".png", len(self.tiles))
     
     print "Number of tiles: ",len(self.tiles)
     
@@ -215,7 +214,7 @@ class Sound(object):
     super(Sound, self).__init__()
     self.name = name
     
-    self.mediaSource = pyglet.media.load("data/sounds/"+name+".wav", streaming = False)
+    self.mediaSource = pyglet.resource.media("sounds/"+name+".wav", streaming = False)
   
   def voice(self, **opts):
     player = pyglet.media.Player()

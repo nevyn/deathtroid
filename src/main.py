@@ -45,6 +45,13 @@ import demjson
 
 logging.basicConfig(level=logging.WARNING)
 
+print pyglet.resource.path
+pyglet.resource.path=['../data.zip/data']
+print pyglet.resource.reindex()
+for p in pyglet.resource._default_loader._index.keys():
+  print p
+print pyglet.resource.location("entity/bullet1.json")
+
 
 class Deathtroid(window.Window):
   """docstring for Deathtroid"""
@@ -200,7 +207,7 @@ class Deathtroid(window.Window):
         self.set_fullscreen(not self.fullscreen)
       
       elif symbol == key.S:
-        layerfile = open('data/levels/foolevel/main.layer', 'r')
+        layerfile = pyglet.resource.file('levels/foolevel/main.layer', 'r')
         old = demjson.decode(layerfile.read())
         layerfile.close()
       
@@ -209,7 +216,7 @@ class Deathtroid(window.Window):
         new = demjson.encode(old)
       
       
-        layerfile = open('data/levels/foolevel/main.layer', 'w')
+        layerfile = pyglet.resource.file('levels/foolevel/main.layer', 'w')
         layerfile.write(new)
         layerfile.close()
         print "sparade!"
