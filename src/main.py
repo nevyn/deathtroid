@@ -45,12 +45,9 @@ import demjson
 
 logging.basicConfig(level=logging.WARNING)
 
-print pyglet.resource.path
-pyglet.resource.path=['../data.zip/data']
-print pyglet.resource.reindex()
-for p in pyglet.resource._default_loader._index.keys():
-  print p
-print pyglet.resource.location("entity/bullet1.json")
+#Set and index pyglet resource path
+pyglet.resource.path=['../data', '../data.pak/data']
+pyglet.resource.reindex()
 
 
 class Deathtroid(window.Window):
