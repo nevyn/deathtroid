@@ -19,12 +19,12 @@ And how do I run it?
 ----------
 With menu:
 
-- `python main.py`
+- `./deathtroid`
 
 From commandline:
 
-- `python main.py [username] both` # to start server and join it
-- `python main.py [username] client [host]` # to connect to a game
+- `./deathtroid [username] both` # to start server and join it
+- `./deathtroid [username] client [host]` # to connect to a game
 
 Who are you guys?
 ----------
