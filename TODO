@@ -3,3 +3,8 @@
 
 <nevyn> jag har funderat en del på det du sa om att ljudet är malplacerat på servern, och har börjat fundera på nåt jag kallar reactors... precis som jag skapar behaviors och attachar dem till entities server-side idag, så kan man skapa reactors och attacha dem till entities client-side, och så kommunicerar de implicit genom state changes och dylikt på sin parent-entity 20.48.24 MSN joachimb@gmail.com: så kanske det är upp till reactorn att välja vilken animation som ska visas t ex, och spela upp ljud vid vissa state changes eller med interval i sin update osv
 <nevyn> och liksom man skapar en DeathmatchLogic på server-side som typ attachas på hela gamet kan man skapa en DeathmatchClientLogic som är som en reactor fast för hela gamet, som kan bestämma om/hur/när hud och scoreboard och sånt ska visas
+
+-GUI
+ - Menues
+  - Serverbrowser
+ - HUD?
