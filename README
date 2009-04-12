@@ -10,10 +10,7 @@ Deps
 - pyglet   http://pyopengl.sourceforge.net/
 - pyopengl http://pyopengl.sourceforge.net/
 
-Installing Deps
-----------
-easy_install pyglet
-easy_install pyopengl
+download or install with easy_install
 
 And how do I run it?
 ----------
@@ -24,6 +21,7 @@ With menu:
 From commandline:
 
 - `./deathtroid [username] both` # to start server and join it
+- `./deathtroid [username] client` # to connect to first local game found
 - `./deathtroid [username] client [host]` # to connect to a game
 
 Who are you guys?
